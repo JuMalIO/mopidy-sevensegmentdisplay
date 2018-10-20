@@ -1,0 +1,12 @@
+include .coveragerc
+include .travis.yml
+include LICENSE
+include MANIFEST.in
+include README.rst
+include mopidy_sevensegmentdisplay/ext.conf
+include mopidy_sevensegmentdisplay/presets.sh
+
+recursive-include mopidy_sevensegmentdisplay/sounds *
+recursive-include mopidy_sevensegmentdisplay/templates *
+recursive-include mopidy_sevensegmentdisplay/static *
+recursive-include tests *.py
