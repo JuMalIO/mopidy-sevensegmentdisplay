@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2010
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "mopidy_sevensegmentdisplay", "mopidy_sevensegmentdisplay.pyproj", "{30F01249-AF78-498C-BA7A-4FC343FFE305}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{30F01249-AF78-498C-BA7A-4FC343FFE305}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{30F01249-AF78-498C-BA7A-4FC343FFE305}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {50D87275-8C3A-421B-B9F4-70483BF5FD44}
+	EndGlobalSection
+EndGlobal

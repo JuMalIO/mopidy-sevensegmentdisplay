@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% if worker.response_code %}
+<div class="alert alert-danger">
+    <p>{{ worker.response_code }}</p>
+</div>
+{% end %}
+
+<div>
+    <p>Timer off:</p>
+    <p>{{ worker.timer_off.timer }}</p>
+    <p>Timer on:</p>
+    <p>{{ worker.timer_on.timer }}</p>
+    <p>Timer alert:</p>
+    {% for timer in worker.timer_alert.timers %}
+    <p>{{ timer }}</p>
+    {% end %}
+</div>
+
+{% end %}
