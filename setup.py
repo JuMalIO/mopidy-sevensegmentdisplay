@@ -30,7 +30,7 @@ setup(
         'Mopidy >= 0.19',
         'Pykka >= 1.1',
         'monotonic >= 1.4',
-        'lirc', 
+        'python-lirc', 
     ],
     test_suite='nose.collector',
     tests_require=[
