@@ -229,24 +229,24 @@ class Music:
     G = Symbols.NUMBER[6]
 
     PRESETS = [
-        { "name": "nobass", "buffer": [N, O, 0, B, A, S, S, 0] },
-        { "name": "flat", "buffer": [0, F, L, A, T1, T2, 0, 0] },
-        { "name": "classical", "buffer": [C, L, A, S, S, I, C, 0] },
-        { "name": "club", "buffer": [0, 0, C, L, U, B, 0, 0] },
-        { "name": "dance", "buffer": [0, D, A, N, C, E, 0, 0] },
-        { "name": "headphones", "buffer": [H, E, A, D, P, H, O, N] },
-        { "name": "bass", "buffer": [0, 0, B, A, S, S, 0, 0] },
-        { "name": "treble", "buffer": [T1, T2, R, E, b, L, E, 0] },
-        { "name": "large_hall", "buffer": [0, 0, H, A, L, L, 0, 0] },
-        { "name": "live", "buffer": [0, 0, L, I, U, E, 0, 0] },
-        { "name": "party", "buffer": [0, P, A, R, T1, T2, Y, 0] },
-        { "name": "pop", "buffer": [0, 0, P, O, P, 0, 0, 0] },
-        { "name": "reggae", "buffer": [0, R, E, G, G, A, E, 0] },
-        { "name": "rock", "buffer": [0, 0, R, O, C, H, 0, 0] },
-        { "name": "ska", "buffer": [0, 0, S, H, A, 0, 0, 0] },
-        { "name": "soft_rock", "buffer": [S, O, F, T2, R, O, C, H] },
-        { "name": "soft", "buffer": [0, S, O, F, T1, T2, 0, 0] },
-        { "name": "techno", "buffer": [T1, T2, E, C, H, N, O, 0] }
+        {"name": "nobass", "buffer": [N, O, 0, B, A, S, S, 0]},
+        {"name": "flat", "buffer": [0, F, L, A, T1, T2, 0, 0]},
+        {"name": "classical", "buffer": [C, L, A, S, S, I, C, 0]},
+        {"name": "club", "buffer": [0, 0, C, L, U, B, 0, 0]},
+        {"name": "dance", "buffer": [0, D, A, N, C, E, 0, 0]},
+        {"name": "headphones", "buffer": [H, E, A, D, P, H, O, N]},
+        {"name": "bass", "buffer": [0, 0, B, A, S, S, 0, 0]},
+        {"name": "treble", "buffer": [T1, T2, R, E, b, L, E, 0]},
+        {"name": "large_hall", "buffer": [0, 0, H, A, L, L, 0, 0]},
+        {"name": "live", "buffer": [0, 0, L, I, U, E, 0, 0]},
+        {"name": "party", "buffer": [0, P, A, R, T1, T2, Y, 0]},
+        {"name": "pop", "buffer": [0, 0, P, O, P, 0, 0, 0]},
+        {"name": "reggae", "buffer": [0, R, E, G, G, A, E, 0]},
+        {"name": "rock", "buffer": [0, 0, R, O, C, H, 0, 0]},
+        {"name": "ska", "buffer": [0, 0, S, H, A, 0, 0, 0]},
+        {"name": "soft_rock", "buffer": [S, O, F, T2, R, O, C, H]},
+        {"name": "soft", "buffer": [0, S, O, F, T1, T2, 0, 0]},
+        {"name": "techno", "buffer": [T1, T2, E, C, H, N, O, 0]}
     ]
 
     def __init__(self, core, default_song):
@@ -277,7 +277,7 @@ class Music:
             return False
 
     def is_mute(self):
-        return self.core.playback.mute.get() #self.core.mixer.get_mute()
+        return self.core.playback.mute.get()  # self.core.mixer.get_mute()
 
     def play(self, tracks):
         if (tracks is not None):
@@ -304,29 +304,29 @@ class Music:
             self.core.playback.stop()
 
     def mute(self):
-        self.core.playback.mute = not self.is_mute() # self.core.mixer.set_mute(not self.is_mute())
+        self.core.playback.mute = not self.is_mute()  # self.core.mixer.set_mute(not self.is_mute())
 
     def set_preset(self, preset_name):
         for preset in self.PRESETS:
-          if (preset["name"] == preset_name):
-            try:
-                call(["sh", os.path.join(os.path.dirname(__file__), 'presets.sh'), preset_name])
-            except Exception as inst:
-                logging.error(inst)
-            return preset["buffer"]
+            if (preset["name"] == preset_name):
+                try:
+                    call(["sh", os.path.join(os.path.dirname(__file__), 'presets.sh'), preset_name])
+                except Exception as inst:
+                    logging.error(inst)
+                return preset["buffer"]
 
     def get_state(self):
-        return self.core.playback.state.get() # self.core.playback.get_state()
+        return self.core.playback.state.get()  # self.core.playback.get_state()
 
     def get_volume(self):
-        return self.core.playback.volume.get() # self.core.mixer.get_volume()
+        return self.core.playback.volume.get()  # self.core.mixer.get_volume()
 
     def set_volume(self, volume):
         if (volume < 0):
-           volume = 0
+            volume = 0
         elif (volume > 100):
-           volume = 100
-        self.core.playback.volume = volume # self.core.mixer.set_volume()
+            volume = 100
+        self.core.playback.volume = volume  # self.core.mixer.set_volume()
 
     def increase_volume(self, volume=1):
         self.set_volume(self.get_volume() + volume)
