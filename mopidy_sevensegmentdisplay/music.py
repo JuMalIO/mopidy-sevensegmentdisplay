@@ -8,6 +8,7 @@ from random import randint
 import logging
 from subprocess import call
 
+
 class Music:
     P = Symbols.P
     L = Symbols.L
@@ -24,8 +25,8 @@ class Music:
         "length": 2,
         "repeat": 1,
         "sleep": 0.05,
-        "buffer":
-            [[0, 0, 0, 0, 0, 0, 0, P],
+        "buffer": [
+            [0, 0, 0, 0, 0, 0, 0, P],
             [0, 0, 0, 0, 0, 0, P, 0],
             [0, 0, 0, 0, 0, P, 0, 0],
             [0, 0, 0, 0, P, 0, 0, 0],
@@ -51,15 +52,16 @@ class Music:
             [0, 0, P, L, A, Y, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, P, L, A, Y, 0, 0]]
+            [0, 0, P, L, A, Y, 0, 0]
+        ]
     }
 
     ANIMATION_STOP = {
         "length": 2,
         "repeat": 1,
         "sleep": 0.05,
-        "buffer":
-            [[0, 0, 0, 0, 0, 0, 0, S],
+        "buffer": [
+            [0, 0, 0, 0, 0, 0, 0, S],
             [0, 0, 0, 0, 0, 0, S, 0],
             [0, 0, 0, 0, 0, S, 0, 0],
             [0, 0, 0, 0, S, 0, 0, 0],
@@ -83,15 +85,16 @@ class Music:
             [0, 0, S, T1, T2, O, P, 0],
             [0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, S, T1, T2, O, P, 0]]
+            [0, 0, S, T1, T2, O, P, 0]
+        ]
     }
 
     ANIMATION_PAUSE = {
         "length": 2,
         "repeat": 1,
         "sleep": 0.05,
-        "buffer":
-            [[0, 0, 0, 0, 0, 0, 0, P],
+        "buffer": [
+            [0, 0, 0, 0, 0, 0, 0, P],
             [0, 0, 0, 0, 0, 0, P, 0],
             [0, 0, 0, 0, 0, P, 0, 0],
             [0, 0, 0, 0, P, 0, 0, 0],
@@ -118,7 +121,8 @@ class Music:
             [0, 0, P, A, U, S, E, 0],
             [0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, P, A, U, S, E, 0]]
+            [0, 0, P, A, U, S, E, 0]
+        ]
     }
 
     BOTTOM = Symbols.BOTTOM
@@ -132,8 +136,8 @@ class Music:
         "length": 1,
         "repeat": 3,
         "sleep": 0.05,
-        "buffer":
-            [[0, 0, 0, 0, 0, 0, 0, BOTTOM],
+        "buffer": [
+            [0, 0, 0, 0, 0, 0, 0, BOTTOM],
             [0, 0, 0, 0, 0, 0, BOTTOM, 0],
             [0, 0, 0, 0, 0, BOTTOM, 0, 0],
             [0, 0, 0, 0, BOTTOM, 0, 0, 0],
@@ -152,7 +156,8 @@ class Music:
             [0, 0, 0, 0, 0, 0, TOP, 0],
             [0, 0, 0, 0, 0, 0, 0, TOP],
             [0, 0, 0, 0, 0, 0, 0, RIGHT_TOP],
-            [0, 0, 0, 0, 0, 0, 0, RIGHT_BOTTOM]]
+            [0, 0, 0, 0, 0, 0, 0, RIGHT_BOTTOM]
+        ]
     }
 
     LEFT = Symbols.LEFT_TOP + Symbols.LEFT_BOTTOM
@@ -162,8 +167,8 @@ class Music:
         "length": 5,
         "repeat": 20,
         "sleep": 0.02,
-        "buffer":
-            [[0, 0, 0, 0, 0, 0, 0, RIGHT],
+        "buffer": [
+            [0, 0, 0, 0, 0, 0, 0, RIGHT],
             [0, 0, 0, 0, 0, 0, RIGHT, 0],
             [0, 0, 0, 0, 0, RIGHT, 0, 0],
             [0, 0, 0, 0, RIGHT, 0, 0, 0],
@@ -178,7 +183,8 @@ class Music:
             [0, 0, 0, 0, LEFT, 0, 0, 0],
             [0, 0, 0, 0, 0, LEFT, 0, 0],
             [0, 0, 0, 0, 0, 0, LEFT, 0],
-            [0, 0, 0, 0, 0, 0, 0, LEFT]]
+            [0, 0, 0, 0, 0, 0, 0, LEFT]
+        ]
     }
 
     MIDDLE = Symbols.MIDDLE
@@ -187,8 +193,8 @@ class Music:
         "length": 5,
         "repeat": 20,
         "sleep": 0.02,
-        "buffer":
-            [[0, 0, 0, 0, 0, 0, 0, MIDDLE],
+        "buffer": [
+            [0, 0, 0, 0, 0, 0, 0, MIDDLE],
             [0, 0, 0, 0, 0, 0, MIDDLE, 0],
             [0, 0, 0, 0, 0, MIDDLE, 0, 0],
             [0, 0, 0, 0, MIDDLE, 0, 0, 0],
@@ -201,7 +207,8 @@ class Music:
             [0, 0, 0, MIDDLE, 0, 0, 0, 0],
             [0, 0, 0, 0, MIDDLE, 0, 0, 0],
             [0, 0, 0, 0, 0, MIDDLE, 0, 0],
-            [0, 0, 0, 0, 0, 0, MIDDLE, 0]]
+            [0, 0, 0, 0, 0, 0, MIDDLE, 0]
+        ]
     }
 
     M0 = int('00000000', 2)
@@ -209,7 +216,7 @@ class Music:
     M2 = int('00001001', 2)
     M3 = int('01001001', 2)
     MUSIC_EQUALIZER = [M0, M1, M2, M3]
-    
+
     N = Symbols.N
     B = Symbols.NUMBER[8]
     F = Symbols.F
@@ -246,7 +253,7 @@ class Music:
         self.core = core
         self.volume = self.get_volume(),
         self.default_song = default_song
-                
+
     def is_playing(self, state=None):
         if (state is None):
             state = self.get_state()
@@ -268,7 +275,7 @@ class Music:
             return True
         else:
             return False
-        
+
     def is_mute(self):
         return self.core.playback.mute.get() #self.core.mixer.get_mute()
 
@@ -287,17 +294,17 @@ class Music:
                 self.core.tracklist.repeat = True
                 self.core.tracklist.random = True
             self.core.playback.play()
-            
+
     def pause(self):
         if (not self.is_paused()):
             self.core.playback.pause()
-    
+
     def stop(self):
         if (self.is_playing()):
             self.core.playback.stop()
-    
+
     def mute(self):
-        self.core.playback.mute = not self.is_mute() #self.core.mixer.set_mute(not self.is_mute())
+        self.core.playback.mute = not self.is_mute() # self.core.mixer.set_mute(not self.is_mute())
 
     def set_preset(self, preset_name):
         for preset in self.PRESETS:
@@ -309,21 +316,21 @@ class Music:
             return preset["buffer"]
 
     def get_state(self):
-        return self.core.playback.state.get() #self.core.playback.get_state()
+        return self.core.playback.state.get() # self.core.playback.get_state()
 
     def get_volume(self):
-        return self.core.playback.volume.get() #self.core.mixer.get_volume()
-      
+        return self.core.playback.volume.get() # self.core.mixer.get_volume()
+
     def set_volume(self, volume):
         if (volume < 0):
            volume = 0
         elif (volume > 100):
            volume = 100
-        self.core.playback.volume = volume #self.core.mixer.set_volume()
-      
+        self.core.playback.volume = volume # self.core.mixer.set_volume()
+
     def increase_volume(self, volume=1):
         self.set_volume(self.get_volume() + volume)
-      
+
     def decrease_volume(self, volume=1):
         self.set_volume(self.get_volume() - volume)
 
@@ -335,7 +342,7 @@ class Music:
 
     def get_draw_play_animation(self):
         return self.ANIMATION_PLAY
-        
+
     def get_draw_stop_animation(self):
         return self.ANIMATION_STOP
 
@@ -373,8 +380,8 @@ class Music:
         if (volume is None):
             volume = self.get_volume()
 
-        #if (self.is_mute()):
-        #    volume = 0
+        # if (self.is_mute()):
+        #     volume = 0
 
         return [
             Symbols.U,

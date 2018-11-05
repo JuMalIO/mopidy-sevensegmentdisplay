@@ -39,17 +39,17 @@ class Timer(object):
         if (not self.is_set()):
             time_left = (self.step - self.now.minute % self.step) if self.remove_min else 0
             min = time_left + (self.step if time_left < self.half_step else 0)
-            self.timer = self.now + timedelta(minutes = min)
+            self.timer = self.now + timedelta(minutes=min)
         else:
-            new_time = self.timer + timedelta(minutes = self.step)
+            new_time = self.timer + timedelta(minutes=self.step)
             diff = new_time - self.now
             if (diff.days < 1):
                 self.timer = new_time
 
     def decrease(self):
         if (self.is_set()):
-            timer_minus_step = self.timer - timedelta(minutes = self.step)
-            now_plus_half_step = self.now + timedelta(minutes = self.half_step)
+            timer_minus_step = self.timer - timedelta(minutes=self.step)
+            now_plus_half_step = self.now + timedelta(minutes=self.half_step)
             if (now_plus_half_step < timer_minus_step):
                 self.timer = timer_minus_step
             else:

@@ -136,10 +136,10 @@ class Worker(Threader):
                     {
                         "get_buffer": lambda: [0, Symbols.S, Symbols.T1, Symbols.T2, Symbols.Y, Symbols.L, Symbols.E, 0],
                         "sub_menu": list(map(lambda x: {
-                                                            "get_buffer": lambda: x["buffer"],
-                                                            "click": lambda: self.music.set_preset(x["name"]),
-                                                            "click_animation": True
-                                                        }, Music.PRESETS))
+                            "get_buffer": lambda: x["buffer"],
+                            "click": lambda: self.music.set_preset(x["name"]),
+                            "click_animation": True
+                        }, Music.PRESETS))
                     },
                     {
                         "get_buffer": lambda: [0, 0, Symbols.D, Symbols.E, Symbols.M1, Symbols.M2, Symbols.O, 0],
