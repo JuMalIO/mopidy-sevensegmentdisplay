@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from datetime import datetime
 from max7219 import Symbols
 
+
 class Time:
     VISIBLE_FOR_SECONDS = 5
 
@@ -21,12 +22,12 @@ class Time:
         hour = now.hour
         minute = now.minute
         second = now.second
-        
+
         self.blink = not self.blink
-        
+
         separator = Symbols.NONE
         if (self.blink):
-           separator = Symbols.MIDDLE
+            separator = Symbols.MIDDLE
 
         time = [
             Symbols.NUMBER[int(hour / 10)],
@@ -65,7 +66,7 @@ class Date:
         day = now.day
         month = now.month
         year = now.year
-    
+
         date = [
             Symbols.NUMBER[int(year / 1000)],
             Symbols.NUMBER[int(year / 100) % 10],
