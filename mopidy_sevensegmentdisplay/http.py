@@ -23,7 +23,7 @@ class BaseRequestHandler(tornado.web.RequestHandler):
 class MainRequestHandler(BaseRequestHandler):
     def get(self):
         self.write(template_loader.load('index.html').generate(
-            config = self.config['sevensegmentdisplay'],
+            config = self.config,
             core = self.core,
             worker = self.worker
         ))
@@ -55,7 +55,7 @@ class ApiRequestHandler(BaseRequestHandler):
 def factory_decorator(worker):
     def app_factory(config, core):
         # since all the RequestHandler-classes get the same arguments ...
-        bind = lambda url, klass: (url, klass, {'config': config, 'core': core, 'worker': worker})
+        bind = lambda url, klass: (url, klass, {'config': config['sevensegmentdisplay'], 'core': core, 'worker': worker})
 
         return [
             (r'/static/(.*)', tornado.web.StaticFileHandler, {'path': os.path.join(os.path.dirname(__file__), 'static')}),

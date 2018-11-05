@@ -32,27 +32,24 @@ class Worker(Threader):
 
     response_code = None
     
-    def __init__(self, config, core):
-        super(Worker, self).__init__()
+    def start(self, config, core):
         self.config = config
         self.core = core
-
-    #def start(self):
-    #    super(Worker, self).start()
+        super(Worker, self).start()
         
     def run(self):
         try:
-            self.music = Music(self.core, self.config['sevensegmentdisplay']['default_song'])
+            self.music = Music(self.core, self.config['default_song'])
             self.display = Display()
             self.ir_sender = IrSender()
             self.ir_receiver = IrReceiver(self.play_stop_music, self.on_menu_click, self.on_menu_click_left, self.on_menu_click_right, self.music.decrease_volume, self.music.increase_volume, self.music.mute, self.on_preset)
             self.gpio = Gpio(self.play_stop_music, self.on_menu_click, self.on_menu_click_left, self.on_menu_click_right, self.ir_sender)
             self.timer_on = TimerOn(self.play_music)
             self.timer_off = TimerOff(self.stop_music)
-            self.timer_alert = TimerAlert(Alert(self.display, self.gpio, json.loads(self.config['sevensegmentdisplay']['alert_files'])).run)
+            self.timer_alert = TimerAlert(Alert(self.display, self.gpio, json.loads(self.config['alert_files'])).run)
             self.time = Time()
             self.date = Date([ self.timer_on, self.timer_off, self.timer_alert ])
-            self.menu = Menu(self.display, self.get_menu(), [ self.time, self.date, self.timer_on, self.timer_off, self.timer_alert ], self.config['sevensegmentdisplay']['display_min_brightness'], self.config['sevensegmentdisplay']['display_max_brightness'], self.config['sevensegmentdisplay']['display_off_time_from'], self.config['sevensegmentdisplay']['display_off_time_to'])
+            self.menu = Menu(self.display, self.get_menu(), [ self.time, self.date, self.timer_on, self.timer_off, self.timer_alert ], self.config['display_min_brightness'], self.config['display_max_brightness'], self.config['display_off_time_from'], self.config['display_off_time_to'])
             
             self.ir_receiver.start()
 
@@ -235,7 +232,7 @@ class Worker(Threader):
             self.on_volume_changed()
 
     def on_volume_changed(self, volume=None):
-        if (self.music is not None and self.music.is_volume_changed(volume)):
+        if (self.menu is not None and self.music is not None and self.music.is_volume_changed(volume)):
             self.menu.draw_sub_menu(self.music.get_draw_volume(volume))
 
     def on_playback_state_changed(self, old_state, new_state):

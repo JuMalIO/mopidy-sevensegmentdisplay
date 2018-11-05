@@ -9,14 +9,16 @@ from worker import Worker
 logger = logging.getLogger('Frontend')
 
 class Frontend(pykka.ThreadingActor, CoreListener):
+    worker = Worker()
 
     def __init__(self, config, core):
+        self.config = config['sevensegmentdisplay']
+        self.core = core
         super(Frontend, self).__init__()
-        self.worker = Worker(config, core)
 
     def on_start(self):
         logger.warning('started')
-        self.worker.start()
+        self.worker.start(self.config, self.core)
 
     def on_stop(self):
         logger.warning('stopped')
