@@ -15,7 +15,11 @@ class Menu:
         self.sub_menu = menu
         self.sub_menu_index = 0
         self.sub_menu_visible = 0
-        self.display_power_saver = DisplayPowerSaver(display, display_min_brightness, display_max_brightness, display_off_time_from, display_off_time_to)
+        self.display_power_saver = DisplayPowerSaver(display,
+                                                     display_min_brightness,
+                                                     display_max_brightness,
+                                                     display_off_time_from,
+                                                     display_off_time_to)
 
     def run(self):
         if (self._is_sub_menu_visible()):
@@ -161,9 +165,11 @@ class DisplayPowerSaver:
         brightness = self.display_min_brightness
         if (hour >= 9 and hour <= 20):
             if (hour < 15):
-                brightness = int(round(self.display_min_brightness + (self.display_max_brightness - self.display_min_brightness) / 6 * (hour - 9 + 1)))
+                brightness = int(round(
+                    self.display_min_brightness + (self.display_max_brightness - self.display_min_brightness) / 6 * (hour - 9 + 1)))
             else:
-                brightness = int(round(self.display_min_brightness + (self.display_max_brightness - self.display_min_brightness) / 6 * (20 - hour + 1)))
+                brightness = int(round(
+                    self.display_min_brightness + (self.display_max_brightness - self.display_min_brightness) / 6 * (20 - hour + 1)))
         self.display.set_brightness(brightness)
 
     def _set_display_on(self):

@@ -41,14 +41,27 @@ class Worker(Threader):
             self.music = Music(self.core, self.config['default_song'])
             self.display = Display()
             self.ir_sender = IrSender()
-            self.ir_receiver = IrReceiver(self.play_stop_music, self.on_menu_click, self.on_menu_click_left, self.on_menu_click_right, self.music.decrease_volume, self.music.increase_volume, self.music.mute, self.on_preset)
+            self.ir_receiver = IrReceiver(self.play_stop_music,
+                                          self.on_menu_click,
+                                          self.on_menu_click_left,
+                                          self.on_menu_click_right,
+                                          self.music.decrease_volume,
+                                          self.music.increase_volume,
+                                          self.music.mute,
+                                          self.on_preset)
             self.gpio = Gpio(self.play_stop_music, self.on_menu_click, self.on_menu_click_left, self.on_menu_click_right, self.ir_sender)
             self.timer_on = TimerOn(self.play_music)
             self.timer_off = TimerOff(self.stop_music)
             self.timer_alert = TimerAlert(Alert(self.display, self.gpio, json.loads(self.config['alert_files'])).run)
             self.time = Time()
             self.date = Date([self.timer_on, self.timer_off, self.timer_alert])
-            self.menu = Menu(self.display, self.get_menu(), [self.time, self.date, self.timer_on, self.timer_off, self.timer_alert], self.config['display_min_brightness'], self.config['display_max_brightness'], self.config['display_off_time_from'], self.config['display_off_time_to'])
+            self.menu = Menu(self.display,
+                             self.get_menu(),
+                             [self.time, self.date, self.timer_on, self.timer_off, self.timer_alert],
+                             self.config['display_min_brightness'],
+                             self.config['display_max_brightness'],
+                             self.config['display_off_time_from'],
+                             self.config['display_off_time_to'])
 
             self.ir_receiver.start()
 
@@ -84,7 +97,8 @@ class Worker(Threader):
                                         "sub_menu": [
                                             {
                                                 "get_buffer": self.timer_alert.get_draw_menu_buffer,
-                                                "click": lambda: (self.timer_alert.add_timer(), self.display.draw(self.timer_alert.get_draw_menu_buffer())),
+                                                "click": lambda: (self.timer_alert.add_timer(),
+                                                                  self.display.draw(self.timer_alert.get_draw_menu_buffer())),
                                                 "click_left": self.timer_alert.decrease,
                                                 "click_right": self.timer_alert.increase
                                             }
