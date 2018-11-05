@@ -1,9 +1,9 @@
 from __future__ import division
 from __future__ import unicode_literals
 
-import math
 from datetime import datetime, timedelta
 from max7219 import Symbols
+
 
 class Timer(object):
     VISIBLE_FOR_SECONDS = 2
@@ -28,7 +28,7 @@ class Timer(object):
 
     def _datetime_now(self):
         return datetime.now().replace(second=0, microsecond=0)
-                
+
     def _is_time(self):
         return self.now >= self.timer
 
@@ -37,14 +37,14 @@ class Timer(object):
 
     def increase(self):
         if (not self.is_set()):
-           time_left = (self.step - self.now.minute % self.step) if self.remove_min else 0
-           min = time_left + (self.step if time_left < self.half_step else 0)     
-           self.timer = self.now + timedelta(minutes = min)
+            time_left = (self.step - self.now.minute % self.step) if self.remove_min else 0
+            min = time_left + (self.step if time_left < self.half_step else 0)
+            self.timer = self.now + timedelta(minutes = min)
         else:
-           new_time = self.timer + timedelta(minutes = self.step)
-           diff = new_time - self.now
-           if (diff.days < 1):
-              self.timer = new_time
+            new_time = self.timer + timedelta(minutes = self.step)
+            diff = new_time - self.now
+            if (diff.days < 1):
+                self.timer = new_time
 
     def decrease(self):
         if (self.is_set()):
@@ -97,7 +97,7 @@ class TimerOn(Timer):
 
     def __init__(self, callback):
         super(TimerOn, self).__init__(callback, self.TIMER_STEP)
-        
+
     def get_draw_buffer(self):
         if (self.timer is None):
             return [
@@ -132,7 +132,7 @@ class TimerAlert:
         self.callback = callback
         self.timer_index = 0
         self.timers = []
-        
+
     def get_draw_buffer(self):
         if (len(self.timers) <= self.timer_index or self.timers[self.timer_index].timer is None):
             return [
