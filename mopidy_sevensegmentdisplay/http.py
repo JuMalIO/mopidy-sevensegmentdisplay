@@ -55,7 +55,8 @@ class ApiRequestHandler(BaseRequestHandler):
 def factory_decorator(worker):
     def app_factory(config, core):
         # since all the RequestHandler-classes get the same arguments ...
-        bind = lambda url, klass: (url, klass, {'config': config['sevensegmentdisplay'], 'core': core, 'worker': worker})
+        def bind(url, klass):
+            return (url, klass, {'config': config['sevensegmentdisplay'], 'core': core, 'worker': worker})
 
         return [
             (r'/static/(.*)', tornado.web.StaticFileHandler, {'path': os.path.join(os.path.dirname(__file__), 'static')}),
