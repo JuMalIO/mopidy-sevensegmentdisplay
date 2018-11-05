@@ -3,6 +3,7 @@ from animation import Animation, BlinkAnimation, ScrollDownAnimation, ScrollUpAn
 import threading
 import logging
 
+
 class Display:
 
     def __init__(self):
@@ -11,7 +12,7 @@ class Display:
         self.animation_thread = None
         self.display = SevenSegmentDisplay()
         self.lock = threading.Lock()
-        
+
     def set_brightness(self, brightness):
         if (self.brightness != brightness):
             self.brightness = brightness
