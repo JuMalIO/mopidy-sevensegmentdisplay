@@ -52,7 +52,7 @@ v0.2.1
 
 - Refactoring release.
 
-v0.1.0
+v0.1.0 (UNRELEASED)
 ----------------------------------------
 
 - Initial release.
