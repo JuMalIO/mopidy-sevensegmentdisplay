@@ -6,8 +6,8 @@ Mopidy-SevenSegmentDisplay
     :target: https://pypi.python.org/pypi/Mopidy-SevenSegmentDisplay/
     :alt: Latest PyPI version
 
-.. image:: https://travis-ci.org/JumalIO/mopidy-sevensegmentdisplay.svg?branch=master
-    :target: https://travis-ci.org/JumalIO/mopidy-sevensegmentdisplay
+.. image:: https://travis-ci.org/JuMalIO/mopidy-sevensegmentdisplay.svg?branch=master
+    :target: https://travis-ci.org/JuMalIO/mopidy-sevensegmentdisplay
     :alt: Travis-CI build status
 
 .. image:: https://coveralls.io/repos/JumalIO/mopidy-sevensegmentdisplay/badge.svg?branch=master
