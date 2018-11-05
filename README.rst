@@ -10,8 +10,8 @@ Mopidy-SevenSegmentDisplay
     :target: https://travis-ci.org/JuMalIO/mopidy-sevensegmentdisplay
     :alt: Travis-CI build status
 
-.. image:: https://coveralls.io/repos/JumalIO/mopidy-sevensegmentdisplay/badge.svg?branch=master
-    :target: https://coveralls.io/r/JumalIO/mopidy-sevensegmentdisplay
+.. image:: https://coveralls.io/repos/JuMalIO/mopidy-sevensegmentdisplay/badge.svg?branch=master
+    :target: https://coveralls.io/r/JuMalIO/mopidy-sevensegmentdisplay
     :alt: Coveralls test coverage
 
 A Mopidy extension for using it with seven segment display.
