@@ -7,6 +7,7 @@ from mopidy import config, ext
 
 __version__ = '0.1.0'
 
+
 class Extension(ext.Extension):
     dist_name = 'Mopidy-SevenSegmentDisplay'
     ext_name = 'sevensegmentdisplay'

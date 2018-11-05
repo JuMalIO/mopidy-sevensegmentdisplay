@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from datetime import datetime
 
+
 class Menu:
 
     def __init__(self, display, menu, modules, display_min_brightness, display_max_brightness, display_off_time_from, display_off_time_to):
@@ -87,7 +88,7 @@ class Menu:
             self.sub_menu_index = (self.sub_menu_index - 1) % len(self.sub_menu)
             if ("get_buffer" in self.sub_menu[self.sub_menu_index]):
                 self.display.draw_scroll_right_animation(self.sub_menu[self.sub_menu_index]["get_buffer"]())
-        
+
     def click_right(self):
         self._set_sub_menu_visible()
         if ("click_right" in self.sub_menu[self.sub_menu_index]):
@@ -144,7 +145,6 @@ class DisplayPowerSaver:
             self.enable = self.now
 
     def _is_display_enabled(self):
-        hour = self.now.hour
         day = self.now.day
         month = self.now.month
         year = self.now.year
@@ -154,8 +154,8 @@ class DisplayPowerSaver:
         hour = self.now.hour
         return self.now_weekday < 5 and hour > self.display_off_time_from and hour < self.display_off_time_to
 
-    #hour       - 9 10 11 12 13 14 15 16 17 18 19 20 -
-    #brightness 2 3  4  5  6  7  8  8  7  6  5  4  3 2
+    # hour       - 9 10 11 12 13 14 15 16 17 18 19 20 -
+    # brightness 2 3  4  5  6  7  8  8  7  6  5  4  3 2
     def _set_brightness(self):
         hour = self.now.hour
         brightness = self.display_min_brightness

@@ -23,9 +23,9 @@ class BaseRequestHandler(tornado.web.RequestHandler):
 class MainRequestHandler(BaseRequestHandler):
     def get(self):
         self.write(template_loader.load('index.html').generate(
-            config = self.config,
-            core = self.core,
-            worker = self.worker
+            config=self.config,
+            core=self.core,
+            worker=self.worker
         ))
 
 
@@ -33,21 +33,21 @@ class ApiRequestHandler(BaseRequestHandler):
     def post(self):
         state = str(self.get_argument('state', ''))
         if (state == 'play'):
-           self.worker.play_music()
+            self.worker.play_music()
         elif (state == 'pause'):
-           self.worker.pause_music()
+            self.worker.pause_music()
         elif (state == 'stop'):
-           self.worker.stop_music()
+            self.worker.stop_music()
         elif (state == 'invert'):
-           self.worker.play_stop_music()
+            self.worker.play_stop_music()
         volume = int(self.get_argument('volume', 0))
         if (volume >= 1 and volume <= 100):
-           self.worker.set_volume(volume)
+            self.worker.set_volume(volume)
         sleep = int(self.get_argument('sleep', 0))
         if (sleep > 0):
-           self.worker.increase_timer()
+            self.worker.increase_timer()
         elif (sleep < 0):
-           self.worker.decrease_timer()
+            self.worker.decrease_timer()
         self.write(str(self.worker.get_volume()))
         self.write(self.worker.get_state())
 

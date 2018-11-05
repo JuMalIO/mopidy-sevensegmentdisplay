@@ -7,11 +7,12 @@ import logging
 from subprocess import call
 from threader import Threader
 
+
 class IrReceiver(Threader):
 
     def __init__(self, on_power, on_input, on_down, on_up, on_vol_down, on_vol_up, on_mute, on_preset):
         super(IrReceiver, self).__init__()
-        lirc.init("myprogram", blocking = False)
+        lirc.init("myprogram", blocking=False)
 
         self.on_power = on_power
         self.on_input = on_input
@@ -46,13 +47,13 @@ class IrReceiver(Threader):
                     elif list[0] == "bass+":
                         self.on_preset("flat")
                 if (self.stopped()):
-                    break;
+                    break
                 time.sleep(0.1)
         except Exception as inst:
             logging.error(inst)
         lirc.deinit()
 
-            
+
 class IrSender:
     MICROLAB = "microlab"
     EDIFIER = "edifier"

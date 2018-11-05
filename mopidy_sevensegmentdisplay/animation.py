@@ -1,6 +1,7 @@
 import time
 from threader import Threader
 
+
 class Animation(Threader):
 
     def __init__(self, display, buffer, repeat, sleep):
@@ -14,12 +15,12 @@ class Animation(Threader):
         for j in range(self.repeat):
             for i in range(len(self.buffer)):
                 if (self.stopped()):
-                        break;
+                        break
                 self.display.set_buffer(self.buffer[i])
                 self.display.flush()
                 time.sleep(self.sleep)
             if (self.stopped()):
-                break;
+                break
 
 
 class BlinkAnimation(Threader):
@@ -34,7 +35,7 @@ class BlinkAnimation(Threader):
     def run(self):
         for j in range(self.repeat):
             if (self.stopped()):
-                break;
+                break
             if (j % 2 == 1):
                 self.display.set_buffer(self.buffer)
             else:
@@ -54,7 +55,7 @@ class ScrollLeftAnimation(Threader):
     def run(self):
         for i in range(len(self.buffer)):
             if (self.stopped()):
-                break;
+                break
             self.display.scroll_left(self.buffer[i])
             self.display.flush()
             time.sleep(self.sleep)
@@ -72,7 +73,7 @@ class ScrollRightAnimation(Threader):
         length = len(self.buffer)
         for i in range(length):
             if (self.stopped()):
-                break;
+                break
             self.display.scroll_right(self.buffer[length - i - 1])
             self.display.flush()
             time.sleep(self.sleep)
@@ -91,7 +92,7 @@ class ScrollUpAnimation(Threader):
     def run(self):
         for i in range(self.FROM, self.TO):
             if (self.stopped()):
-                break;
+                break
             self.display.scroll_up(self.buffer, i)
             self.display.flush()
             time.sleep(self.sleep)
@@ -110,7 +111,7 @@ class ScrollDownAnimation(Threader):
     def run(self):
         for i in range(self.FROM, self.TO):
             if (self.stopped()):
-                break;
+                break
             self.display.scroll_down(self.buffer, i)
             self.display.flush()
             time.sleep(self.sleep)

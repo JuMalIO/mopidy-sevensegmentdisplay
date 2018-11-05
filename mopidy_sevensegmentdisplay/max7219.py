@@ -17,7 +17,7 @@ class Constants(object):
 
 
 class Symbols(object):
-    NUMBER = [ 0x7e, 0x30, 0x6d, 0x79, 0x33, 0x5b, 0x5f, 0x70, 0x7f, 0x7b ]
+    NUMBER = [0x7e, 0x30, 0x6d, 0x79, 0x33, 0x5b, 0x5f, 0x70, 0x7f, 0x7b]
     BOTTOM = 0x08
     TOP = 0x40
     LEFT_TOP = 0x02
@@ -33,29 +33,29 @@ class Symbols(object):
     D = int('00111101', 2)
     E = int('01001111', 2)
     F = int('01000111', 2)
-    #G
+    # G
     H = int('00110111', 2)
     I = int('00110000', 2)
     J = int('00111100', 2)
-    #K
+    # K
     L = int('00001110', 2)
     M1 = int('00010101', 2)
     M2 = int('00010001', 2)
     N = int('00010101', 2)
     O = int('01111110', 2)
     P = int('01100111', 2)
-    #Q
+    # Q
     R = int('00000101', 2)
     S = int('01011011', 2)
     T1 = int('01000000', 2)
     T2 = int('01000110', 2)
     U = int('00111110', 2)
-    #V
+    # V
     W1 = int('00011100', 2)
     W2 = int('00011000', 2)
-    #X
+    # X
     Y = int('00110011', 2)
-    #Z
+    # Z
 
 
 class SevenSegmentDisplay(object):
@@ -80,7 +80,7 @@ class SevenSegmentDisplay(object):
         self.clear()
 
     def shutdown(self, value):
-        self.command(Constants.MAX7219_REG_SHUTDOWN, 0 if value else 1) 
+        self.command(Constants.MAX7219_REG_SHUTDOWN, 0 if value else 1)
 
     def command(self, register, data):
         assert Constants.MAX7219_REG_DECODEMODE <= register <= Constants.MAX7219_REG_DISPLAYTEST
@@ -131,7 +131,7 @@ class SevenSegmentDisplay(object):
 
     def set_buffer(self, buffer):
         assert len(buffer) == len(self._buffer), "Buffer is wrong size"
-        
+
         length = len(buffer)
         for deviceId in range(0, self._cascaded):
             for position in range(self.NUM_DIGITS):
@@ -153,7 +153,7 @@ class SevenSegmentDisplay(object):
     def scroll_down(self, buffer=None, index=0):
         if (buffer is not None):
             assert len(buffer) == len(self._buffer), "Buffer is wrong size"
-            
+
         length = len(self._buffer)
         for i in range(length):
             byte = 0
@@ -176,12 +176,12 @@ class SevenSegmentDisplay(object):
                 elif (index >= 3):
                     byte = buffer[pos]
 
-            self._buffer[i] = byte;
+            self._buffer[i] = byte
 
     def scroll_up(self, buffer=None, index=0):
         if (buffer is not None):
             assert len(buffer) == len(self._buffer), "Buffer is wrong size"
-            
+
         length = len(self._buffer)
         for i in range(length):
             byte = 0
@@ -204,7 +204,7 @@ class SevenSegmentDisplay(object):
                 elif (index >= 3):
                     byte = buffer[pos]
 
-            self._buffer[i] = byte;
+            self._buffer[i] = byte
 
     def _switch_bit(self, number, index_src, index_des):
         bit_value = ((number >> index_src) & 1) << index_des

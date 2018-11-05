@@ -2,19 +2,19 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import os
-import math
 import random
 import time
 import logging
 from subprocess import call
 from max7219 import Symbols
 
+
 class Alert:
     VOL_UP = "VOL+"
     VOL_DOWN = "VOL-"
     BASS_UP = "BASS+"
     BASS_DOWN = "BASS-"
-    
+
     A = Symbols.A
     L = Symbols.L
     E = Symbols.E
@@ -26,8 +26,8 @@ class Alert:
         "length": 1,
         "repeat": 1,
         "sleep": 0.05,
-        "buffer":
-            [[0, 0, 0, 0, 0, 0, 0, A],
+        "buffer": [
+            [0, 0, 0, 0, 0, 0, 0, A],
             [0, 0, 0, 0, 0, 0, A, 0],
             [0, 0, 0, 0, 0, A, 0, 0],
             [0, 0, 0, 0, A, 0, 0, 0],
@@ -59,7 +59,8 @@ class Alert:
             [0, A, L, E, R, T1, T2, 0],
             [0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, A, L, E, R, T1, T2, 0]]
+            [0, A, L, E, R, T1, T2, 0]
+        ]
     }
 
     def __init__(self, display, gpio, files):
@@ -73,9 +74,9 @@ class Alert:
 
             self.gpio.switch_relay_on()
             time.sleep(10)
-            
+
             file = random.choice(filter(lambda x: x["enabled"], self.files))
-            
+
             self._set_irsend(self.BASS_UP, file["bass"])
             self._set_irsend(self.VOL_UP, file["volume"])
             self._play_file(file["name"])
