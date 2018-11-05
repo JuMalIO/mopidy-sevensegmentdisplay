@@ -6,7 +6,7 @@ import threading
 import time
 import logging
 from threading import Timer
-from subprocess import call
+
 
 class Gpio:
 
@@ -17,10 +17,10 @@ class Gpio:
         GPIO.setup(self.RELAY_PIN, GPIO.OUT, initial=GPIO.HIGH)
         self.is_relay_on = False
 
-        self.KEY_1_PIN = 5   #Play/Pause
-        self.KEY_2_PIN = 6   #Stop
-        self.KEY_3_PIN = 13  #Open/Close
-        self.KEY_4_PIN = 19  #StandBy-On
+        self.KEY_1_PIN = 5   # Play/Pause
+        self.KEY_2_PIN = 6   # Stop
+        self.KEY_3_PIN = 13  # Open/Close
+        self.KEY_4_PIN = 19  # StandBy-On
         GPIO.setup(self.KEY_1_PIN, GPIO.IN)
         GPIO.setup(self.KEY_2_PIN, GPIO.IN)
         GPIO.setup(self.KEY_3_PIN, GPIO.IN)
@@ -30,7 +30,7 @@ class Gpio:
         self.on_input = on_input
         self.on_down = on_down
         self.on_up = on_up
-        
+
         self.ir_sender = ir_sender
 
         GPIO.add_event_detect(self.KEY_1_PIN, GPIO.RISING, callback=self._on_button, bouncetime=300)
@@ -63,7 +63,7 @@ class Gpio:
                 if (is_relay_on and not self.is_relay_on):
                     GPIO.output(self.RELAY_PIN, GPIO.LOW)
                     self.is_relay_on = True
-                    time.sleep(0.5)     
+                    time.sleep(0.5)
                     self.timer = Timer(1.0, self.ir_sender.power)
                     self.timer.start()
                 elif (not is_relay_on and self.is_relay_on):
