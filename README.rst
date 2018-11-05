@@ -47,7 +47,7 @@ Make sure that the `HTTP extension <http://docs.mopidy.com/en/latest/ext/http/>`
 Changelog
 =========
 
-v0.2.0
+v0.2.1
 ----------------------------------------
 
 - Refactoring release.
