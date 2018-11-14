@@ -9,14 +9,59 @@
 {% end %}
 
 <div>
-    <p>Timer off:</p>
-    <p>{{ worker.timer_off.timer }}</p>
-    <p>Timer on:</p>
-    <p>{{ worker.timer_on.timer }}</p>
-    <p>Timer alert:</p>
-    {% for timer in worker.timer_alert.timers %}
-    <p>{{ timer }}</p>
-    {% end %}
+    <p>
+        Mopidy state - {{ worker.get_state() }}
+    </p>
+    <br />
+
+    <p>
+        Timer off
+        <input id="off_hour" type="number" min="0" max="23" style="width: 50px;" value="23" />
+        <input id="off_minute" type="number" min="0" max="59" style="width: 50px;" value="0" />
+        <button onclick="post({off: 'set', hour: $('#off_hour').val(), minute: $('#off_minute').val() })">Set</button>
+        <button onclick="post({off: '-'})">Decrease</button>
+        <button onclick="post({off: '+'})">Increase</button>
+    </p>
+    <ul>
+        <li>{{ worker.timer_off.timer }}</li>
+    </ul>
+    <br />
+
+    <p>
+        Timer on
+        <input id="on_hour" type="number" min="0" max="23" style="width: 50px;" value="6" />
+        <input id="on_minute" type="number" min="0" max="59" style="width: 50px;" value="0" />
+        <button onclick="post({on: 'set', hour: $('#on_hour').val(), minute: $('#on_minute').val() })">Set</button>
+        <button onclick="post({on: '-'})">Decrease</button>
+        <button onclick="post({on: '+'})">Increase</button>
+    </p>
+    <ul>
+        <li>{{ worker.timer_on.timer }}</li>
+    </ul>
+    <br />
+
+    <p>
+        Timer alert
+        <input id="alert_hour" type="number" min="0" max="23" style="width: 50px;" />
+        <input id="alert_minute" type="number" min="0" max="59" style="width: 50px;" />
+        <script>
+            $('#alert_hour').val((new Date()).getHours() + 2);
+            $('#alert_minute').val((new Date()).getMinutes());
+        </script>
+        <button onclick="post({alert: 'add', hour: $('#alert_hour').val(), minute: $('#alert_minute').val() })">Add</button>
+        <button onclick="post({alert: 'clear'})">Clear</button>
+        <button onclick="post({alert: '-'})">Decrease</button>
+        <button onclick="post({alert: '+'})">Increase</button>
+    </p>
+    <ul>
+        {% if not worker.timer_alert.is_set() %}
+        <li>{{ None }}</li>
+        {% else %}
+        {% for timer in worker.timer_alert.timers %}
+        <li>{{ timer.timer }}</li>
+        {% end %}
+        {% end %}
+    </ul>
 </div>
 
 {% end %}

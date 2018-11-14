@@ -35,6 +35,17 @@ class Timer(object):
     def reset(self):
         self.timer = None
 
+    def set(self, hour=None, minute=None):
+        if (hour is not None or minute is not None):
+            new_timer = self.now
+            if (hour is not None):
+                new_timer = new_timer.replace(hour=int(hour))
+            if (minute is not None):
+                new_timer = new_timer.replace(minute=int(minute))
+            if (new_timer <= self.now):
+                new_timer += timedelta(days=1)
+            self.timer = new_timer
+
     def increase(self):
         if (not self.is_set()):
             time_left = (self.step - self.now.minute % self.step) if self.remove_min else 0
@@ -173,11 +184,14 @@ class TimerAlert:
             else:
                 self.timers[i].run()
 
-    def add_timer(self):
+    def add_timer(self, hour=None, minute=None):
         if (len(self.timers) < 10):
             new_timer = Timer(self.callback, self.TIMER_STEP, False)
-            if (self._have_timers()):
-                new_timer.timer = self.timers[len(self.timers) - 1].timer
+            if (hour is not None or minute is not None):
+                new_timer.set(hour, minute)
+            else:
+                if (self._have_timers()):
+                    new_timer.timer = self.timers[len(self.timers) - 1].timer
                 for i in range(6):
                     new_timer.increase()
             self.timers.append(new_timer)
@@ -198,12 +212,12 @@ class TimerAlert:
     def increase(self):
         if (not self._have_timers()):
             self.add_timer()
-        self.timers[len(self.timers) - 1].increase()
+        else:
+            self.timers[len(self.timers) - 1].increase()
 
     def decrease(self):
-        if (not self._have_timers()):
-            self.add_timer()
-        self.timers[len(self.timers) - 1].decrease()
+        if (self._have_timers()):
+            self.timers[len(self.timers) - 1].decrease()
 
     def is_visible(self, seconds):
         self.timer_index = seconds // Timer.VISIBLE_FOR_SECONDS

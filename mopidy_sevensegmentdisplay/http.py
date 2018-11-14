@@ -38,16 +38,45 @@ class ApiRequestHandler(BaseRequestHandler):
             self.worker.pause_music()
         elif (state == 'stop'):
             self.worker.stop_music()
-        elif (state == 'invert'):
+        elif (state == 'play_stop'):
             self.worker.play_stop_music()
+
         volume = int(self.get_argument('volume', 0))
         if (volume >= 1 and volume <= 100):
             self.worker.set_volume(volume)
-        sleep = int(self.get_argument('sleep', 0))
-        if (sleep > 0):
-            self.worker.increase_timer()
-        elif (sleep < 0):
-            self.worker.decrease_timer()
+
+        off = str(self.get_argument('off', ''))
+        if (off == 'set'):
+            hour = self.get_argument('hour', None)
+            minute = self.get_argument('minute', None)
+            self.worker.timer_off.set(hour, minute)
+        elif (off == '-'):
+            self.worker.timer_off.decrease()
+        elif (off == '+'):
+            self.worker.timer_off.increase()
+
+        on = str(self.get_argument('on', ''))
+        if (on == 'set'):
+            hour = self.get_argument('hour', None)
+            minute = self.get_argument('minute', None)
+            self.worker.timer_on.set(hour, minute)
+        elif (on == '-'):
+            self.worker.timer_on.decrease()
+        elif (on == '+'):
+            self.worker.timer_on.increase()
+
+        alert = str(self.get_argument('alert', ''))
+        if (alert == 'add'):
+            hour = self.get_argument('hour', None)
+            minute = self.get_argument('minute', None)
+            self.worker.timer_alert.add_timer(hour, minute)
+        elif (alert == 'clear'):
+            self.worker.timer_alert.reset()
+        elif (alert == '-'):
+            self.worker.timer_alert.decrease()
+        elif (alert == '+'):
+            self.worker.timer_alert.increase()
+
         self.write(str(self.worker.get_volume()))
         self.write(self.worker.get_state())
 
