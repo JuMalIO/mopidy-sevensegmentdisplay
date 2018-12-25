@@ -58,3 +58,5 @@ docs/_build/
 /.vs
 /*/.vs
 *.pyproj.user
+/mopidy_sevensegmentdisplay/sounds
+/temp

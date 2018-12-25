@@ -20,6 +20,8 @@ class Extension(ext.Extension):
     def get_config_schema(self):
         schema = super(Extension, self).get_config_schema()
         schema['default_song'] = config.String()
+        schema['timer_on_volume'] = config.Integer()
+        schema['timer_on_preset'] = config.String()
         schema['alert_files'] = config.String()
         schema['display_min_brightness'] = config.Integer()
         schema['display_max_brightness'] = config.Integer()

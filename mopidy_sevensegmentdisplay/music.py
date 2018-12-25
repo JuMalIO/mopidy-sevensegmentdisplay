@@ -160,33 +160,6 @@ class Music:
         ]
     }
 
-    LEFT = Symbols.LEFT_TOP + Symbols.LEFT_BOTTOM
-    RIGHT = Symbols.RIGHT_TOP + Symbols.RIGHT_BOTTOM
-
-    ANIMATION_START_2 = {
-        "length": 5,
-        "repeat": 20,
-        "sleep": 0.02,
-        "buffer": [
-            [0, 0, 0, 0, 0, 0, 0, RIGHT],
-            [0, 0, 0, 0, 0, 0, RIGHT, 0],
-            [0, 0, 0, 0, 0, RIGHT, 0, 0],
-            [0, 0, 0, 0, RIGHT, 0, 0, 0],
-            [0, 0, 0, RIGHT, 0, 0, 0, 0],
-            [0, 0, RIGHT, 0, 0, 0, 0, 0],
-            [0, RIGHT, 0, 0, 0, 0, 0, 0],
-            [RIGHT, 0, 0, 0, 0, 0, 0, 0],
-            [LEFT, 0, 0, 0, 0, 0, 0, 0],
-            [0, LEFT, 0, 0, 0, 0, 0, 0],
-            [0, 0, LEFT, 0, 0, 0, 0, 0],
-            [0, 0, 0, LEFT, 0, 0, 0, 0],
-            [0, 0, 0, 0, LEFT, 0, 0, 0],
-            [0, 0, 0, 0, 0, LEFT, 0, 0],
-            [0, 0, 0, 0, 0, 0, LEFT, 0],
-            [0, 0, 0, 0, 0, 0, 0, LEFT]
-        ]
-    }
-
     MIDDLE = Symbols.MIDDLE
 
     ANIMATION_START = {
@@ -229,7 +202,6 @@ class Music:
     G = Symbols.NUMBER[6]
 
     PRESETS = [
-        {"name": "nobass", "buffer": [N, O, 0, B, A, S, S, 0]},
         {"name": "flat", "buffer": [0, F, L, A, T1, T2, 0, 0]},
         {"name": "classical", "buffer": [C, L, A, S, S, I, C, 0]},
         {"name": "club", "buffer": [0, 0, C, L, U, B, 0, 0]},
@@ -246,7 +218,8 @@ class Music:
         {"name": "ska", "buffer": [0, 0, S, H, A, 0, 0, 0]},
         {"name": "soft_rock", "buffer": [S, O, F, T2, R, O, C, H]},
         {"name": "soft", "buffer": [0, S, O, F, T1, T2, 0, 0]},
-        {"name": "techno", "buffer": [T1, T2, E, C, H, N, O, 0]}
+        {"name": "techno", "buffer": [T1, T2, E, C, H, N, O, 0]},
+        {"name": "nobass", "buffer": [N, O, 0, B, A, S, S, 0]}
     ]
 
     def __init__(self, core, default_song):

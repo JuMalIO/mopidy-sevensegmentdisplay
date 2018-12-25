@@ -12,7 +12,6 @@ set_equalizer_curve() {
 
 profile="${1:-flat}"
 case "${profile}" in
-nobass) curve="0 5 15 25 65 65 65 65 65 65" ;;
 flat) curve="65 65 65 65 65 65 65 65 65 65" ;;
 classical) curve="71 71 71 71 71 71 84 83 83 87" ;;
 club) curve="71 71 67 63 63 63 67 71 71 71" ;;
@@ -30,6 +29,7 @@ ska) curve="75 79 78 72 66 63 58 57 55 57" ;;
 soft_rock) curve="66 66 69 72 78 80 77 72 68 58" ;;
 soft) curve="65 70 73 75 73 66 59 57 55 53" ;;
 techno) curve="60 63 71 80 79 71 60 57 57 58" ;;
+nobass) curve="0 5 15 25 65 65 65 65 65 65" ;;
 *) echo "Unknown profile ${profile}" >&2 ;;
 esac
 

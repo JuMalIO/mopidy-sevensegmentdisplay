@@ -63,7 +63,8 @@ class Alert:
         ]
     }
 
-    def __init__(self, display, gpio, files):
+    def __init__(self, music, display, gpio, files):
+        self.music = music
         self.display = display
         self.gpio = gpio
         self.files = files
@@ -72,8 +73,9 @@ class Alert:
         try:
             self.display.draw_animation(self.ANIMATION_ALERT["buffer"], self.ANIMATION_ALERT["repeat"], self.ANIMATION_ALERT["sleep"])
 
-            self.gpio.switch_relay_on()
-            time.sleep(10)
+            if (not self.music.is_playing()):
+                self.gpio.switch_relay_on()
+                time.sleep(10)
 
             file = random.choice(filter(lambda x: x["enabled"], self.files))
 
@@ -83,8 +85,9 @@ class Alert:
             self._set_irsend(self.BASS_DOWN, file["bass"])
             self._set_irsend(self.VOL_DOWN, file["volume"])
 
-            time.sleep(2)
-            self.gpio.switch_relay_off()
+            if (not self.music.is_playing()):
+                time.sleep(2)
+                self.gpio.switch_relay_off()
         except Exception as inst:
             logging.error(inst)
 

@@ -50,9 +50,9 @@ class Worker(Threader):
                                           self.music.mute,
                                           self.on_preset)
             self.gpio = Gpio(self.play_stop_music, self.on_menu_click, self.on_menu_click_left, self.on_menu_click_right, self.ir_sender)
-            self.timer_on = TimerOn(self.play_music)
+            self.timer_on = TimerOn(self.on_timer_on)
             self.timer_off = TimerOff(self.stop_music)
-            self.timer_alert = TimerAlert(Alert(self.display, self.gpio, json.loads(self.config['alert_files'])).run)
+            self.timer_alert = TimerAlert(Alert(self.music, self.display, self.gpio, json.loads(self.config['alert_files'])).run)
             self.time = Time()
             self.date = Date([self.timer_on, self.timer_off, self.timer_alert])
             self.menu = Menu(self.display,
@@ -171,6 +171,11 @@ class Worker(Threader):
 
     def on_menu_click_right(self):
         self.menu.click_right()
+
+    def on_timer_on(self):
+        self.music.set_volume(self.config['timer_on_volume'])
+        self.music.set_preset(self.config['timer_on_preset'])
+        self.play_music()
 
     def increase_timer(self):
         if (self.music.is_playing()):
