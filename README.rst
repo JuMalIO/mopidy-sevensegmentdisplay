@@ -16,6 +16,8 @@ Mopidy-SevenSegmentDisplay
 
 A Mopidy extension for using it with seven segment display.
 
+![](https://s2.gifyu.com/images/18af69fdf5a34049f.gif)
+
 Installation
 ============
 
@@ -41,7 +43,7 @@ Optionally defaults can be configured in ``mopidy.conf`` config file (the defaul
 Usage
 =============
 
-Make sure that the `HTTP extension <http://docs.mopidy.com/en/latest/ext/http/>`_ is enabled. Then browse to the app on the Mopidy server (for instance, http://localhost:6680/sevensegmentdisplay/).
+Make sure that the `HTTP extension <http://docs.mopidy.com/en/latest/ext/http/>`_ is enabled. Then browse to the app on the Mopidy server (for instance, http://localhost/sevensegmentdisplay/).
 
 
 Changelog
