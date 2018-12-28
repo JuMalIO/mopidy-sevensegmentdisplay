@@ -22,16 +22,16 @@ class Gpio:
             self.RIGHT_BUTTON_PIN = 6   # Stop
 
             GPIO.setup(self.POWER_BUTTON_PIN, GPIO.IN)
-            GPIO.setup(self.MENU_BUTTON_PIN,  GPIO.IN)
-            GPIO.setup(self.LEFT_BUTTON_PIN,  GPIO.IN)
+            GPIO.setup(self.MENU_BUTTON_PIN, GPIO.IN)
+            GPIO.setup(self.LEFT_BUTTON_PIN, GPIO.IN)
             GPIO.setup(self.RIGHT_BUTTON_PIN, GPIO.IN)
 
             GPIO.add_event_detect(self.POWER_BUTTON_PIN, GPIO.RISING, bouncetime=300,
                                   callback=lambda gpio: on_power() if not self.lock.locked() else None)
-            GPIO.add_event_detect(self.MENU_BUTTON_PIN,  GPIO.RISING, bouncetime=300,
-                                  callback=lambda gpio: on_menu()  if not self.lock.locked() else None)
-            GPIO.add_event_detect(self.LEFT_BUTTON_PIN,  GPIO.RISING, bouncetime=300,
-                                  callback=lambda gpio: on_left()  if not self.lock.locked() else None)
+            GPIO.add_event_detect(self.MENU_BUTTON_PIN, GPIO.RISING, bouncetime=300,
+                                  callback=lambda gpio: on_menu() if not self.lock.locked() else None)
+            GPIO.add_event_detect(self.LEFT_BUTTON_PIN, GPIO.RISING, bouncetime=300,
+                                  callback=lambda gpio: on_left() if not self.lock.locked() else None)
             GPIO.add_event_detect(self.RIGHT_BUTTON_PIN, GPIO.RISING, bouncetime=300,
                                   callback=lambda gpio: on_right() if not self.lock.locked() else None)
 

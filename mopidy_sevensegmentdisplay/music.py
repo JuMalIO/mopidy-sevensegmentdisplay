@@ -222,11 +222,11 @@ class Music:
         {"name": "nobass", "buffer": [N, O, 0, B, A, S, S, 0]}
     ]
 
-    def __init__(self, core, default_song, default_preset):
+    def __init__(self, core, default_song, preset):
         self.core = core
         self.volume = self.get_volume(),
         self.default_song = default_song,
-        self.preset = default_preset
+        self.preset = preset
 
     def is_playing(self, state=None):
         if (state is None):
@@ -295,9 +295,9 @@ class Music:
         return self.PRESETS[index]["buffer"]
 
     def get_presets(self):
-        index = self._get_preset_index(value)
+        index = self._get_preset_index(self.preset)
         return self.PRESETS[index:len(self.PRESETS)] + self.PRESETS[0:index]
-    
+
     def _get_preset_index(self, name):
         for i, d in enumerate(self.PRESETS):
             if (d["name"] == name):
