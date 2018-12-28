@@ -10,11 +10,6 @@ from max7219 import Symbols
 
 
 class Alert:
-    VOL_UP = "VOL+"
-    VOL_DOWN = "VOL-"
-    BASS_UP = "BASS+"
-    BASS_DOWN = "BASS-"
-
     A = Symbols.A
     L = Symbols.L
     E = Symbols.E
@@ -63,10 +58,10 @@ class Alert:
         ]
     }
 
-    def __init__(self, music, display, gpio, files):
+    def __init__(self, music, display, ir_sender, files):
         self.music = music
         self.display = display
-        self.gpio = gpio
+        self.ir_sender = ir_sender
         self.files = files
 
     def run(self):
@@ -74,27 +69,22 @@ class Alert:
             self.display.draw_animation(self.ANIMATION_ALERT["buffer"], self.ANIMATION_ALERT["repeat"], self.ANIMATION_ALERT["sleep"])
 
             if (not self.music.is_playing()):
-                self.gpio.switch_relay_on()
+                self.ir_sender.power(True)
                 time.sleep(10)
 
             file = random.choice(filter(lambda x: x["enabled"], self.files))
 
-            self._set_irsend(self.BASS_UP, file["bass"])
-            self._set_irsend(self.VOL_UP, file["volume"])
+            self.ir_sender.bass(file["bass"])
+            self.ir_sender.volume(file["volume"])
             self._play_file(file["name"])
-            self._set_irsend(self.BASS_DOWN, file["bass"])
-            self._set_irsend(self.VOL_DOWN, file["volume"])
+            self.ir_sender.bass(- file["bass"])
+            self.ir_sender.volume(- file["volume"])
 
             if (not self.music.is_playing()):
                 time.sleep(2)
-                self.gpio.switch_relay_off()
+                self.ir_sender.power(False)
         except Exception as inst:
             logging.error(inst)
-
-    def _set_irsend(self, command, repeat, sleep=0.2):
-        for i in range(repeat):
-            call(["irsend", "SEND_ONCE", "microlab", command])
-            time.sleep(sleep)
 
     def _play_file(self, file, repeat=1, sleep=0.5):
         for i in range(repeat):

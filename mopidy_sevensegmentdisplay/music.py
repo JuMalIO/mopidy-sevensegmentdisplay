@@ -222,10 +222,11 @@ class Music:
         {"name": "nobass", "buffer": [N, O, 0, B, A, S, S, 0]}
     ]
 
-    def __init__(self, core, default_song):
+    def __init__(self, core, default_song, default_preset):
         self.core = core
         self.volume = self.get_volume(),
-        self.default_song = default_song
+        self.default_song = default_song,
+        self.preset = default_preset
 
     def is_playing(self, state=None):
         if (state is None):
@@ -279,14 +280,29 @@ class Music:
     def mute(self):
         self.core.playback.mute = not self.is_mute()  # self.core.mixer.set_mute(not self.is_mute())
 
-    def set_preset(self, preset_name):
-        for preset in self.PRESETS:
-            if (preset["name"] == preset_name):
-                try:
-                    call(["sh", os.path.join(os.path.dirname(__file__), 'presets.sh'), preset_name])
-                except Exception as inst:
-                    logging.error(inst)
-                return preset["buffer"]
+    def set_preset(self, value):
+        index = 0
+        if (value == -1 or value == 1):
+            index = (self._get_preset_index(self.preset) + value + len(self.PRESETS)) % len(self.PRESETS)
+        else:
+            index = self._get_preset_index(value)
+
+        try:
+            call(["sh", os.path.join(os.path.dirname(__file__), 'presets.sh'), self.PRESETS[index]["name"]])
+        except Exception as inst:
+            logging.error(inst)
+
+        return self.PRESETS[index]["buffer"]
+
+    def get_presets(self):
+        index = self._get_preset_index(value)
+        return self.PRESETS[index:len(self.PRESETS)] + self.PRESETS[0:index]
+    
+    def _get_preset_index(self, name):
+        for i, d in enumerate(self.PRESETS):
+            if (d["name"] == name):
+                return i
+        return 0
 
     def get_state(self):
         return self.core.playback.state.get()  # self.core.playback.get_state()

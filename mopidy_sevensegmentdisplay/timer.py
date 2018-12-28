@@ -179,7 +179,7 @@ class TimerAlert:
 
     def run(self):
         for i in range(len(self.timers) - 1, -1, -1):
-            if not self.timers[i].is_set():
+            if (not self.timers[i].is_set()):
                 del self.timers[i]
             else:
                 self.timers[i].run()

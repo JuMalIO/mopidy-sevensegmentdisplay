@@ -5,74 +5,56 @@ import RPi.GPIO as GPIO
 import threading
 import time
 import logging
-from threading import Timer
+from threader import Threader
 
 
 class Gpio:
 
-    def __init__(self, on_power, on_input, on_down, on_up, ir_sender):
-        GPIO.setmode(GPIO.BCM)
-
-        self.RELAY_PIN = 4
-        GPIO.setup(self.RELAY_PIN, GPIO.OUT, initial=GPIO.HIGH)
-        self.is_relay_on = False
-
-        self.KEY_1_PIN = 5   # Play/Pause
-        self.KEY_2_PIN = 6   # Stop
-        self.KEY_3_PIN = 13  # Open/Close
-        self.KEY_4_PIN = 19  # StandBy-On
-        GPIO.setup(self.KEY_1_PIN, GPIO.IN)
-        GPIO.setup(self.KEY_2_PIN, GPIO.IN)
-        GPIO.setup(self.KEY_3_PIN, GPIO.IN)
-        GPIO.setup(self.KEY_4_PIN, GPIO.IN)
-
-        self.on_power = on_power
-        self.on_input = on_input
-        self.on_down = on_down
-        self.on_up = on_up
-
-        self.ir_sender = ir_sender
-
-        GPIO.add_event_detect(self.KEY_1_PIN, GPIO.RISING, callback=self._on_button, bouncetime=300)
-        GPIO.add_event_detect(self.KEY_2_PIN, GPIO.RISING, callback=self._on_button, bouncetime=300)
-        GPIO.add_event_detect(self.KEY_3_PIN, GPIO.RISING, callback=self._on_button, bouncetime=300)
-        GPIO.add_event_detect(self.KEY_4_PIN, GPIO.RISING, callback=self._on_button, bouncetime=300)
-
+    def __init__(self, buttons_enabled, on_power, on_menu, on_left, on_right, light_sensor_enabled, on_light, relay_enabled):
         self.lock = threading.Lock()
 
-    def _on_button(self, gpio):
-        if not self.lock.locked():
-            if (gpio == self.KEY_1_PIN):
-                self.on_down()
-            elif (gpio == self.KEY_2_PIN):
-                self.on_up()
-            elif (gpio == self.KEY_3_PIN):
-                self.on_input()
-            elif (gpio == self.KEY_4_PIN):
-                self.on_power()
+        GPIO.setmode(GPIO.BCM)
 
-    def switch_relay_on(self):
-        self._switch_relay(True)
+        if (buttons_enabled):
+            self.POWER_BUTTON_PIN = 19  # StandBy-On
+            self.MENU_BUTTON_PIN = 13   # Open/Close
+            self.LEFT_BUTTON_PIN = 5    # Play/Pause
+            self.RIGHT_BUTTON_PIN = 6   # Stop
 
-    def switch_relay_off(self):
-        self._switch_relay(False)
+            GPIO.setup(self.POWER_BUTTON_PIN, GPIO.IN)
+            GPIO.setup(self.MENU_BUTTON_PIN,  GPIO.IN)
+            GPIO.setup(self.LEFT_BUTTON_PIN,  GPIO.IN)
+            GPIO.setup(self.RIGHT_BUTTON_PIN, GPIO.IN)
 
-    def _switch_relay(self, is_relay_on):
-        if self.lock.acquire(False):
+            GPIO.add_event_detect(self.POWER_BUTTON_PIN, GPIO.RISING, bouncetime=300,
+                                  callback=lambda gpio: on_power() if not self.lock.locked() else None)
+            GPIO.add_event_detect(self.MENU_BUTTON_PIN,  GPIO.RISING, bouncetime=300,
+                                  callback=lambda gpio: on_menu()  if not self.lock.locked() else None)
+            GPIO.add_event_detect(self.LEFT_BUTTON_PIN,  GPIO.RISING, bouncetime=300,
+                                  callback=lambda gpio: on_left()  if not self.lock.locked() else None)
+            GPIO.add_event_detect(self.RIGHT_BUTTON_PIN, GPIO.RISING, bouncetime=300,
+                                  callback=lambda gpio: on_right() if not self.lock.locked() else None)
+
+        if (light_sensor_enabled):
+            self.LIGHT_SENSOR_PIN = 27
+            self.thread = LightSensor(self.LIGHT_SENSOR_PIN, on_light)
+            GPIO.setup(self.LIGHT_SENSOR_PIN, GPIO.IN)
+            GPIO.add_event_detect(self.LIGHT_SENSOR_PIN, GPIO.RISING, bouncetime=300,
+                                  callback=lambda gpio: (self.thread.stop(), self.thread.start()))
+
+        if (relay_enabled):
+            self.is_relay_on = False
+            self.RELAY_PIN = 4
+            GPIO.setup(self.RELAY_PIN, GPIO.OUT, initial=GPIO.HIGH)
+
+    def switch_relay(self, value):
+        if (self.RELAY_PIN is not None and self.lock.acquire(False)):
             try:
-                if (is_relay_on and not self.is_relay_on):
-                    GPIO.output(self.RELAY_PIN, GPIO.LOW)
-                    self.is_relay_on = True
-                    time.sleep(0.5)
-                    self.timer = Timer(1.0, self.ir_sender.power)
-                    self.timer.start()
-                elif (not is_relay_on and self.is_relay_on):
-                    GPIO.output(self.RELAY_PIN, GPIO.HIGH)
-                    self.is_relay_on = False
-                    time.sleep(0.5)
-                    self.timer = Timer(1.0, self.ir_sender.power)
-                    self.timer.start()
-                return True
+                if (value != self.is_relay_on):
+                    GPIO.output(self.RELAY_PIN, GPIO.LOW if value else GPIO.HIGH)
+                    self.is_relay_on = value
+                    time.sleep(0.7)
+                    return True
             except Exception as inst:
                 logging.error(inst)
             finally:
@@ -81,3 +63,24 @@ class Gpio:
 
     def cleanup(self):
         GPIO.cleanup()
+
+
+class LightSensor(Threader):
+
+    def __init__(self, gpio, callback):
+        super(LightSensor, self).__init__()
+        self.gpio = gpio
+        self.callback = callback
+
+    def run(self):
+        value = GPIO.input(self.gpio)
+        checked_times = 0
+        while (checked_times < 50):
+            if (self.stopped()):
+                return
+            if (GPIO.input(self.gpio) != value):
+                return
+            checked_times += 1
+            time.sleep(0.1)
+        if (checked_times == 50):
+            self.callback(True if value == 1 else False)
