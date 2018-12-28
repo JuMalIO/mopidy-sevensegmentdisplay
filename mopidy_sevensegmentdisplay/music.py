@@ -287,6 +287,8 @@ class Music:
         else:
             index = self._get_preset_index(value)
 
+        self.preset = self.PRESETS[index]["name"]
+
         try:
             call(["sh", os.path.join(os.path.dirname(__file__), 'presets.sh'), self.PRESETS[index]["name"]])
         except Exception as inst:
