@@ -71,8 +71,8 @@ class Menu:
 
     def click(self):
         self._set_sub_menu_visible()
-        if ("sub_menu" in self.sub_menu[self.sub_menu_index]):
-            self.sub_menu = self.sub_menu[self.sub_menu_index]["sub_menu"]
+        if ("get_sub_menu" in self.sub_menu[self.sub_menu_index]):
+            self.sub_menu = self.sub_menu[self.sub_menu_index]["get_sub_menu"]()
             self.sub_menu_index = 0
             self.display.draw_scroll_down_animation(self.sub_menu[self.sub_menu_index]["get_buffer"]())
         elif ("click" in self.sub_menu[self.sub_menu_index]):

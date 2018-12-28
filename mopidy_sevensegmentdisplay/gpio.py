@@ -47,8 +47,10 @@ class Gpio:
             self.RELAY_PIN = 4
             GPIO.setup(self.RELAY_PIN, GPIO.OUT, initial=GPIO.HIGH)
 
+        self.relay_enabled = relay_enabled
+
     def switch_relay(self, value):
-        if (self.RELAY_PIN is not None and self.lock.acquire(False)):
+        if (self.relay_enabled and self.lock.acquire(False)):
             try:
                 if (value != self.is_relay_on):
                     GPIO.output(self.RELAY_PIN, GPIO.LOW if value else GPIO.HIGH)

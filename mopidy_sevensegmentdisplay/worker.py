@@ -95,16 +95,16 @@ class Worker(Threader):
             {
                 "click_left": self.decrease_timer,
                 "click_right": self.increase_timer,
-                "sub_menu": [
+                "get_sub_menu": lambda: [
                     {
                         "get_buffer": lambda: [0, Symbols.T1, Symbols.T2, Symbols.I, Symbols.M1, Symbols.M2, Symbols.E, Symbols.R],
-                        "sub_menu": [
+                        "get_sub_menu": lambda: [
                             {
                                 "get_buffer": lambda: [0, Symbols.A, Symbols.L, Symbols.E, Symbols.R, Symbols.T1, Symbols.T2, 0],
-                                "sub_menu": [
+                                "get_sub_menu": lambda: [
                                     {
                                         "get_buffer": lambda: [0, 0, 0, Symbols.A, Symbols.D, Symbols.D, 0, 0],
-                                        "sub_menu": [
+                                        "get_sub_menu": lambda: [
                                             {
                                                 "get_buffer": self.timer_alert.get_draw_menu_buffer,
                                                 "click": lambda: (self.timer_alert.add_timer(),
@@ -123,7 +123,7 @@ class Worker(Threader):
                             },
                             {
                                 "get_buffer": lambda: [0, 0, 0, Symbols.O, Symbols.F, Symbols.F, 0, 0],
-                                "sub_menu": [
+                                "get_sub_menu": lambda: [
                                     {
                                         "get_buffer": self.timer_off.get_draw_buffer,
                                         "click_left": self.timer_off.decrease,
@@ -133,7 +133,7 @@ class Worker(Threader):
                             },
                             {
                                 "get_buffer": lambda: [0, 0, 0, Symbols.O, Symbols.N, 0, 0, 0],
-                                "sub_menu": [
+                                "get_sub_menu": lambda: [
                                     {
                                         "get_buffer": self.timer_on.get_draw_buffer,
                                         "click_left": self.timer_on.decrease,
@@ -149,7 +149,7 @@ class Worker(Threader):
                     },
                     {
                         "get_buffer": lambda: [0, Symbols.U, Symbols.O, Symbols.L, Symbols.U, Symbols.M1, Symbols.M2, Symbols.E],
-                        "sub_menu": [
+                        "get_sub_menu": lambda: [
                             {
                                 "get_buffer": self.music.get_draw_volume,
                                 "click_left": self.music.decrease_volume,
@@ -159,7 +159,7 @@ class Worker(Threader):
                     },
                     {
                         "get_buffer": lambda: [0, Symbols.S, Symbols.T1, Symbols.T2, Symbols.Y, Symbols.L, Symbols.E, 0],
-                        "sub_menu": list(map(lambda x: {
+                        "get_sub_menu": lambda: list(map(lambda x: {
                             "get_buffer": lambda: x["buffer"],
                             "click": lambda: self.music.set_preset(x["name"]),
                             "click_animation": True
