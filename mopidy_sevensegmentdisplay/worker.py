@@ -46,7 +46,7 @@ class Worker(Threader):
                              self.on_menu_click_left,
                              self.on_menu_click_right,
                              self.config['light_sensor_enabled'],
-                             self.on_light,
+                             self.on_light_sensor,
                              self.config['relay_enabled'])
             self.ir_sender = IrSender(self.gpio.switch_relay)
             self.ir_receiver = IrReceiver(self.play_stop_music,
