@@ -37,10 +37,12 @@ class Gpio:
 
         if (light_sensor_enabled):
             self.LIGHT_SENSOR_PIN = 27
-            self.thread = LightSensor(self.LIGHT_SENSOR_PIN, on_light)
+            self.thread = None
             GPIO.setup(self.LIGHT_SENSOR_PIN, GPIO.IN)
             GPIO.add_event_detect(self.LIGHT_SENSOR_PIN, GPIO.RISING, bouncetime=300,
-                                  callback=lambda gpio: (self.thread.stop(), self.thread.start()))
+                                  callback=lambda gpio: (self.thread.stop() if self.thread is not None else None,
+                                                         self.thread = LightSensor(self.LIGHT_SENSOR_PIN, on_light),
+                                                         self.thread.start()))
 
         if (relay_enabled):
             self.is_relay_on = False
