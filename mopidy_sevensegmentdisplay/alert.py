@@ -78,11 +78,10 @@ class Alert:
             self.ir_sender.bass(file["bass"])
             self.ir_sender.volume(file["volume"])
             self._play_file(file["name"])
-            self.ir_sender.bass(- file["bass"])
             self.ir_sender.volume(- file["volume"])
 
             if (not self.music.is_playing()):
-                time.sleep(2)
+                time.sleep(5)
                 self.ir_sender.power(False)
         except Exception as inst:
             logging.error(inst)

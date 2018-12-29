@@ -222,10 +222,10 @@ class Music:
         {"name": "nobass", "buffer": [N, O, 0, B, A, S, S, 0]}
     ]
 
-    def __init__(self, core, default_song, preset):
+    def __init__(self, core, default_tracks, preset):
         self.core = core
         self.volume = self.get_volume(),
-        self.default_song = default_song,
+        self.default_tracks = list(default_tracks) if isinstance(default_tracks, tuple) else [default_tracks]
         self.preset = preset
 
     def is_playing(self, state=None):
@@ -264,7 +264,7 @@ class Music:
             self.core.tracklist.random = True
         if (not self.is_playing()):
             if (self.core.tracklist.get_length().get() < 1):
-                self.core.tracklist.add(uris=[self.default_song])
+                self.core.tracklist.add(uris=self.default_tracks)
                 self.core.tracklist.repeat = True
                 self.core.tracklist.random = True
             self.core.playback.play()
@@ -325,8 +325,8 @@ class Music:
     def decrease_volume(self, volume=1):
         self.set_volume(self.get_volume() - volume)
 
-    def get_default_song(self):
-        return self.default_song
+    def get_default_tracks(self):
+        return self.default_tracks
 
     def get_draw_start_animation(self):
         return self.ANIMATION_START

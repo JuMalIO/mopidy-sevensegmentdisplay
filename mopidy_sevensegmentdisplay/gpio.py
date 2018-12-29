@@ -49,17 +49,17 @@ class Gpio:
         self.relay_enabled = relay_enabled
 
     def switch_relay(self, value):
-        if (self.relay_enabled and self.lock.acquire(False)):
+        if (self.relay_enabled and self.lock.acquire()):
             try:
                 if (value != self.is_relay_on):
                     GPIO.output(self.RELAY_PIN, GPIO.LOW if value else GPIO.HIGH)
                     self.is_relay_on = value
-                    time.sleep(0.7)
+                    time.sleep(1)
                     return True
             except Exception as inst:
                 logging.error(inst)
             finally:
-                self.lock.release()
+                threading.Timer(1, self.lock.release).start()
         return False
 
     def cleanup(self):

@@ -37,7 +37,7 @@ class Worker(Threader):
 
     def run(self):
         try:
-            self.music = Music(self.core, self.config['default_song'], self.config['default_preset'])
+            self.music = Music(self.core, self.config['default_tracks'], self.config['default_preset'])
             self.display = Display()
             self.gpio = Gpio(self.config['buttons_enabled'],
                              self.play_stop_music,
@@ -144,7 +144,7 @@ class Worker(Threader):
                     },
                     {
                         "get_buffer": lambda: [0, Symbols.P, Symbols.L, Symbols.A, Symbols.Y, 0, Symbols.NUMBER[1], 0],
-                        "click": lambda: self.play_music([self.music.get_default_song()])
+                        "click": lambda: self.play_music(self.music.get_default_tracks())
                     },
                     {
                         "get_buffer": lambda: [0, Symbols.U, Symbols.O, Symbols.L, Symbols.U, Symbols.M1, Symbols.M2, Symbols.E],

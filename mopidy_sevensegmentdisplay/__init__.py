@@ -22,7 +22,7 @@ class Extension(ext.Extension):
         schema['buttons_enabled'] = config.Boolean()
         schema['light_sensor_enabled'] = config.Boolean()
         schema['relay_enabled'] = config.Boolean()
-        schema['default_song'] = config.String()
+        schema['default_tracks'] = config.String()
         schema['default_volume'] = config.Integer()
         schema['default_preset'] = config.String()
         schema['light_sensor_volume'] = config.Integer()
