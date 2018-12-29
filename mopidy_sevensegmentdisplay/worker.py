@@ -2,7 +2,6 @@ from __future__ import unicode_literals
 
 import logging
 from time import sleep
-import json
 from threader import Threader
 from music import Music
 from display import Display
@@ -62,7 +61,7 @@ class Worker(Threader):
             self.timer_alert = TimerAlert(Alert(self.music,
                                                 self.display,
                                                 self.ir_sender,
-                                                json.loads(self.config['alert_files'])).run)
+                                                self.config['alert_files']).run)
             self.time = Time()
             self.date = Date([self.timer_on, self.timer_off, self.timer_alert])
             self.menu = Menu(self.display,
@@ -183,15 +182,18 @@ class Worker(Threader):
         self.menu.click_right()
 
     def on_light_sensor(self, is_dark):
-        if (self.music.is_playing() and is_dark):
-            self.music.set_volume(self.config['light_sensor_volume'])
-            self.music.set_preset(self.config['light_sensor_preset'])
-            self.timer_off.reset()
-            self.timer_off.increase()
-            self.timer_off.increase()
-            self.timer_off.increase()
-            self.timer_off.increase()
-            self.menu.draw_sub_menu(self.timer_off.get_draw_buffer())
+        if (self.music.is_playing()):
+            if (is_dark):
+                self.music.set_volume(self.config['light_sensor_volume'])
+                self.music.set_preset(self.config['light_sensor_preset'])
+                self.timer_off.reset()
+                self.timer_off.increase()
+                self.timer_off.increase()
+                self.timer_off.increase()
+                self.timer_off.increase()
+                self.menu.draw_sub_menu(self.timer_off.get_draw_buffer())
+            else:
+                self.timer_off.reset()
 
     def increase_timer(self):
         if (self.music.is_playing()):

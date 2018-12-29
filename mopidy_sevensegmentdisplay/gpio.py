@@ -35,14 +35,12 @@ class Gpio:
             GPIO.add_event_detect(self.RIGHT_BUTTON_PIN, GPIO.RISING, bouncetime=300,
                                   callback=lambda gpio: on_right() if not self.lock.locked() else None)
 
+
+        self.LIGHT_SENSOR_PIN = 27
+        self.lightSensor = LightSensor(self.LIGHT_SENSOR_PIN, on_light)
         if (light_sensor_enabled):
-            self.LIGHT_SENSOR_PIN = 27
-            self.thread = None
             GPIO.setup(self.LIGHT_SENSOR_PIN, GPIO.IN)
-            GPIO.add_event_detect(self.LIGHT_SENSOR_PIN, GPIO.RISING, bouncetime=300,
-                                  callback=lambda gpio: (self.thread.stop() if self.thread is not None else None,
-                                                         self.thread = LightSensor(self.LIGHT_SENSOR_PIN, on_light),
-                                                         self.thread.start()))
+            self.lightSensor.start()
 
         if (relay_enabled):
             self.is_relay_on = False
@@ -66,6 +64,7 @@ class Gpio:
         return False
 
     def cleanup(self):
+        self.lightSensor.stop()
         GPIO.cleanup()
 
 
@@ -75,16 +74,22 @@ class LightSensor(Threader):
         super(LightSensor, self).__init__()
         self.gpio = gpio
         self.callback = callback
+        self.value = 0
 
     def run(self):
-        value = GPIO.input(self.gpio)
-        checked_times = 0
-        while (checked_times < 50):
+        counter = 0
+        while (True):
             if (self.stopped()):
-                return
-            if (GPIO.input(self.gpio) != value):
-                return
-            checked_times += 1
-            time.sleep(0.1)
-        if (checked_times == 50):
-            self.callback(True if value == 1 else False)
+                break
+            value = GPIO.input(self.gpio)
+            if (self.value != value):
+                if (counter < 50):
+                    counter += 1
+                else:
+                    counter = 0
+                    self.value = value
+                    self.callback(True if value == 1 else False)
+            else:
+                counter = 0
+            time.sleep(0.2)
+            

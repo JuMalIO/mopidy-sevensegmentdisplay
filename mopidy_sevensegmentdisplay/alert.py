@@ -5,6 +5,7 @@ import os
 import random
 import time
 import logging
+import json
 from subprocess import call
 from max7219 import Symbols
 
@@ -62,7 +63,7 @@ class Alert:
         self.music = music
         self.display = display
         self.ir_sender = ir_sender
-        self.files = files
+        self.files = json.loads(files)
 
     def run(self):
         try:
