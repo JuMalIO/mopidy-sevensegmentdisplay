@@ -35,7 +35,6 @@ class Gpio:
             GPIO.add_event_detect(self.RIGHT_BUTTON_PIN, GPIO.RISING, bouncetime=300,
                                   callback=lambda gpio: on_right() if not self.lock.locked() else None)
 
-
         self.LIGHT_SENSOR_PIN = 27
         self.lightSensor = LightSensor(self.LIGHT_SENSOR_PIN, on_light)
         if (light_sensor_enabled):
@@ -92,4 +91,3 @@ class LightSensor(Threader):
             else:
                 counter = 0
             time.sleep(0.2)
-            
