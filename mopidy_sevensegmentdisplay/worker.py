@@ -48,7 +48,8 @@ class Worker(Threader):
                              self.on_light_sensor,
                              self.config['relay_enabled'])
             self.ir_sender = IrSender(self.gpio.switch_relay)
-            self.ir_receiver = IrReceiver(self.play_stop_music,
+            self.ir_receiver = IrReceiver(self.config['ir_receiver_enabled'],
+                                          self.play_stop_music,
                                           self.on_menu_click,
                                           self.on_menu_click_left,
                                           self.on_menu_click_right,
@@ -71,8 +72,6 @@ class Worker(Threader):
                              self.config['display_max_brightness'],
                              self.config['display_off_time_from'],
                              self.config['display_off_time_to'])
-
-            self.ir_receiver.start()
 
             while True:
                 self.menu.run()
@@ -107,7 +106,7 @@ class Worker(Threader):
                                             {
                                                 "get_buffer": self.timer_alert.get_draw_menu_buffer,
                                                 "click": lambda: (self.timer_alert.add_timer(),
-                                                                  self.display.draw(self.timer_alert.get_draw_menu_buffer())),
+                                                                    self.display.draw(self.timer_alert.get_draw_menu_buffer())),
                                                 "click_left": self.timer_alert.decrease,
                                                 "click_right": self.timer_alert.increase
                                             }

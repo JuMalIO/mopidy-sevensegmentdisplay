@@ -10,7 +10,7 @@ from threader import Threader
 
 class IrReceiver(Threader):
 
-    def __init__(self, on_power, on_menu, on_left, on_right, on_vol_down, on_vol_up, on_mute, on_preset):
+    def __init__(self, ir_receiver_enabled, on_power, on_menu, on_left, on_right, on_vol_down, on_vol_up, on_mute, on_preset):
         super(IrReceiver, self).__init__()
         lirc.init("myprogram", blocking=False)
 
@@ -23,9 +23,14 @@ class IrReceiver(Threader):
         self.on_mute = on_mute
         self.on_preset = on_preset
 
+        if (ir_receiver_enabled):
+            super(IrReceiver, self).start()
+
     def run(self):
         try:
             while (True):
+                if (self.stopped()):
+                    break
                 list = lirc.nextcode()
                 if len(list) != 0:
                     if list[0] == "power":
@@ -46,9 +51,8 @@ class IrReceiver(Threader):
                         self.on_preset(-1)
                     elif list[0] == "bass+":
                         self.on_preset(1)
-                if (self.stopped()):
-                    break
-                time.sleep(0.1)
+                else:
+                    time.sleep(0.1)
         except Exception as inst:
             logging.error(inst)
         lirc.deinit()
