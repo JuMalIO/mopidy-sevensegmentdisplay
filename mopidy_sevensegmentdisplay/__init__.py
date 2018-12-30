@@ -19,9 +19,15 @@ class Extension(ext.Extension):
 
     def get_config_schema(self):
         schema = super(Extension, self).get_config_schema()
-        schema['default_song'] = config.String()
-        schema['timer_on_volume'] = config.Integer()
-        schema['timer_on_preset'] = config.String()
+        schema['buttons_enabled'] = config.Boolean()
+        schema['light_sensor_enabled'] = config.Boolean()
+        schema['relay_enabled'] = config.Boolean()
+        schema['ir_receiver_enabled'] = config.Boolean()
+        schema['default_tracks'] = config.String()
+        schema['default_volume'] = config.Integer()
+        schema['default_preset'] = config.String()
+        schema['light_sensor_volume'] = config.Integer()
+        schema['light_sensor_preset'] = config.String()
         schema['alert_files'] = config.String()
         schema['display_min_brightness'] = config.Integer()
         schema['display_max_brightness'] = config.Integer()

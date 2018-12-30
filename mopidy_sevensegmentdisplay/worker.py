@@ -2,7 +2,6 @@ from __future__ import unicode_literals
 
 import logging
 from time import sleep
-import json
 from threader import Threader
 from music import Music
 from display import Display
@@ -19,9 +18,9 @@ class Worker(Threader):
     core = None
     music = None
     display = None
+    gpio = None
     ir_sender = None
     ir_receiver = None
-    gpio = None
     timer_on = None
     timer_off = None
     timer_alert = None
@@ -38,21 +37,32 @@ class Worker(Threader):
 
     def run(self):
         try:
-            self.music = Music(self.core, self.config['default_song'])
+            self.music = Music(self.core, self.config['default_tracks'], self.config['default_preset'])
             self.display = Display()
-            self.ir_sender = IrSender()
-            self.ir_receiver = IrReceiver(self.play_stop_music,
+            self.gpio = Gpio(self.config['buttons_enabled'],
+                             self.play_stop_music,
+                             self.on_menu_click,
+                             self.on_menu_click_left,
+                             self.on_menu_click_right,
+                             self.config['light_sensor_enabled'],
+                             self.on_light_sensor,
+                             self.config['relay_enabled'])
+            self.ir_sender = IrSender(self.gpio.switch_relay)
+            self.ir_receiver = IrReceiver(self.config['ir_receiver_enabled'],
+                                          self.play_stop_music,
                                           self.on_menu_click,
                                           self.on_menu_click_left,
                                           self.on_menu_click_right,
                                           self.music.decrease_volume,
                                           self.music.increase_volume,
                                           self.music.mute,
-                                          self.on_preset)
-            self.gpio = Gpio(self.play_stop_music, self.on_menu_click, self.on_menu_click_left, self.on_menu_click_right, self.ir_sender)
-            self.timer_on = TimerOn(self.on_timer_on)
+                                          self.change_preset)
+            self.timer_on = TimerOn(self.play_music)
             self.timer_off = TimerOff(self.stop_music)
-            self.timer_alert = TimerAlert(Alert(self.music, self.display, self.gpio, json.loads(self.config['alert_files'])).run)
+            self.timer_alert = TimerAlert(Alert(self.music,
+                                                self.display,
+                                                self.ir_sender,
+                                                self.config['alert_files']).run)
             self.time = Time()
             self.date = Date([self.timer_on, self.timer_off, self.timer_alert])
             self.menu = Menu(self.display,
@@ -62,8 +72,6 @@ class Worker(Threader):
                              self.config['display_max_brightness'],
                              self.config['display_off_time_from'],
                              self.config['display_off_time_to'])
-
-            self.ir_receiver.start()
 
             while True:
                 self.menu.run()
@@ -85,16 +93,16 @@ class Worker(Threader):
             {
                 "click_left": self.decrease_timer,
                 "click_right": self.increase_timer,
-                "sub_menu": [
+                "get_sub_menu": lambda: [
                     {
                         "get_buffer": lambda: [0, Symbols.T1, Symbols.T2, Symbols.I, Symbols.M1, Symbols.M2, Symbols.E, Symbols.R],
-                        "sub_menu": [
+                        "get_sub_menu": lambda: [
                             {
                                 "get_buffer": lambda: [0, Symbols.A, Symbols.L, Symbols.E, Symbols.R, Symbols.T1, Symbols.T2, 0],
-                                "sub_menu": [
+                                "get_sub_menu": lambda: [
                                     {
                                         "get_buffer": lambda: [0, 0, 0, Symbols.A, Symbols.D, Symbols.D, 0, 0],
-                                        "sub_menu": [
+                                        "get_sub_menu": lambda: [
                                             {
                                                 "get_buffer": self.timer_alert.get_draw_menu_buffer,
                                                 "click": lambda: (self.timer_alert.add_timer(),
@@ -113,7 +121,7 @@ class Worker(Threader):
                             },
                             {
                                 "get_buffer": lambda: [0, 0, 0, Symbols.O, Symbols.F, Symbols.F, 0, 0],
-                                "sub_menu": [
+                                "get_sub_menu": lambda: [
                                     {
                                         "get_buffer": self.timer_off.get_draw_buffer,
                                         "click_left": self.timer_off.decrease,
@@ -123,7 +131,7 @@ class Worker(Threader):
                             },
                             {
                                 "get_buffer": lambda: [0, 0, 0, Symbols.O, Symbols.N, 0, 0, 0],
-                                "sub_menu": [
+                                "get_sub_menu": lambda: [
                                     {
                                         "get_buffer": self.timer_on.get_draw_buffer,
                                         "click_left": self.timer_on.decrease,
@@ -135,11 +143,11 @@ class Worker(Threader):
                     },
                     {
                         "get_buffer": lambda: [0, Symbols.P, Symbols.L, Symbols.A, Symbols.Y, 0, Symbols.NUMBER[1], 0],
-                        "click": lambda: self.play_music([self.music.get_default_song()])
+                        "click": lambda: self.play_music(self.music.get_default_tracks())
                     },
                     {
                         "get_buffer": lambda: [0, Symbols.U, Symbols.O, Symbols.L, Symbols.U, Symbols.M1, Symbols.M2, Symbols.E],
-                        "sub_menu": [
+                        "get_sub_menu": lambda: [
                             {
                                 "get_buffer": self.music.get_draw_volume,
                                 "click_left": self.music.decrease_volume,
@@ -149,11 +157,11 @@ class Worker(Threader):
                     },
                     {
                         "get_buffer": lambda: [0, Symbols.S, Symbols.T1, Symbols.T2, Symbols.Y, Symbols.L, Symbols.E, 0],
-                        "sub_menu": list(map(lambda x: {
+                        "get_sub_menu": lambda: list(map(lambda x: {
                             "get_buffer": lambda: x["buffer"],
                             "click": lambda: self.music.set_preset(x["name"]),
                             "click_animation": True
-                        }, Music.PRESETS))
+                        }, self.music.get_presets()))
                     },
                     {
                         "get_buffer": lambda: [0, 0, Symbols.D, Symbols.E, Symbols.M1, Symbols.M2, Symbols.O, 0],
@@ -172,10 +180,19 @@ class Worker(Threader):
     def on_menu_click_right(self):
         self.menu.click_right()
 
-    def on_timer_on(self):
-        self.music.set_volume(self.config['timer_on_volume'])
-        self.music.set_preset(self.config['timer_on_preset'])
-        self.play_music()
+    def on_light_sensor(self, is_dark):
+        if (self.music.is_playing()):
+            if (is_dark):
+                self.music.set_volume(self.config['light_sensor_volume'])
+                self.music.set_preset(self.config['light_sensor_preset'])
+                self.timer_off.reset()
+                self.timer_off.increase()
+                self.timer_off.increase()
+                self.timer_off.increase()
+                self.timer_off.increase()
+                self.menu.draw_sub_menu(self.timer_off.get_draw_buffer())
+            else:
+                self.timer_off.reset()
 
     def increase_timer(self):
         if (self.music.is_playing()):
@@ -209,6 +226,8 @@ class Worker(Threader):
             self.play_music()
 
     def play_music(self, tracks=None):
+        self.music.set_volume(self.config['default_volume'])
+        self.music.set_preset(self.config['default_preset'])
         self.music.play(tracks)
         self.on_started()
 
@@ -220,8 +239,8 @@ class Worker(Threader):
         self.music.stop()
         self.on_stopped()
 
-    def on_preset(self, preset):
-        self.menu.draw_sub_menu(self.music.set_preset(preset))
+    def change_preset(self, value):
+        self.menu.draw_sub_menu(self.music.set_preset(value))
 
     def on_started(self):
         self.menu.draw_sub_menu_animation(self.music.get_draw_start_animation())
@@ -229,13 +248,13 @@ class Worker(Threader):
     def on_stopped(self):
         self.menu.draw_sub_menu_animation(self.music.get_draw_stop_animation())
         self.timer_off.reset()
-        self.gpio.switch_relay_off()
+        self.ir_sender.power(False)
 
     def on_playing(self):
         self.menu.draw_sub_menu_animation(self.music.get_draw_play_animation())
         self.timer_on.reset()
         if (self.music.is_playing()):
-            self.gpio.switch_relay_on()
+            self.ir_sender.power(True)
 
     def on_paused(self):
         self.menu.draw_sub_menu_animation(self.music.get_draw_pause_animation())
