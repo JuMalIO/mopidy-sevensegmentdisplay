@@ -1,7 +1,6 @@
 from __future__ import division
 from __future__ import unicode_literals
 
-import os
 from mopidy import core
 from max7219 import Symbols
 from random import randint
@@ -202,24 +201,24 @@ class Music:
     G = Symbols.NUMBER[6]
 
     PRESETS = [
-        {"name": "flat", "buffer": [0, F, L, A, T1, T2, 0, 0]},
-        {"name": "classical", "buffer": [C, L, A, S, S, I, C, 0]},
-        {"name": "club", "buffer": [0, 0, C, L, U, B, 0, 0]},
-        {"name": "dance", "buffer": [0, D, A, N, C, E, 0, 0]},
-        {"name": "headphones", "buffer": [H, E, A, D, P, H, O, N]},
-        {"name": "bass", "buffer": [0, 0, B, A, S, S, 0, 0]},
-        {"name": "treble", "buffer": [T1, T2, R, E, b, L, E, 0]},
-        {"name": "large_hall", "buffer": [0, 0, H, A, L, L, 0, 0]},
-        {"name": "live", "buffer": [0, 0, L, I, U, E, 0, 0]},
-        {"name": "party", "buffer": [0, P, A, R, T1, T2, Y, 0]},
-        {"name": "pop", "buffer": [0, 0, P, O, P, 0, 0, 0]},
-        {"name": "reggae", "buffer": [0, R, E, G, G, A, E, 0]},
-        {"name": "rock", "buffer": [0, 0, R, O, C, H, 0, 0]},
-        {"name": "ska", "buffer": [0, 0, S, H, A, 0, 0, 0]},
-        {"name": "soft_rock", "buffer": [S, O, F, T2, R, O, C, H]},
-        {"name": "soft", "buffer": [0, S, O, F, T1, T2, 0, 0]},
-        {"name": "techno", "buffer": [T1, T2, E, C, H, N, O, 0]},
-        {"name": "nobass", "buffer": [N, O, 0, B, A, S, S, 0]}
+        {"name": "flat", "curve": [65, 65, 65, 65, 65, 65, 65, 65, 65, 65], "buffer": [0, F, L, A, T1, T2, 0, 0]},
+        {"name": "classical", "curve": [71, 71, 71, 71, 71, 71, 84, 83, 83, 87], "buffer": [C, L, A, S, S, I, C, 0]},
+        {"name": "club", "curve": [71, 71, 67, 63, 63, 63, 67, 71, 71, 71], "buffer": [0, 0, C, L, U, B, 0, 0]},
+        {"name": "dance", "curve": [57, 61, 69, 71, 71, 81, 83, 83, 71, 71], "buffer": [0, D, A, N, C, E, 0, 0]},
+        {"name": "headphones", "curve": [65, 55, 64, 77, 75, 70, 65, 57, 52, 49], "buffer": [H, E, A, D, P, H, O, N]},
+        {"name": "bass", "curve": [59, 59, 59, 63, 70, 78, 85, 88, 89, 89], "buffer": [0, 0, B, A, S, S, 0, 0]},
+        {"name": "treble", "curve": [87, 87, 87, 78, 68, 55, 47, 47, 47, 45], "buffer": [T1, T2, R, E, b, L, E, 0]},
+        {"name": "large_hall", "curve": [56, 56, 63, 63, 71, 79, 79, 79, 71, 71], "buffer": [0, 0, H, A, L, L, 0, 0]},
+        {"name": "live", "curve": [79, 71, 66, 64, 63, 63, 66, 68, 68, 69], "buffer": [0, 0, L, I, U, E, 0, 0]},
+        {"name": "party", "curve": [61, 61, 71, 71, 71, 71, 71, 71, 61, 61], "buffer": [0, P, A, R, T1, T2, Y, 0]},
+        {"name": "pop", "curve": [74, 65, 61, 60, 64, 73, 75, 75, 74, 74], "buffer": [0, 0, P, O, P, 0, 0, 0]},
+        {"name": "reggae", "curve": [71, 71, 72, 81, 71, 62, 62, 71, 71, 71], "buffer": [0, R, E, G, G, A, E, 0]},
+        {"name": "rock", "curve": [58, 63, 80, 84, 77, 66, 58, 55, 55, 55], "buffer": [0, 0, R, O, C, H, 0, 0]},
+        {"name": "ska", "curve": [75, 79, 78, 72, 66, 63, 58, 57, 55, 57], "buffer": [0, 0, S, H, A, 0, 0, 0]},
+        {"name": "soft_rock", "curve": [66, 66, 69, 72, 78, 80, 77, 72, 68, 58], "buffer": [S, O, F, T2, R, O, C, H]},
+        {"name": "soft", "curve": [65, 70, 73, 75, 73, 66, 59, 57, 55, 53], "buffer": [0, S, O, F, T1, T2, 0, 0]},
+        {"name": "techno", "curve": [60, 63, 71, 80, 79, 71, 60, 57, 57, 58], "buffer": [T1, T2, E, C, H, N, O, 0]},
+        {"name": "nobass", "curve": [0, 5, 15, 25, 65, 65, 65, 65, 65, 65], "buffer": [N, O, 0, B, A, S, S, 0]}
     ]
 
     def __init__(self, core, default_tracks, preset):
@@ -288,12 +287,13 @@ class Music:
             index = self._get_preset_index(value)
 
         self.preset = self.PRESETS[index]["name"]
-
         try:
-            call(["sh", os.path.join(os.path.dirname(__file__), 'presets.sh'), self.PRESETS[index]["name"]])
+            curve = ""
+            for i, c in enumerate(self.PRESETS[index]["curve"]):
+                curve += "echo cset numid=%d %d;" % (i + 1, c)
+            call("{ %s } | amixer -D equal -s" % curve, shell=True)
         except Exception as inst:
             logging.error(inst)
-
         return self.PRESETS[index]["buffer"]
 
     def get_presets(self):
@@ -301,8 +301,8 @@ class Music:
         return self.PRESETS[index:len(self.PRESETS)] + self.PRESETS[0:index]
 
     def _get_preset_index(self, name):
-        for i, d in enumerate(self.PRESETS):
-            if (d["name"] == name):
+        for i, p in enumerate(self.PRESETS):
+            if (p["name"] == name):
                 return i
         return 0
 
