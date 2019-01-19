@@ -36,8 +36,22 @@ Configuration
 Optionally defaults can be configured in ``mopidy.conf`` config file (the default default values are shown below)::
 
     [sevensegmentdisplay]
-    default_song = http://janus.shoutca.st:8788/stream
+
+    buttons_enabled = false
+    light_sensor_enabled = true
+    relay_enabled = false
+    ir_receiver_enabled = true
+
+    default_tracks = http://janus.shoutca.st:8788/stream
     
+    default_volume = 20
+    default_preset = flat
+
+    light_sensor_volume = 5
+    light_sensor_preset = nobass
+	light_sensor_time_from = 22
+	light_sensor_time_to = 4
+
     display_min_brightness = 13
     display_max_brightness = 15
     display_off_time_from = 8
