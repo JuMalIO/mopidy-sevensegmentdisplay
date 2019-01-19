@@ -28,6 +28,8 @@ class Extension(ext.Extension):
         schema['default_preset'] = config.String()
         schema['light_sensor_volume'] = config.Integer()
         schema['light_sensor_preset'] = config.String()
+        schema['light_sensor_time_from'] = config.Integer()
+        schema['light_sensor_time_to'] = config.Integer()
         schema['alert_files'] = config.String()
         schema['display_min_brightness'] = config.Integer()
         schema['display_max_brightness'] = config.Integer()

@@ -5,6 +5,7 @@ import RPi.GPIO as GPIO
 import threading
 import time
 import logging
+from datetime import datetime
 from threader import Threader
 
 
@@ -87,7 +88,7 @@ class LightSensor(Threader):
                 else:
                     counter = 0
                     self.value = value
-                    self.callback(True if value == 1 else False)
+                    self.callback(datetime.now(), True if value == 1 else False)
             else:
                 counter = 0
             time.sleep(0.2)

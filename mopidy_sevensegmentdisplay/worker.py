@@ -180,10 +180,13 @@ class Worker(Threader):
     def on_menu_click_right(self):
         self.menu.click_right()
 
-    def on_light_sensor(self, is_dark):
-        if (self.music.is_playing()):
+    def on_light_sensor(self, datetime, is_dark):
+        if (self.music.is_playing() and
+            datetime.hour >= self.config['light_sensor_time_from'] and
+            datetime.hour < self.config['light_sensor_time_to']):
             if (is_dark):
-                self.music.set_volume(self.config['light_sensor_volume'])
+                if (self.music.get_volume() > self.config['light_sensor_volume']):
+                    self.music.set_volume(self.config['light_sensor_volume'])
                 self.music.set_preset(self.config['light_sensor_preset'])
                 self.timer_off.reset()
                 self.timer_off.increase()
