@@ -4,7 +4,7 @@ import logging
 from time import sleep
 from threader import Threader
 from music import Music
-from display import Display
+from display import DisplayWithPowerSaving
 from ir import IrSender, IrReceiver
 from gpio import Gpio
 from timer import TimerOn, TimerOff, TimerAlert
@@ -38,7 +38,10 @@ class Worker(Threader):
     def run(self):
         try:
             self.music = Music(self.core, self.config['default_tracks'], self.config['default_preset'])
-            self.display = Display()
+            self.display = DisplayWithPowerSaving(self.config['display_min_brightness'],
+                                                  self.config['display_max_brightness'],
+                                                  self.config['display_off_time_from'],
+                                                  self.config['display_off_time_to'])
             self.gpio = Gpio(self.config['buttons_enabled'],
                              self.play_stop_music,
                              self.on_menu_click,
@@ -67,11 +70,7 @@ class Worker(Threader):
             self.date = Date([self.timer_on, self.timer_off, self.timer_alert])
             self.menu = Menu(self.display,
                              self.get_menu(),
-                             [self.time, self.date, self.timer_on, self.timer_off, self.timer_alert],
-                             self.config['display_min_brightness'],
-                             self.config['display_max_brightness'],
-                             self.config['display_off_time_from'],
-                             self.config['display_off_time_to'])
+                             [self.time, self.date, self.timer_on, self.timer_off, self.timer_alert])
 
             while True:
                 self.menu.run()
@@ -106,7 +105,7 @@ class Worker(Threader):
                                             {
                                                 "get_buffer": self.timer_alert.get_draw_menu_buffer,
                                                 "click": lambda: (self.timer_alert.add_timer(),
-                                                                  self.display.draw(self.timer_alert.get_draw_menu_buffer())),
+                                                                    self.display.draw(self.timer_alert.get_draw_menu_buffer())),
                                                 "click_left": self.timer_alert.decrease,
                                                 "click_right": self.timer_alert.increase
                                             }

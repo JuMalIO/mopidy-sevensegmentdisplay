@@ -67,6 +67,7 @@ class Alert:
 
     def run(self):
         try:
+            self.display.set_power_saving_off()
             self.display.draw_animation(self.ANIMATION_ALERT["buffer"], self.ANIMATION_ALERT["repeat"], self.ANIMATION_ALERT["sleep"])
 
             if (not self.music.is_playing()):
