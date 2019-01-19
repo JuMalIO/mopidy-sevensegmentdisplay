@@ -49,8 +49,8 @@ Optionally defaults can be configured in ``mopidy.conf`` config file (the defaul
 
     light_sensor_volume = 5
     light_sensor_preset = nobass
-	light_sensor_time_from = 22
-	light_sensor_time_to = 4
+    light_sensor_time_from = 22
+    light_sensor_time_to = 4
 
     display_min_brightness = 13
     display_max_brightness = 15
