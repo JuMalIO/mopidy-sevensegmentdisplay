@@ -79,28 +79,28 @@ class DisplayWithPowerSaving(Display):
         self.display_max_brightness = display_max_brightness
         self.display_off_time_from = display_off_time_from
         self.display_off_time_to = display_off_time_to
-        self.display_enabled = datetime.now()
+        self.display_power_on = datetime.now()
 
-    def is_power_saving_off(self):
+    def is_power_on(self):
         now = datetime.now()
-        if (self._is_power_saving_off(now)):
-            self._set_display_on()
+        if (self._is_power_on(now)):
+            self._set_power_on()
             self._set_brightness(now)
             return True
         else:
-            self._set_display_off()
+            self._set_power_off()
             return False
 
-    def set_power_saving_off(self):
+    def set_power_on(self):
         now = datetime.now()
-        if (not self._is_power_saving_off(now)):
-            self._set_display_on()
-            self.display_enabled = now
+        if (not self._is_power_on(now)):
+            self._set_power_on()
+            self.display_power_on = now
 
-    def _is_power_saving_off(self, now):
-        return (self.display_enabled.day == now.day and
-                self.display_enabled.month == now.month and
-                self.display_enabled.year == now.year) or (not self._is_work_time(now))
+    def _is_power_on(self, now):
+        return (self.display_power_on.day == now.day and
+                self.display_power_on.month == now.month and
+                self.display_power_on.year == now.year) or (not self._is_work_time(now))
 
     def _is_work_time(self, now):
         return now.weekday() < 5 and now.hour > self.display_off_time_from and now.hour < self.display_off_time_to
@@ -120,8 +120,8 @@ class DisplayWithPowerSaving(Display):
                     self.display_min_brightness + (self.display_max_brightness - self.display_min_brightness) / 6 * (20 - hour + 1)))
         super(DisplayWithPowerSaving, self).set_brightness(brightness)
 
-    def _set_display_on(self):
+    def _set_power_on(self):
         super(DisplayWithPowerSaving, self).shutdown(False)
 
-    def _set_display_off(self):
+    def _set_power_off(self):
         super(DisplayWithPowerSaving, self).shutdown()

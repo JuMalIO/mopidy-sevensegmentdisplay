@@ -20,7 +20,7 @@ class Menu:
 
         self._run_modules()
 
-        if (self.display.is_power_saving_off()):
+        if (self.display.is_power_on()):
             self._draw_module()
 
     def _run_modules(self):
@@ -106,7 +106,7 @@ class Menu:
         self.display.draw(buffer)
 
     def _set_sub_menu_visible(self, seconds=5):
-        self.display.set_power_saving_off()
+        self.display.set_power_on()
         self.sub_menu_visible = seconds
         self.module_index = 0
         self.module_visible = 0
