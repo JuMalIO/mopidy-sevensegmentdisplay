@@ -1,12 +1,10 @@
 from __future__ import division
 from __future__ import unicode_literals
 
-from datetime import datetime
-
 
 class Menu:
 
-    def __init__(self, display, menu, modules, display_min_brightness, display_max_brightness, display_off_time_from, display_off_time_to):
+    def __init__(self, display, menu, modules):
         self.display = display
         self.menu = menu
         self.modules = modules
@@ -15,11 +13,6 @@ class Menu:
         self.sub_menu = menu
         self.sub_menu_index = 0
         self.sub_menu_visible = 0
-        self.display_power_saver = DisplayPowerSaver(display,
-                                                     display_min_brightness,
-                                                     display_max_brightness,
-                                                     display_off_time_from,
-                                                     display_off_time_to)
 
     def run(self):
         if (self._is_sub_menu_visible()):
@@ -27,7 +20,7 @@ class Menu:
 
         self._run_modules()
 
-        if (self.display_power_saver.is_display_enabled()):
+        if (self.display.is_power_on()):
             self._draw_module()
 
     def _run_modules(self):
@@ -113,67 +106,7 @@ class Menu:
         self.display.draw(buffer)
 
     def _set_sub_menu_visible(self, seconds=5):
-        self.display_power_saver.set_display_enabled()
+        self.display.set_power_on()
         self.sub_menu_visible = seconds
         self.module_index = 0
         self.module_visible = 0
-
-
-class DisplayPowerSaver:
-
-    def __init__(self, display, display_min_brightness=2, display_max_brightness=8, display_off_time_from=8, display_off_time_to=17):
-        self.display = display
-        self.display_min_brightness = display_min_brightness
-        self.display_max_brightness = display_max_brightness
-        self.display_off_time_from = display_off_time_from
-        self.display_off_time_to = display_off_time_to
-        self.now = datetime.now()
-        self.now_weekday = self.now.weekday()
-        self.enable = self.now
-
-    def is_display_enabled(self):
-        self.now = datetime.now()
-        self.now_weekday = self.now.weekday()
-
-        if (self._is_display_enabled()):
-            self._set_display_on()
-            self._set_brightness()
-            return True
-        else:
-            self._set_display_off()
-            return False
-
-    def set_display_enabled(self):
-        if (self._is_work_time()):
-            self._set_display_on()
-            self.enable = self.now
-
-    def _is_display_enabled(self):
-        day = self.now.day
-        month = self.now.month
-        year = self.now.year
-        return (self.enable.day == day and self.enable.month == month and self.enable.year == year) or not (self._is_work_time())
-
-    def _is_work_time(self):
-        hour = self.now.hour
-        return self.now_weekday < 5 and hour > self.display_off_time_from and hour < self.display_off_time_to
-
-    # hour       - 9 10 11 12 13 14 15 16 17 18 19 20 -
-    # brightness 2 3  4  5  6  7  8  8  7  6  5  4  3 2
-    def _set_brightness(self):
-        hour = self.now.hour
-        brightness = self.display_min_brightness
-        if (hour >= 9 and hour <= 20):
-            if (hour < 15):
-                brightness = int(round(
-                    self.display_min_brightness + (self.display_max_brightness - self.display_min_brightness) / 6 * (hour - 9 + 1)))
-            else:
-                brightness = int(round(
-                    self.display_min_brightness + (self.display_max_brightness - self.display_min_brightness) / 6 * (20 - hour + 1)))
-        self.display.set_brightness(brightness)
-
-    def _set_display_on(self):
-        self.display.shutdown(False)
-
-    def _set_display_off(self):
-        self.display.shutdown()
