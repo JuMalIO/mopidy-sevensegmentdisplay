@@ -5,7 +5,7 @@ import logging
 from datetime import datetime
 
 
-class Display:
+class Display(object):
 
     def __init__(self):
         self.brightness = None
@@ -74,7 +74,7 @@ class Display:
 class DisplayWithPowerSaving(Display):
 
     def __init__(self, display_min_brightness, display_max_brightness, display_off_time_from, display_off_time_to):
-        super(Display, self).__init__()
+        super(DisplayWithPowerSaving, self).__init__()
         self.display_min_brightness = display_min_brightness
         self.display_max_brightness = display_max_brightness
         self.display_off_time_from = display_off_time_from
