@@ -15,7 +15,7 @@ class Animation(Threader):
         for j in range(self.repeat):
             for i in range(len(self.buffer)):
                 if (self.stopped()):
-                        break
+                    break
                 self.display.set_buffer(self.buffer[i])
                 self.display.flush()
                 time.sleep(self.sleep)

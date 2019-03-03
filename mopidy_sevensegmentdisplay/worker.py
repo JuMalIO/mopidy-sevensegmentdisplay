@@ -125,7 +125,7 @@ class Worker(Threader):
                 {
                     "get_buffer": self.timer_alert.get_draw_menu_buffer,
                     "click": lambda: (self.timer_alert.add_timer(),
-                                        self.display.draw(self.timer_alert.get_draw_menu_buffer())),
+                                      self.display.draw(self.timer_alert.get_draw_menu_buffer())),
                     "click_left": self.timer_alert.decrease,
                     "click_right": self.timer_alert.increase
                 }
