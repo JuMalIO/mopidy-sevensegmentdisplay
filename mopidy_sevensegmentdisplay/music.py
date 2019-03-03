@@ -276,6 +276,18 @@ class Music:
         if (self.is_playing()):
             self.core.playback.stop()
 
+    def reboot(self):
+        try:
+            call("sudo shutdown -r now", shell=True)
+        except Exception as inst:
+            logging.error(inst)
+
+    def halt(self):
+        try:
+            call("sudo shutdown -h now", shell=True)
+        except Exception as inst:
+            logging.error(inst)
+
     def mute(self):
         self.core.playback.mute = not self.is_mute()  # self.core.mixer.set_mute(not self.is_mute())
 

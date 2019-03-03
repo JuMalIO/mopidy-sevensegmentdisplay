@@ -5,6 +5,7 @@ import RPi.GPIO as GPIO
 import threading
 import time
 import logging
+from max7219 import Symbols
 from datetime import datetime
 from threader import Threader
 
@@ -37,10 +38,10 @@ class Gpio:
                                   callback=lambda gpio: on_right() if not self.lock.locked() else None)
 
         self.LIGHT_SENSOR_PIN = 27
-        self.lightSensor = LightSensor(self.LIGHT_SENSOR_PIN, on_light)
+        self.light_sensor = LightSensor(self.LIGHT_SENSOR_PIN, on_light)
         if (light_sensor_enabled):
             GPIO.setup(self.LIGHT_SENSOR_PIN, GPIO.IN)
-            self.lightSensor.start()
+            self.light_sensor.start()
 
         if (relay_enabled):
             self.is_relay_on = False
@@ -48,6 +49,9 @@ class Gpio:
             GPIO.setup(self.RELAY_PIN, GPIO.OUT, initial=GPIO.HIGH)
 
         self.relay_enabled = relay_enabled
+
+    def get_draw_sleep_animation(self):
+        return self.light_sensor.ANIMATION_SLEEP
 
     def switch_relay(self, value):
         if (self.relay_enabled and self.lock.acquire()):
@@ -64,11 +68,51 @@ class Gpio:
         return False
 
     def cleanup(self):
-        self.lightSensor.stop()
+        self.light_sensor.stop()
         GPIO.cleanup()
 
 
 class LightSensor(Threader):
+    S = Symbols.S
+    L = Symbols.L
+    E = Symbols.E
+    P = Symbols.P
+
+    ANIMATION_SLEEP = {
+        "length": 2,
+        "repeat": 1,
+        "sleep": 0.05,
+        "buffer": [
+            [0, 0, 0, 0, 0, 0, 0, S],
+            [0, 0, 0, 0, 0, 0, S, 0],
+            [0, 0, 0, 0, 0, S, 0, 0],
+            [0, 0, 0, 0, S, 0, 0, 0],
+            [0, 0, 0, S, 0, 0, 0, 0],
+            [0, 0, S, 0, 0, 0, 0, L],
+            [0, 0, S, 0, 0, 0, L, 0],
+            [0, 0, S, 0, 0, L, 0, 0],
+            [0, 0, S, 0, L, 0, 0, 0],
+            [0, 0, S, L, 0, 0, 0, E],
+            [0, 0, S, L, 0, 0, E, 0],
+            [0, 0, S, L, 0, E, 0, 0],
+            [0, 0, S, L, E, 0, 0, E],
+            [0, 0, S, L, E, 0, E, 0],
+            [0, 0, S, L, E, E, 0, 0],
+            [0, 0, S, L, E, E, 0, P],
+            [0, 0, S, L, E, E, P, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, S, L, E, E, P, 0],
+            [0, 0, S, L, E, E, P, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, S, L, E, E, P, 0],
+            [0, 0, S, L, E, E, P, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, S, L, E, E, P, 0]
+        ]
+    }
 
     def __init__(self, gpio, callback):
         super(LightSensor, self).__init__()

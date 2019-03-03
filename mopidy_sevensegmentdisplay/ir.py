@@ -73,6 +73,9 @@ class IrSender:
     def __init__(self, on_power):
         self.on_power = on_power
 
+    def stop(self):
+        self.power(False)
+
     def power(self, value=None):
         if (value is None or value != self.is_power_on):
             self.on_power(value)

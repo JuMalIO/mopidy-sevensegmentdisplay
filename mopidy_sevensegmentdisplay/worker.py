@@ -37,6 +37,7 @@ class Worker(Threader):
 
     def run(self):
         try:
+            self._init_menu()
             self.music = Music(self.core, self.config['default_tracks'], self.config['default_preset'])
             self.display = DisplayWithPowerSaving(self.config['display_min_brightness'],
                                                   self.config['display_max_brightness'],
@@ -69,7 +70,7 @@ class Worker(Threader):
             self.time = Time()
             self.date = Date([self.timer_on, self.timer_off, self.timer_alert])
             self.menu = Menu(self.display,
-                             self.get_menu(),
+                             self.MENU,
                              [self.time, self.date, self.timer_on, self.timer_off, self.timer_alert])
 
             while True:
@@ -83,106 +84,137 @@ class Worker(Threader):
         except Exception as inst:
             logging.error(inst)
         finally:
+            self.ir_sender.stop()
             self.ir_receiver.stop()
             self.display.shutdown()
             self.gpio.cleanup()
 
-    def get_menu(self):
-        return [
-            {
-                "click_left": self.decrease_timer,
-                "click_right": self.increase_timer,
-                "get_sub_menu": lambda: [
-                    {
-                        "get_buffer": lambda: [0, Symbols.T1, Symbols.T2, Symbols.I, Symbols.M1, Symbols.M2, Symbols.E, Symbols.R],
-                        "get_sub_menu": lambda: [
-                            {
-                                "get_buffer": lambda: [0, Symbols.A, Symbols.L, Symbols.E, Symbols.R, Symbols.T1, Symbols.T2, 0],
-                                "get_sub_menu": lambda: [
-                                    {
-                                        "get_buffer": lambda: [0, 0, 0, Symbols.A, Symbols.D, Symbols.D, 0, 0],
-                                        "get_sub_menu": lambda: [
-                                            {
-                                                "get_buffer": self.timer_alert.get_draw_menu_buffer,
-                                                "click": lambda: (self.timer_alert.add_timer(),
-                                                                  self.display.draw(self.timer_alert.get_draw_menu_buffer())),
-                                                "click_left": self.timer_alert.decrease,
-                                                "click_right": self.timer_alert.increase
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "get_buffer": lambda: [0, 0, Symbols.C, Symbols.L, Symbols.E, Symbols.A, Symbols.R, 0],
-                                        "click": self.timer_alert.reset,
-                                        "click_animation": True
-                                    },
-                                ]
-                            },
-                            {
-                                "get_buffer": lambda: [0, 0, 0, Symbols.O, Symbols.F, Symbols.F, 0, 0],
-                                "get_sub_menu": lambda: [
-                                    {
-                                        "get_buffer": self.timer_off.get_draw_buffer,
-                                        "click_left": self.timer_off.decrease,
-                                        "click_right": self.timer_off.increase
-                                    }
-                                ]
-                            },
-                            {
-                                "get_buffer": lambda: [0, 0, 0, Symbols.O, Symbols.N, 0, 0, 0],
-                                "get_sub_menu": lambda: [
-                                    {
-                                        "get_buffer": self.timer_on.get_draw_buffer,
-                                        "click_left": self.timer_on.decrease,
-                                        "click_right": self.timer_on.increase
-                                    }
-                                ]
-                            }
-                        ]
-                    },
-                    {
-                        "get_buffer": lambda: [0, Symbols.P, Symbols.L, Symbols.A, Symbols.Y, 0, Symbols.NUMBER[1], 0],
-                        "click": lambda: self.play_music(self.music.get_default_tracks())
-                    },
-                    {
-                        "get_buffer": lambda: [0, Symbols.U, Symbols.O, Symbols.L, Symbols.U, Symbols.M1, Symbols.M2, Symbols.E],
-                        "get_sub_menu": lambda: [
-                            {
-                                "get_buffer": self.music.get_draw_volume,
-                                "click_left": self.music.decrease_volume,
-                                "click_right": self.music.increase_volume
-                            }
-                        ]
-                    },
-                    {
-                        "get_buffer": lambda: [0, Symbols.S, Symbols.T1, Symbols.T2, Symbols.Y, Symbols.L, Symbols.E, 0],
-                        "get_sub_menu": lambda: list(map(lambda x: {
-                            "get_buffer": lambda: x["buffer"],
-                            "click": lambda: self.music.set_preset(x["name"]),
-                            "click_animation": True
-                        }, self.music.get_presets()))
-                    },
-                    {
-                        "get_buffer": lambda: [0, 0, Symbols.D, Symbols.E, Symbols.M1, Symbols.M2, Symbols.O, 0],
-                        "click": lambda: self.menu.draw_sub_menu_animation(self.music.get_draw_equalizer_animation())
-                    }
-                ]
-            }
-        ]
+    def _init_menu(self):
+        self.MENU = {
+            "get_sub_menu": lambda: [
+                {
+                    "get_sub_menu": lambda: [
+                        self.MENU_TIMER,
+                        self.MENU_PLAY_1,
+                        self.MENU_VOLUME,
+                        self.MENU_STYLE,
+                        self.MENU_DEMO,
+                        self.MENU_SYSTEM
+                    ]
+                }
+            ]
+        }
+        self.MENU_TIMER = {
+            "get_buffer": lambda: [0, Symbols.T1, Symbols.T2, Symbols.I, Symbols.M1, Symbols.M2, Symbols.E, Symbols.R],
+            "get_sub_menu": lambda: [
+                self.MENU_ALERT,
+                self.MENU_TIMER_OFF,
+                self.MENU_TIMER_ON
+            ]
+        }
+        self.MENU_ALERT = {
+            "get_buffer": lambda: [0, Symbols.A, Symbols.L, Symbols.E, Symbols.R, Symbols.T1, Symbols.T2, 0],
+            "get_sub_menu": lambda: [
+                self.MENU_ALERT_ADD,
+                self.MENU_ALERT_CLEAR,
+            ]
+        }
+        self.MENU_ALERT_ADD = {
+            "get_buffer": lambda: [0, 0, 0, Symbols.A, Symbols.D, Symbols.D, 0, 0],
+            "get_sub_menu": lambda: [
+                {
+                    "get_buffer": self.timer_alert.get_draw_menu_buffer,
+                    "click": lambda: (self.timer_alert.add_timer(),
+                                        self.display.draw(self.timer_alert.get_draw_menu_buffer())),
+                    "click_left": self.timer_alert.decrease,
+                    "click_right": self.timer_alert.increase
+                }
+            ]
+        }
+        self.MENU_ALERT_CLEAR = {
+            "get_buffer": lambda: [0, 0, Symbols.C, Symbols.L, Symbols.E, Symbols.A, Symbols.R, 0],
+            "click": lambda: self.timer_alert.reset(),
+            "click_animation": True
+        }
+        self.MENU_TIMER_OFF = {
+            "group": "timer_off",
+            "get_buffer": lambda: [0, 0, 0, Symbols.O, Symbols.F, Symbols.F, 0, 0],
+            "get_sub_menu": lambda: [
+                {
+                    "get_buffer": self.timer_off.get_draw_buffer,
+                    "click_left": self.timer_off.decrease,
+                    "click_right": self.timer_off.increase
+                }
+            ]
+        }
+        self.MENU_TIMER_ON = {
+            "group": "timer_on",
+            "get_buffer": lambda: [0, 0, 0, Symbols.O, Symbols.N, 0, 0, 0],
+            "get_sub_menu": lambda: [
+                {
+                    "get_buffer": self.timer_on.get_draw_buffer,
+                    "click_left": self.timer_on.decrease,
+                    "click_right": self.timer_on.increase
+                }
+            ]
+        }
+        self.MENU_PLAY_1 = {
+            "get_buffer": lambda: [0, Symbols.P, Symbols.L, Symbols.A, Symbols.Y, 0, Symbols.NUMBER[1], 0],
+            "click": lambda: self.play_music(self.music.get_default_tracks())
+        }
+        self.MENU_VOLUME = {
+            "group": "volume",
+            "get_buffer": lambda: [0, Symbols.U, Symbols.O, Symbols.L, Symbols.U, Symbols.M1, Symbols.M2, Symbols.E],
+            "get_sub_menu": lambda: [
+                {
+                    "get_buffer": self.music.get_draw_volume,
+                    "click_left": self.music.decrease_volume,
+                    "click_right": self.music.increase_volume
+                }
+            ]
+        }
+        self.MENU_STYLE = {
+            "group": "style",
+            "get_buffer": lambda: [0, Symbols.S, Symbols.T1, Symbols.T2, Symbols.Y, Symbols.L, Symbols.E, 0],
+            "get_sub_menu": lambda: list(map(lambda x: {
+                "get_buffer": lambda: x["buffer"],
+                "on_draw": lambda: self.music.set_preset(x["name"])
+            }, self.music.get_presets()))
+        }
+        self.MENU_DEMO = {
+            "get_buffer": lambda: [0, 0, Symbols.D, Symbols.E, Symbols.M1, Symbols.M2, Symbols.O, 0],
+            "click": lambda: self.menu.draw_sub_menu_animation(self.music.get_draw_equalizer_animation())
+        }
+        self.MENU_SYSTEM = {
+            "get_buffer": lambda: [Symbols.S, Symbols.Y, Symbols.S, Symbols.T1, Symbols.T2, Symbols.E, Symbols.M1, Symbols.M2],
+            "get_sub_menu": lambda: [
+                self.MENU_REBOOT,
+                self.MENU_HALT
+            ]
+        }
+        self.MENU_REBOOT = {
+            "get_buffer": lambda: [0, Symbols.R, Symbols.E, Symbols.B, Symbols.O, Symbols.O, Symbols.T1, Symbols.T2],
+            "click": lambda: self.music.reboot(),
+            "click_animation": True
+        }
+        self.MENU_HALT = {
+            "get_buffer": lambda: [0, 0, Symbols.H, Symbols.A, Symbols.L, Symbols.T1, Symbols.T2, 0],
+            "click": lambda: self.music.halt(),
+            "click_animation": True
+        }
 
     def on_menu_click(self):
         self.menu.click()
 
     def on_menu_click_left(self):
-        self.menu.click_left()
+        self.menu.click_left() if self.menu.is_sub_menu_visible() else self.decrease_timer()
 
     def on_menu_click_right(self):
-        self.menu.click_right()
+        self.menu.click_right() if self.menu.is_sub_menu_visible() else self.increase_timer()
 
-    def on_light_sensor(self, datetime, is_dark):
+    def on_light_sensor(self, now, is_dark):
         if (self.music.is_playing() and
-            datetime.hour >= self.config['light_sensor_time_from'] and
-            datetime.hour < self.config['light_sensor_time_to']):
+            (now.hour >= self.config['light_sensor_time_from'] or now.hour < self.config['light_sensor_time_to'])):
             if (is_dark):
                 if (self.music.get_volume() > self.config['light_sensor_volume']):
                     self.music.set_volume(self.config['light_sensor_volume'])
@@ -192,25 +224,25 @@ class Worker(Threader):
                 self.timer_off.increase()
                 self.timer_off.increase()
                 self.timer_off.increase()
-                self.menu.draw_sub_menu(self.timer_off.get_draw_buffer())
+                self.menu.draw_sub_menu_animation(self.gpio.get_draw_sleep_animation())
             else:
                 self.timer_off.reset()
 
     def increase_timer(self):
         if (self.music.is_playing()):
             self.timer_off.increase()
-            self.menu.draw_sub_menu(self.timer_off.get_draw_buffer())
+            self.menu.draw_sub_menu(self.MENU_TIMER_OFF)
         else:
             self.timer_on.increase()
-            self.menu.draw_sub_menu(self.timer_on.get_draw_buffer())
+            self.menu.draw_sub_menu(self.MENU_TIMER_ON)
 
     def decrease_timer(self):
         if (self.music.is_playing()):
             self.timer_off.decrease()
-            self.menu.draw_sub_menu(self.timer_off.get_draw_buffer())
+            self.menu.draw_sub_menu(self.MENU_TIMER_OFF)
         else:
             self.timer_on.decrease()
-            self.menu.draw_sub_menu(self.timer_on.get_draw_buffer())
+            self.menu.draw_sub_menu(self.MENU_TIMER_ON)
 
     def get_volume(self):
         return self.music.get_volume()
@@ -242,7 +274,11 @@ class Worker(Threader):
         self.on_stopped()
 
     def change_preset(self, value):
-        self.menu.draw_sub_menu(self.music.set_preset(value))
+        self.music.set_preset(value)
+        if (value < 0):
+            self.menu.click_left(self.MENU_STYLE)
+        else:
+            self.menu.click_right(self.MENU_STYLE)
 
     def on_started(self):
         self.menu.draw_sub_menu_animation(self.music.get_draw_start_animation())
@@ -272,7 +308,7 @@ class Worker(Threader):
 
     def on_volume_changed(self, volume=None):
         if (self.menu is not None and self.music is not None and self.music.is_volume_changed(volume)):
-            self.menu.draw_sub_menu(self.music.get_draw_volume(volume))
+            self.menu.draw_sub_menu(self.MENU_VOLUME)
 
     def on_playback_state_changed(self, old_state, new_state):
         if (old_state != new_state):
