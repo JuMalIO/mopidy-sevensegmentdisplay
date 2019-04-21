@@ -14,14 +14,14 @@ class Menu:
         self._sub_menu_group = None
         self._sub_menu_index = 0
         self._sub_menu_visible = 0
-        self._set_sub_menu(self._menu)
+        self.reset_sub_menu()
 
     def run(self):
         if (self.is_sub_menu_visible()):
             self._sub_menu_visible -= 1
             if (not self.is_sub_menu_visible()):
                 self._display.draw_scroll_up_animation(self._modules[self._module_index].get_draw_buffer())
-                self._set_sub_menu(self._menu)
+                self.reset_sub_menu()
             return
 
         self._run_modules()
@@ -65,9 +65,12 @@ class Menu:
         if ("click_animation" in self._sub_menu[self._sub_menu_index]):
             self._get_buffer_and_draw(self._display.draw_blink_animation)
 
-    def close_sub_menu(self):
+    def _close_sub_menu(self):
         if (self._sub_menu_visible > 1):
             self._sub_menu_visible = 1
+
+    def reset_sub_menu(self):
+        self._set_sub_menu(self._menu)
 
     def is_sub_menu_visible(self, seconds=0):
         if (self._sub_menu_visible <= seconds):
@@ -86,7 +89,7 @@ class Menu:
             self._sub_menu[self._sub_menu_index]["click"]()
             self._click_animation()
         else:
-            self.close_sub_menu()
+            self._close_sub_menu()
 
     def click_left(self, item=None):
         self._set_sub_menu_visible()
