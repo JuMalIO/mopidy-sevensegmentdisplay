@@ -67,10 +67,27 @@ Make sure that the `HTTP extension <http://docs.mopidy.com/en/latest/ext/http/>`
 Changelog
 =========
 
+v0.3.0
+----------------------------------------
+
+- Timers added to webpage
+- Possibility to disable features in config
+- Music presets moved from sh to python
+- Menu animations changed
+- Light sensor added
+- Reboot/halt menu added
+- Refactoring
+- Minor adjustments
+
 v0.2.1
 ----------------------------------------
 
 - Refactoring release.
+
+v0.2.0
+----------------------------------------
+
+- Initial release.
 
 v0.1.0 (UNRELEASED)
 ----------------------------------------
