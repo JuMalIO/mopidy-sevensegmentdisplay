@@ -183,7 +183,8 @@ class Worker(Threader):
         }
         self.MENU_DEMO = {
             "get_buffer": lambda: [0, 0, Symbols.D, Symbols.E, Symbols.M1, Symbols.M2, Symbols.O, 0],
-            "click": lambda: self.menu.draw_sub_menu_animation(self.music.get_draw_equalizer_animation())
+            "click": lambda: (self.menu.draw_sub_menu_animation(self.music.get_draw_equalizer_animation()),
+                              self.menu.reset_sub_menu())
         }
         self.MENU_SYSTEM = {
             "get_buffer": lambda: [Symbols.S, Symbols.Y, Symbols.S, Symbols.T1, Symbols.T2, Symbols.E, Symbols.M1, Symbols.M2],

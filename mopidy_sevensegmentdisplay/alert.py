@@ -60,30 +60,30 @@ class Alert:
     }
 
     def __init__(self, music, display, ir_sender, files):
-        self.music = music
-        self.display = display
-        self.ir_sender = ir_sender
-        self.files = json.loads(files)
+        self._music = music
+        self._display = display
+        self._ir_sender = ir_sender
+        self._files = json.loads(files)
 
     def run(self):
         try:
-            self.display.set_power_on()
-            self.display.draw_animation(self.ANIMATION_ALERT["buffer"], self.ANIMATION_ALERT["repeat"], self.ANIMATION_ALERT["sleep"])
+            self._display.set_power_on()
+            self._display.draw_animation(self.ANIMATION_ALERT["buffer"], self.ANIMATION_ALERT["repeat"], self.ANIMATION_ALERT["sleep"])
 
-            if (not self.music.is_playing()):
-                self.ir_sender.power(True)
+            if (not self._music.is_playing()):
+                self._ir_sender.power(True)
                 time.sleep(10)
 
-            file = random.choice(filter(lambda x: x["enabled"], self.files))
+            file = random.choice(filter(lambda x: x["enabled"], self._files))
 
-            self.ir_sender.bass(file["bass"])
-            self.ir_sender.volume(file["volume"])
+            self._ir_sender.bass(file["bass"])
+            self._ir_sender.volume(file["volume"])
             self._play_file(file["name"])
-            self.ir_sender.volume(- file["volume"])
+            self._ir_sender.volume(- file["volume"])
 
-            if (not self.music.is_playing()):
+            if (not self._music.is_playing()):
                 time.sleep(5)
-                self.ir_sender.power(False)
+                self._ir_sender.power(False)
         except Exception as inst:
             logging.error(inst)
 

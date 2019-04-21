@@ -9,7 +9,7 @@ class Time:
     VISIBLE_FOR_SECONDS = 5
 
     def __init__(self):
-        self.blink = True
+        self._blink = True
 
     def run(self):
         pass
@@ -23,10 +23,10 @@ class Time:
         minute = now.minute
         second = now.second
 
-        self.blink = not self.blink
+        self._blink = not self._blink
 
         separator = Symbols.NONE
-        if (self.blink):
+        if (self._blink):
             separator = Symbols.MIDDLE
 
         time = [
@@ -47,7 +47,7 @@ class Date:
     VISIBLE_FOR_SECONDS = 2
 
     def __init__(self, modules):
-        self.modules = modules
+        self._modules = modules
 
     def run(self):
         pass
@@ -56,7 +56,7 @@ class Date:
         return seconds < self.VISIBLE_FOR_SECONDS and not self._is_any_module_enabled()
 
     def _is_any_module_enabled(self):
-        for module in self.modules:
+        for module in self._modules:
             if (module.is_set()):
                 return True
         return False

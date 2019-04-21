@@ -9,62 +9,65 @@ class Timer(object):
     VISIBLE_FOR_SECONDS = 2
 
     def __init__(self, callback, step, remove_min=True):
-        self.callback = callback
-        self.step = step
-        self.half_step = int(step / 2)
-        self.remove_min = remove_min
-        self.now = self._datetime_now()
-        self.timer = None
+        self._callback = callback
+        self._step = step
+        self._half_step = int(step / 2)
+        self._remove_min = remove_min
+        self._now = self._datetime_now()
+        self._timer = None
 
     def run(self):
-        self.now = self._datetime_now()
+        self._now = self._datetime_now()
         if (self.is_set()):
             if (self._is_time()):
-                self.callback()
+                self._callback()
                 self.reset()
 
     def is_set(self):
-        return self.timer is not None
+        return self._timer is not None
 
     def _datetime_now(self):
         return datetime.now().replace(second=0, microsecond=0)
 
     def _is_time(self):
-        return self.now >= self.timer
+        return self._now >= self._timer
 
     def reset(self):
-        self.timer = None
+        self._timer = None
+
+    def get(self):
+        return self._timer
 
     def set(self, hour=None, minute=None):
         if (hour is not None or minute is not None):
-            new_timer = self.now
+            new_timer = self._now
             if (hour is not None):
                 new_timer = new_timer.replace(hour=int(hour))
             if (minute is not None):
                 new_timer = new_timer.replace(minute=int(minute))
-            if (new_timer <= self.now):
+            if (new_timer <= self._now):
                 new_timer += timedelta(days=1)
-            self.timer = new_timer
+            self._timer = new_timer
 
     def increase(self):
         if (not self.is_set()):
-            time_left = (self.step - self.now.minute % self.step) if self.remove_min else 0
-            min = time_left + (self.step if time_left < self.half_step else 0)
-            self.timer = self.now + timedelta(minutes=min)
+            time_left = (self._step - self._now.minute % self._step) if self._remove_min else 0
+            min = time_left + (self._step if time_left < self._half_step else 0)
+            self._timer = self._now + timedelta(minutes=min)
         else:
-            new_time = self.timer + timedelta(minutes=self.step)
-            diff = new_time - self.now
+            new_time = self._timer + timedelta(minutes=self._step)
+            diff = new_time - self._now
             if (diff.days < 1):
-                self.timer = new_time
+                self._timer = new_time
 
     def decrease(self):
         if (self.is_set()):
-            timer_minus_step = self.timer - timedelta(minutes=self.step)
-            now_plus_half_step = self.now + timedelta(minutes=self.half_step)
+            timer_minus_step = self._timer - timedelta(minutes=self._step)
+            now_plus_half_step = self._now + timedelta(minutes=self._half_step)
             if (now_plus_half_step < timer_minus_step):
-                self.timer = timer_minus_step
+                self._timer = timer_minus_step
             else:
-                self.timer = None
+                self._timer = None
 
     def is_visible(self, seconds):
         return seconds < self.VISIBLE_FOR_SECONDS and self.is_set()
@@ -77,20 +80,10 @@ class TimerOff(Timer):
         super(TimerOff, self).__init__(callback, self.TIMER_STEP)
 
     def get_draw_buffer(self):
-        if (self.timer is None):
-            return [
-                Symbols.O,
-                Symbols.F,
-                Symbols.F,
-                Symbols.NONE,
-                Symbols.MIDDLE,
-                Symbols.MIDDLE,
-                Symbols.MIDDLE,
-                Symbols.MIDDLE
-            ]
-        else:
-            hour = self.timer.hour
-            minute = self.timer.minute
+        if (self.is_set()):
+            timer = self.get()
+            hour = timer.hour
+            minute = timer.minute
             return [
                 Symbols.O,
                 Symbols.F,
@@ -100,6 +93,17 @@ class TimerOff(Timer):
                 Symbols.NUMBER[hour % 10] + Symbols.DOT,
                 Symbols.NUMBER[int(minute / 10)],
                 Symbols.NUMBER[minute % 10]
+            ]
+        else:
+            return [
+                Symbols.O,
+                Symbols.F,
+                Symbols.F,
+                Symbols.NONE,
+                Symbols.MIDDLE,
+                Symbols.MIDDLE,
+                Symbols.MIDDLE,
+                Symbols.MIDDLE
             ]
 
 
@@ -110,20 +114,10 @@ class TimerOn(Timer):
         super(TimerOn, self).__init__(callback, self.TIMER_STEP)
 
     def get_draw_buffer(self):
-        if (self.timer is None):
-            return [
-                Symbols.O,
-                Symbols.N,
-                Symbols.NONE,
-                Symbols.NONE,
-                Symbols.MIDDLE,
-                Symbols.MIDDLE,
-                Symbols.MIDDLE,
-                Symbols.MIDDLE
-            ]
-        else:
-            hour = self.timer.hour
-            minute = self.timer.minute
+        if (self.is_set()):
+            timer = self.get()
+            hour = timer.hour
+            minute = timer.minute
             return [
                 Symbols.O,
                 Symbols.N,
@@ -133,6 +127,17 @@ class TimerOn(Timer):
                 Symbols.NUMBER[hour % 10] + Symbols.DOT,
                 Symbols.NUMBER[int(minute / 10)],
                 Symbols.NUMBER[minute % 10]
+            ]
+        else:
+            return [
+                Symbols.O,
+                Symbols.N,
+                Symbols.NONE,
+                Symbols.NONE,
+                Symbols.MIDDLE,
+                Symbols.MIDDLE,
+                Symbols.MIDDLE,
+                Symbols.MIDDLE
             ]
 
 
@@ -140,85 +145,87 @@ class TimerAlert:
     TIMER_STEP = 10
 
     def __init__(self, callback):
-        self.callback = callback
-        self.timer_index = 0
-        self.timers = []
+        self._callback = callback
+        self._timer_index = 0
+        self._timers = []
 
     def get_draw_buffer(self):
-        if (len(self.timers) <= self.timer_index or self.timers[self.timer_index].timer is None):
+        if (len(self._timers) > self._timer_index and self._timers[self._timer_index].is_set()):
+            timer = self._timers[self._timer_index].get()
+            hour = timer.hour
+            minute = timer.minute
             return [
                 Symbols.T1,
                 Symbols.T2,
-                Symbols.NUMBER[self.timer_index],
-                Symbols.NONE,
-                Symbols.MIDDLE,
-                Symbols.MIDDLE,
-                Symbols.MIDDLE,
-                Symbols.MIDDLE
-            ]
-        else:
-            hour = self.timers[self.timer_index].timer.hour
-            minute = self.timers[self.timer_index].timer.minute
-            return [
-                Symbols.T1,
-                Symbols.T2,
-                Symbols.NUMBER[self.timer_index],
+                Symbols.NUMBER[self._timer_index],
                 Symbols.NONE,
                 Symbols.NUMBER[int(hour / 10)],
                 Symbols.NUMBER[hour % 10] + Symbols.DOT,
                 Symbols.NUMBER[int(minute / 10)],
                 Symbols.NUMBER[minute % 10]
             ]
+        else:
+            return [
+                Symbols.T1,
+                Symbols.T2,
+                Symbols.NUMBER[self._timer_index],
+                Symbols.NONE,
+                Symbols.MIDDLE,
+                Symbols.MIDDLE,
+                Symbols.MIDDLE,
+                Symbols.MIDDLE
+            ]
 
     def get_draw_menu_buffer(self):
         if (self._have_timers()):
-            self.timer_index = len(self.timers) - 1
+            self._timer_index = len(self._timers) - 1
         else:
-            self.timer_index = 0
+            self._timer_index = 0
         return self.get_draw_buffer()
 
     def run(self):
-        for i in range(len(self.timers) - 1, -1, -1):
-            if (not self.timers[i].is_set()):
-                del self.timers[i]
+        for i in range(len(self._timers) - 1, -1, -1):
+            if (not self._timers[i].is_set()):
+                del self._timers[i]
             else:
-                self.timers[i].run()
+                self._timers[i].run()
 
     def add_timer(self, hour=None, minute=None):
-        if (len(self.timers) < 10):
-            new_timer = Timer(self.callback, self.TIMER_STEP, False)
+        if (len(self._timers) < 10):
+            new_timer = Timer(self._callback, self.TIMER_STEP, False)
             if (hour is not None or minute is not None):
                 new_timer.set(hour, minute)
             else:
                 if (self._have_timers()):
-                    new_timer.timer = self.timers[len(self.timers) - 1].timer
+                    timer = self._timers[len(self._timers) - 1].get()
+                    new_timer.set(timer.hour, timer.minute)
                 for i in range(6):
                     new_timer.increase()
-            self.timers.append(new_timer)
+            self._timers.append(new_timer)
 
     def _have_timers(self):
-        return len(self.timers) > 0
+        return len(self._timers) > 0
 
     def is_set(self):
-        for timer in self.timers:
+        for timer in self._timers:
             if (timer.is_set()):
                 return True
         return False
 
     def reset(self):
-        self.timer_index = 0
-        self.timers = []
+        self._timer_index = 0
+        self._timers = []
 
     def increase(self):
         if (not self._have_timers()):
             self.add_timer()
         else:
-            self.timers[len(self.timers) - 1].increase()
+            self._timers[len(self._timers) - 1].increase()
 
     def decrease(self):
         if (self._have_timers()):
-            self.timers[len(self.timers) - 1].decrease()
+            self._timers[len(self._timers) - 1].decrease()
 
     def is_visible(self, seconds):
-        self.timer_index = seconds // Timer.VISIBLE_FOR_SECONDS
-        return seconds < Timer.VISIBLE_FOR_SECONDS * len(self.timers)
+        self._timer_index = seconds // Timer.VISIBLE_FOR_SECONDS
+        return seconds < Timer.VISIBLE_FOR_SECONDS * len(self._timers)
