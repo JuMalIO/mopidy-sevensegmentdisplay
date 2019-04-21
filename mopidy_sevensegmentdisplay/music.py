@@ -218,14 +218,16 @@ class Music:
         {"name": "soft_rock", "curve": [66, 66, 69, 72, 78, 80, 77, 72, 68, 58], "buffer": [S, O, F, T2, R, O, C, H]},
         {"name": "soft", "curve": [65, 70, 73, 75, 73, 66, 59, 57, 55, 53], "buffer": [0, S, O, F, T1, T2, 0, 0]},
         {"name": "techno", "curve": [60, 63, 71, 80, 79, 71, 60, 57, 57, 58], "buffer": [T1, T2, E, C, H, N, O, 0]},
-        {"name": "nobass", "curve": [0, 5, 15, 25, 65, 65, 65, 65, 65, 65], "buffer": [N, O, 0, B, A, S, S, 0]}
+        {"name": "nobass3", "curve": [0, 4, 14, 23, 47, 70, 87, 87, 87, 88], "buffer": [N, O, 0, B, A, S, S, Symbols.NUMBER[3]]},
+        {"name": "nobass2", "curve": [0, 4, 14, 23, 47, 67, 76, 76, 76, 76], "buffer": [N, O, 0, B, A, S, S, Symbols.NUMBER[2]]},
+        {"name": "nobass", "curve": [0, 4, 14, 23, 47, 65, 65, 65, 65, 65], "buffer": [N, O, 0, B, A, S, S, 0]}
     ]
 
     def __init__(self, core, default_tracks, preset):
-        self.core = core
-        self.volume = self.get_volume(),
-        self.default_tracks = list(default_tracks) if isinstance(default_tracks, tuple) else [default_tracks]
-        self.preset = preset
+        self._core = core
+        self._volume = self.get_volume(),
+        self._default_tracks = list(default_tracks) if isinstance(default_tracks, tuple) else [default_tracks]
+        self._preset = preset
 
     def is_playing(self, state=None):
         if (state is None):
@@ -243,38 +245,38 @@ class Music:
         return state == core.PlaybackState.STOPPED
 
     def is_volume_changed(self, volume):
-        if (self.volume != volume):
-            self.volume = volume
+        if (self._volume != volume):
+            self._volume = volume
             return True
         else:
             return False
 
     def is_mute(self):
-        return self.core.playback.mute.get()  # self.core.mixer.get_mute()
+        return self._core.playback.mute.get()  # self._core.mixer.get_mute()
 
     def play(self, tracks):
         if (tracks is not None):
-            self.core.playback.stop()
-            self.core.tracklist.clear()
-            self.core.tracklist.add(uris=tracks)
-            self.core.tracklist.consume = False
-            self.core.tracklist.single = False
-            self.core.tracklist.repeat = True
-            self.core.tracklist.random = True
+            self._core.playback.stop()
+            self._core.tracklist.clear()
+            self._core.tracklist.add(uris=tracks)
+            self._core.tracklist.consume = False
+            self._core.tracklist.single = False
+            self._core.tracklist.repeat = True
+            self._core.tracklist.random = True
         if (not self.is_playing()):
-            if (self.core.tracklist.get_length().get() < 1):
-                self.core.tracklist.add(uris=self.default_tracks)
-                self.core.tracklist.repeat = True
-                self.core.tracklist.random = True
-            self.core.playback.play()
+            if (self._core.tracklist.get_length().get() < 1):
+                self._core.tracklist.add(uris=self._default_tracks)
+                self._core.tracklist.repeat = True
+                self._core.tracklist.random = True
+            self._core.playback.play()
 
     def pause(self):
         if (not self.is_paused()):
-            self.core.playback.pause()
+            self._core.playback.pause()
 
     def stop(self):
         if (self.is_playing()):
-            self.core.playback.stop()
+            self._core.playback.stop()
 
     def reboot(self):
         try:
@@ -289,16 +291,16 @@ class Music:
             logging.error(inst)
 
     def mute(self):
-        self.core.playback.mute = not self.is_mute()  # self.core.mixer.set_mute(not self.is_mute())
+        self._core.playback.mute = not self.is_mute()  # self._core.mixer.set_mute(not self.is_mute())
 
     def set_preset(self, value):
         index = 0
         if (value == -1 or value == 1):
-            index = (self._get_preset_index(self.preset) + value + len(self.PRESETS)) % len(self.PRESETS)
+            index = (self._get_preset_index(self._preset) + value + len(self.PRESETS)) % len(self.PRESETS)
         else:
             index = self._get_preset_index(value)
 
-        self.preset = self.PRESETS[index]["name"]
+        self._preset = self.PRESETS[index]["name"]
         try:
             curve = ""
             for i, c in enumerate(self.PRESETS[index]["curve"]):
@@ -309,7 +311,7 @@ class Music:
         return self.PRESETS[index]["buffer"]
 
     def get_presets(self):
-        index = self._get_preset_index(self.preset)
+        index = self._get_preset_index(self._preset)
         return self.PRESETS[index:len(self.PRESETS)] + self.PRESETS[0:index]
 
     def _get_preset_index(self, name):
@@ -319,17 +321,17 @@ class Music:
         return 0
 
     def get_state(self):
-        return self.core.playback.state.get()  # self.core.playback.get_state()
+        return self._core.playback.state.get()  # self._core.playback.get_state()
 
     def get_volume(self):
-        return self.core.playback.volume.get()  # self.core.mixer.get_volume()
+        return self._core.playback.volume.get()  # self._core.mixer.get_volume()
 
     def set_volume(self, volume):
         if (volume < 0):
             volume = 0
         elif (volume > 100):
             volume = 100
-        self.core.playback.volume = volume  # self.core.mixer.set_volume()
+        self._core.playback.volume = volume  # self._core.mixer.set_volume()
 
     def increase_volume(self, volume=1):
         self.set_volume(self.get_volume() + volume)
@@ -338,7 +340,7 @@ class Music:
         self.set_volume(self.get_volume() - volume)
 
     def get_default_tracks(self):
-        return self.default_tracks
+        return self._default_tracks
 
     def get_draw_start_animation(self):
         return self.ANIMATION_START
@@ -373,8 +375,8 @@ class Music:
             animation.append(frame)
 
         return {
-            "length": 5,
-            "repeat": 1,
+            "length": 3600,
+            "repeat": 720,
             "sleep": 0.05,
             "buffer": animation
         }
