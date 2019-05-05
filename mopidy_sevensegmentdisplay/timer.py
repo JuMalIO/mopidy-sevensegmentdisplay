@@ -216,6 +216,9 @@ class TimerAlert:
         self._timer_index = 0
         self._timers = []
 
+    def get(self):
+        return self._timers
+
     def increase(self):
         if (not self._have_timers()):
             self.add_timer()

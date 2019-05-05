@@ -23,7 +23,7 @@
         <button onclick="post({off: '+'})">Increase</button>
     </p>
     <ul>
-        <li>{{ worker.timer_off.timer }}</li>
+        <li>{{ worker.timer_off.get() }}</li>
     </ul>
     <br />
 
@@ -36,7 +36,7 @@
         <button onclick="post({on: '+'})">Increase</button>
     </p>
     <ul>
-        <li>{{ worker.timer_on.timer }}</li>
+        <li>{{ worker.timer_on.get() }}</li>
     </ul>
     <br />
 
@@ -57,8 +57,8 @@
         {% if not worker.timer_alert.is_set() %}
         <li>{{ None }}</li>
         {% else %}
-        {% for timer in worker.timer_alert.timers %}
-        <li>{{ timer.timer }}</li>
+        {% for timer in worker.timer_alert.get() %}
+        <li>{{ timer.get() }}</li>
         {% end %}
         {% end %}
     </ul>
