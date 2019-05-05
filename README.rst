@@ -67,6 +67,11 @@ Make sure that the `HTTP extension <http://docs.mopidy.com/en/latest/ext/http/>`
 Changelog
 =========
 
+v0.3.1
+----------------------------------------
+
+- Fixed timer issue on webpage
+
 v0.3.0
 ----------------------------------------
 
