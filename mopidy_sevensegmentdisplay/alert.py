@@ -71,7 +71,7 @@ class Alert:
             self._display.draw_animation(self.ANIMATION_ALERT["buffer"], self.ANIMATION_ALERT["repeat"], self.ANIMATION_ALERT["sleep"])
 
             file = random.choice(filter(lambda x: x["enabled"], self._files))
-            
+
             if (not self._music.is_playing()):
                 self._ir_sender.power(True)
                 time.sleep(10 if "ir_send" in file else 1)
@@ -83,7 +83,7 @@ class Alert:
                     self._ir_sender.volume(file["ir_send"]["volume"])
 
             self._play_file(file["name"], file["volume"], file["repeat"])
-            
+
             if ("ir_send" in file):
                 if ("bass" in file["ir_send"]):
                     self._ir_sender.bass(- file["ir_send"]["bass"])
