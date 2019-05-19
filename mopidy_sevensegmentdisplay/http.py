@@ -76,6 +76,8 @@ class ApiRequestHandler(BaseRequestHandler):
             self.worker.timer_alert.decrease()
         elif (alert == '+'):
             self.worker.timer_alert.increase()
+        elif (alert == 'run'):
+            self.worker.alert.run()
 
         self.write(str(self.worker.get_volume()))
         self.write(self.worker.get_state())

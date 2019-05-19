@@ -70,24 +70,33 @@ class Alert:
             self._display.set_power_on()
             self._display.draw_animation(self.ANIMATION_ALERT["buffer"], self.ANIMATION_ALERT["repeat"], self.ANIMATION_ALERT["sleep"])
 
+            file = random.choice(filter(lambda x: x["enabled"], self._files))
+            
             if (not self._music.is_playing()):
                 self._ir_sender.power(True)
-                time.sleep(10)
+                time.sleep(10 if "ir_send" in file else 1)
 
-            file = random.choice(filter(lambda x: x["enabled"], self._files))
+            if ("ir_send" in file):
+                if ("bass" in file["ir_send"]):
+                    self._ir_sender.bass(file["ir_send"]["bass"])
+                if ("volume" in file["ir_send"]):
+                    self._ir_sender.volume(file["ir_send"]["volume"])
 
-            self._ir_sender.bass(file["bass"])
-            self._ir_sender.volume(file["volume"])
-            self._play_file(file["name"])
-            self._ir_sender.volume(- file["volume"])
+            self._play_file(file["name"], file["volume"], file["repeat"])
+            
+            if ("ir_send" in file):
+                if ("bass" in file["ir_send"]):
+                    self._ir_sender.bass(- file["ir_send"]["bass"])
+                if ("volume" in file["ir_send"]):
+                    self._ir_sender.volume(- file["ir_send"]["volume"])
 
             if (not self._music.is_playing()):
-                time.sleep(5)
+                time.sleep(5 if "ir_send" in file else 1)
                 self._ir_sender.power(False)
         except Exception as inst:
             logging.error(inst)
 
-    def _play_file(self, file, repeat=1, sleep=0.5):
+    def _play_file(self, file, volume=32768, repeat=1, sleep=0.5):
         for i in range(repeat):
-            call(["mpg123", "-q", os.path.join(os.path.dirname(__file__), file)])
+            call(["mpg123", "-f", str(volume), "-q", os.path.join(os.path.dirname(__file__), file)])
             time.sleep(sleep)

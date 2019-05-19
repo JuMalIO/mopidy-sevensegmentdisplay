@@ -52,6 +52,7 @@
         <button onclick="post({alert: 'clear'})">Clear</button>
         <button onclick="post({alert: '-'})">Decrease</button>
         <button onclick="post({alert: '+'})">Increase</button>
+        <button onclick="post({alert: 'run'})">Run</button>
     </p>
     <ul>
         {% if not worker.timer_alert.is_set() %}

@@ -37,6 +37,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="ext.conf" />
+    <Content Include="run.sh" />
     <Content Include="static\bootstrap-theme.css" />
     <Content Include="static\bootstrap.css" />
     <Content Include="static\bootstrap.js" />
