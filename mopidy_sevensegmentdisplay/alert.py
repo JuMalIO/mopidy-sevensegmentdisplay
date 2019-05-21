@@ -74,7 +74,7 @@ class Alert:
 
             if (not self._music.is_playing()):
                 self._ir_sender.power(True)
-                time.sleep(10 if "ir_send" in file else 1)
+                time.sleep(10 if "ir_send" in file else 2)
 
             if ("ir_send" in file):
                 if ("bass" in file["ir_send"]):
