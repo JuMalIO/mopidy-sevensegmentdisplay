@@ -23,6 +23,7 @@ class Extension(ext.Extension):
         schema['light_sensor_enabled'] = config.Boolean()
         schema['relay_enabled'] = config.Boolean()
         schema['ir_receiver_enabled'] = config.Boolean()
+        schema['ir_remote'] = config.String()
         schema['default_tracks'] = config.String()
         schema['default_volume'] = config.Integer()
         schema['default_preset'] = config.String()

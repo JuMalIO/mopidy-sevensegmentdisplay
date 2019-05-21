@@ -5,6 +5,7 @@ from mopidy import core
 from max7219 import Symbols
 from random import randint
 import logging
+import os
 from subprocess import call
 
 
@@ -287,6 +288,12 @@ class Music:
     def halt(self):
         try:
             call("sudo shutdown -h now", shell=True)
+        except Exception as inst:
+            logging.error(inst)
+
+    def run_sh(self):
+        try:
+            call(["sh", os.path.join(os.path.dirname(__file__), "run.sh")])
         except Exception as inst:
             logging.error(inst)
 

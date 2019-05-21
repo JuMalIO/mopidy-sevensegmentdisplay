@@ -23,6 +23,7 @@ class Worker(Threader):
     ir_receiver = None
     timer_on = None
     timer_off = None
+    alert = None
     timer_alert = None
     time = None
     date = None
@@ -51,7 +52,7 @@ class Worker(Threader):
                              self.config['light_sensor_enabled'],
                              self.on_light_sensor,
                              self.config['relay_enabled'])
-            self.ir_sender = IrSender(self.gpio.switch_relay)
+            self.ir_sender = IrSender(self.config['ir_remote'], self.gpio.switch_relay)
             self.ir_receiver = IrReceiver(self.config['ir_receiver_enabled'],
                                           self.play_stop_music,
                                           self.on_menu_click,
@@ -63,10 +64,11 @@ class Worker(Threader):
                                           self.change_preset)
             self.timer_on = TimerOn(self.play_music)
             self.timer_off = TimerOff(self.stop_music)
-            self.timer_alert = TimerAlert(Alert(self.music,
-                                                self.display,
-                                                self.ir_sender,
-                                                self.config['alert_files']).run)
+            self.alert = Alert(self.music,
+                               self.display,
+                               self.ir_sender,
+                               self.config['alert_files'])
+            self.timer_alert = TimerAlert(self.alert.run)
             self.time = Time()
             self.date = Date([self.timer_on, self.timer_off, self.timer_alert])
             self.menu = Menu(self.display,
@@ -96,6 +98,7 @@ class Worker(Threader):
                     "get_sub_menu": lambda: [
                         self.MENU_TIMER,
                         self.MENU_PLAY_1,
+                        self.MENU_RUN_SH,
                         self.MENU_VOLUME,
                         self.MENU_STYLE,
                         self.MENU_DEMO,
@@ -181,6 +184,11 @@ class Worker(Threader):
                 "on_draw": lambda: self.music.set_preset(x["name"])
             }, self.music.get_presets()))
         }
+        self.MENU_RUN_SH = {
+            "get_buffer": lambda: [0, Symbols.R, Symbols.U, Symbols.N, 0, Symbols.S, Symbols.H, 0],
+            "click": lambda: self.music.run_sh(),
+            "click_animation": True
+        }
         self.MENU_DEMO = {
             "get_buffer": lambda: [0, 0, Symbols.D, Symbols.E, Symbols.M1, Symbols.M2, Symbols.O, 0],
             "click": lambda: (self.menu.draw_sub_menu_animation(self.music.get_draw_equalizer_animation()),
@@ -208,10 +216,19 @@ class Worker(Threader):
         self.menu.click()
 
     def on_menu_click_left(self):
-        self.menu.click_left() if self.menu.is_sub_menu_visible() else self.decrease_timer()
+        if (self.menu.is_sub_menu_visible()):
+            self.menu.click_left()
+        else:
+            if (self.music.is_playing() and self.timer_off.is_set() or not self.music.is_playing() and self.timer_on.is_set()):
+                self.decrease_timer()
+            else:
+                self.alert.run()
 
     def on_menu_click_right(self):
-        self.menu.click_right() if self.menu.is_sub_menu_visible() else self.increase_timer()
+        if (self.menu.is_sub_menu_visible()):
+            self.menu.click_right()
+        else:
+            self.increase_timer()
 
     def on_light_sensor(self, now, is_dark):
         if (self.music.is_playing() and
