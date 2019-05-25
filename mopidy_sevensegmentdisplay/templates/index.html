@@ -10,7 +10,17 @@
 
 <div>
     <p>
-        Mopidy state - {{ worker.get_state() }}
+        Mopidy
+        <button onclick="post({ state: 'play_stop' })">{{ worker.music.get_state() }}</button>
+        style
+        <select id="preset" onchange="post({ preset: $('#preset option:selected').text() })">
+        {% for preset in worker.music.get_presets() %}
+        <option>{{ preset['name'] }}</option>
+        {% end %}
+        </select>
+        volume
+        <input id="volume" type="number" min="1" max="100" style="width: 50px;" value="{{ worker.music.get_volume() }}" />
+        <button onclick="post({ volume: $('#volume').val() })">Set</button>
     </p>
     <br />
 
@@ -18,9 +28,9 @@
         Timer off
         <input id="off_hour" type="number" min="0" max="23" style="width: 50px;" value="23" />
         <input id="off_minute" type="number" min="0" max="59" style="width: 50px;" value="0" />
-        <button onclick="post({off: 'set', hour: $('#off_hour').val(), minute: $('#off_minute').val() })">Set</button>
-        <button onclick="post({off: '-'})">Decrease</button>
-        <button onclick="post({off: '+'})">Increase</button>
+        <button onclick="post({ off: 'set', hour: $('#off_hour').val(), minute: $('#off_minute').val() })">Set</button>
+        <button onclick="post({ off: '-' })">Decrease</button>
+        <button onclick="post({ off: '+' })">Increase</button>
     </p>
     <ul>
         <li>{{ worker.timer_off.get() }}</li>
@@ -31,9 +41,9 @@
         Timer on
         <input id="on_hour" type="number" min="0" max="23" style="width: 50px;" value="6" />
         <input id="on_minute" type="number" min="0" max="59" style="width: 50px;" value="0" />
-        <button onclick="post({on: 'set', hour: $('#on_hour').val(), minute: $('#on_minute').val() })">Set</button>
-        <button onclick="post({on: '-'})">Decrease</button>
-        <button onclick="post({on: '+'})">Increase</button>
+        <button onclick="post({ on: 'set', hour: $('#on_hour').val(), minute: $('#on_minute').val() })">Set</button>
+        <button onclick="post({ on: '-' })">Decrease</button>
+        <button onclick="post({ on: '+' })">Increase</button>
     </p>
     <ul>
         <li>{{ worker.timer_on.get() }}</li>
@@ -48,11 +58,11 @@
             $('#alert_hour').val((new Date()).getHours() + 2);
             $('#alert_minute').val((new Date()).getMinutes());
         </script>
-        <button onclick="post({alert: 'add', hour: $('#alert_hour').val(), minute: $('#alert_minute').val() })">Add</button>
-        <button onclick="post({alert: 'clear'})">Clear</button>
-        <button onclick="post({alert: '-'})">Decrease</button>
-        <button onclick="post({alert: '+'})">Increase</button>
-        <button onclick="post({alert: 'run'})">Run</button>
+        <button onclick="post({ alert: 'add', hour: $('#alert_hour').val(), minute: $('#alert_minute').val() })">Add</button>
+        <button onclick="post({ alert: 'clear' })">Clear</button>
+        <button onclick="post({ alert: '-' })">Decrease</button>
+        <button onclick="post({ alert: '+' })">Increase</button>
+        <button onclick="post({ alert: 'run' })">Run</button>
     </p>
     <ul>
         {% if not worker.timer_alert.is_set() %}
