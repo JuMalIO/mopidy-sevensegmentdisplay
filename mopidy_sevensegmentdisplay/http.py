@@ -79,8 +79,12 @@ class ApiRequestHandler(BaseRequestHandler):
         elif (alert == 'run'):
             self.worker.alert.run()
 
-        self.write(str(self.worker.get_volume()))
-        self.write(self.worker.get_state())
+        preset = str(self.get_argument('preset', ''))
+        if (preset != ''):
+            self.worker.music.set_preset(preset)
+
+        self.write(str(self.worker.music.get_volume()))
+        self.write(self.worker.music.get_state())
 
 
 def factory_decorator(worker):
