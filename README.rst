@@ -41,6 +41,8 @@ Optionally defaults can be configured in ``mopidy.conf`` config file (the defaul
     light_sensor_enabled = true
     relay_enabled = false
     ir_receiver_enabled = true
+    
+    ir_remote = manufacturer
 
     default_tracks = http://janus.shoutca.st:8788/stream
     
