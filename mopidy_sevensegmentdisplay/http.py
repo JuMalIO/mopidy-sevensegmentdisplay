@@ -77,14 +77,14 @@ class ApiRequestHandler(BaseRequestHandler):
         elif (alert == '+'):
             self.worker.timer_alert.increase()
         elif (alert == 'run'):
-            self.worker.alert.run()
+            self.worker.run_alert()
 
         preset = str(self.get_argument('preset', ''))
         if (preset != ''):
-            self.worker.music.set_preset(preset)
+            self.worker.set_preset(preset)
 
-        self.write(str(self.worker.music.get_volume()))
-        self.write(self.worker.music.get_state())
+        self.write(str(self.worker.get_volume()))
+        self.write(self.worker.get_state())
 
 
 def factory_decorator(worker):

@@ -46,29 +46,28 @@ class Worker(Threader):
                                                   self.config['display_off_time_to'])
             self.gpio = Gpio(self.config['buttons_enabled'],
                              self.play_stop_music,
-                             self.on_menu_click,
-                             self.on_menu_click_left,
-                             self.on_menu_click_right,
+                             self._on_menu_click,
+                             self._on_menu_click_left,
+                             self._on_menu_click_right,
                              self.config['light_sensor_enabled'],
-                             self.on_light_sensor,
+                             self._on_light_sensor,
                              self.config['relay_enabled'])
             self.ir_sender = IrSender(self.config['ir_remote'], self.gpio.switch_relay)
             self.ir_receiver = IrReceiver(self.config['ir_receiver_enabled'],
                                           self.play_stop_music,
-                                          self.on_menu_click,
-                                          self.on_menu_click_left,
-                                          self.on_menu_click_right,
+                                          self._on_menu_click,
+                                          self._on_menu_click_left,
+                                          self._on_menu_click_right,
                                           self.music.decrease_volume,
                                           self.music.increase_volume,
                                           self.music.mute,
-                                          self.change_preset)
+                                          self._on_change_preset)
             self.timer_on = TimerOn(self.play_music)
             self.timer_off = TimerOff(self.stop_music)
             self.alert = Alert(self.music,
-                               self.display,
                                self.ir_sender,
                                self.config['alert_files'])
-            self.timer_alert = TimerAlert(self.alert.run)
+            self.timer_alert = TimerAlert(self.run_alert)
             self.time = Time()
             self.date = Date([self.timer_on, self.timer_off, self.timer_alert])
             self.menu = Menu(self.display,
@@ -212,25 +211,25 @@ class Worker(Threader):
             "click_animation": True
         }
 
-    def on_menu_click(self):
+    def _on_menu_click(self):
         self.menu.click()
 
-    def on_menu_click_left(self):
+    def _on_menu_click_left(self):
         if (self.menu.is_sub_menu_visible()):
             self.menu.click_left()
         else:
             if (self.music.is_playing() and self.timer_off.is_set() or not self.music.is_playing() and self.timer_on.is_set()):
-                self.decrease_timer()
+                self._decrease_timer()
             else:
-                self.alert.run()
+                self.run_alert()
 
-    def on_menu_click_right(self):
+    def _on_menu_click_right(self):
         if (self.menu.is_sub_menu_visible()):
             self.menu.click_right()
         else:
-            self.increase_timer()
+            self._increase_timer()
 
-    def on_light_sensor(self, now, is_dark):
+    def _on_light_sensor(self, now, is_dark):
         if (self.music.is_playing() and
             (now.hour >= self.config['light_sensor_time_from'] or now.hour < self.config['light_sensor_time_to'])):
             if (is_dark):
@@ -246,7 +245,14 @@ class Worker(Threader):
             else:
                 self.timer_off.reset()
 
-    def increase_timer(self):
+    def _on_change_preset(self, value):
+        self.music.set_preset(value)
+        if (value < 0):
+            self.menu.click_left(self.MENU_STYLE)
+        else:
+            self.menu.click_right(self.MENU_STYLE)
+
+    def _increase_timer(self):
         if (self.music.is_playing()):
             self.timer_off.increase()
             self.menu.draw_sub_menu(self.MENU_TIMER_OFF)
@@ -254,13 +260,23 @@ class Worker(Threader):
             self.timer_on.increase()
             self.menu.draw_sub_menu(self.MENU_TIMER_ON)
 
-    def decrease_timer(self):
+    def _decrease_timer(self):
         if (self.music.is_playing()):
             self.timer_off.decrease()
             self.menu.draw_sub_menu(self.MENU_TIMER_OFF)
         else:
             self.timer_on.decrease()
             self.menu.draw_sub_menu(self.MENU_TIMER_ON)
+
+    def run_alert(self):
+        self.menu.draw_sub_menu_animation(self.alert.get_draw_alert_animation())
+        self.alert.run()
+
+    def get_presets(self):
+        return self.music.get_presets()
+
+    def set_preset(self, value):
+        self.music.set_preset(value)
 
     def get_volume(self):
         return self.music.get_volume()
@@ -290,13 +306,6 @@ class Worker(Threader):
     def stop_music(self):
         self.music.stop()
         self.on_stopped()
-
-    def change_preset(self, value):
-        self.music.set_preset(value)
-        if (value < 0):
-            self.menu.click_left(self.MENU_STYLE)
-        else:
-            self.menu.click_right(self.MENU_STYLE)
 
     def on_started(self):
         self.menu.draw_sub_menu_animation(self.music.get_draw_start_animation())

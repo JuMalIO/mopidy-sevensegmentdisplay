@@ -11,15 +11,15 @@
 <div>
     <p>
         Mopidy
-        <button onclick="post({ state: 'play_stop' })">{{ worker.music.get_state() }}</button>
+        <button onclick="post({ state: 'play_stop' })">{{ worker.get_state() }}</button>
         style
         <select id="preset" onchange="post({ preset: $('#preset option:selected').text() })">
-        {% for preset in worker.music.get_presets() %}
-        <option>{{ preset['name'] }}</option>
-        {% end %}
+            {% for preset in worker.get_presets() %}
+            <option>{{ preset['name'] }}</option>
+            {% end %}
         </select>
         volume
-        <input id="volume" type="number" min="1" max="100" style="width: 50px;" value="{{ worker.music.get_volume() }}" />
+        <input id="volume" type="number" min="1" max="100" style="width: 50px;" value="{{ worker.get_volume() }}" />
         <button onclick="post({ volume: $('#volume').val() })">Set</button>
     </p>
     <br />

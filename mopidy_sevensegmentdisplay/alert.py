@@ -59,17 +59,13 @@ class Alert:
         ]
     }
 
-    def __init__(self, music, display, ir_sender, files):
+    def __init__(self, music, ir_sender, files):
         self._music = music
-        self._display = display
         self._ir_sender = ir_sender
         self._files = json.loads(files)
 
     def run(self):
         try:
-            self._display.set_power_on()
-            self._display.draw_animation(self.ANIMATION_ALERT["buffer"], self.ANIMATION_ALERT["repeat"], self.ANIMATION_ALERT["sleep"])
-
             file = random.choice(filter(lambda x: x["enabled"], self._files))
 
             if (not self._music.is_playing()):
@@ -95,6 +91,9 @@ class Alert:
                 self._ir_sender.power(False)
         except Exception as inst:
             logging.error(inst)
+
+    def get_draw_alert_animation(self):
+        return self.ANIMATION_ALERT
 
     def _play_file(self, file, volume=32768, repeat=1, sleep=0.5):
         for i in range(repeat):
