@@ -60,7 +60,7 @@ class Worker(Threader):
                                           self._on_menu_click_right,
                                           self.music.decrease_volume,
                                           self.music.increase_volume,
-                                          self.music.mute,
+                                          self.run_alert,
                                           self._on_change_preset)
             self.timer_on = TimerOn(self.play_music)
             self.timer_off = TimerOff(self.stop_music)
@@ -119,6 +119,7 @@ class Worker(Threader):
             "get_sub_menu": lambda: [
                 self.MENU_ALERT_ADD,
                 self.MENU_ALERT_CLEAR,
+                self.MENU_ALERT_RUN
             ]
         }
         self.MENU_ALERT_ADD = {
@@ -136,6 +137,11 @@ class Worker(Threader):
         self.MENU_ALERT_CLEAR = {
             "get_buffer": lambda: [0, 0, Symbols.C, Symbols.L, Symbols.E, Symbols.A, Symbols.R, 0],
             "click": lambda: self.timer_alert.reset(),
+            "click_animation": True
+        }
+        self.MENU_ALERT_RUN = {
+            "get_buffer": lambda: [0, 0, 0, Symbols.R, Symbols.U, Symbols.N, 0, 0],
+            "click": lambda: self.run_alert(),
             "click_animation": True
         }
         self.MENU_TIMER_OFF = {
@@ -218,10 +224,7 @@ class Worker(Threader):
         if (self.menu.is_sub_menu_visible()):
             self.menu.click_left()
         else:
-            if (self.music.is_playing() and self.timer_off.is_set() or not self.music.is_playing() and self.timer_on.is_set()):
-                self._decrease_timer()
-            else:
-                self.run_alert()
+            self._decrease_timer()
 
     def _on_menu_click_right(self):
         if (self.menu.is_sub_menu_visible()):
