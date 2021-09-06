@@ -16,11 +16,11 @@ Mopidy-SevenSegmentDisplay
 
 A Mopidy extension for using it with seven segment display.
 
-.. figure:: https://bit.ly/2QRAsZm
+.. figure:: https://raw.githubusercontent.com/JuMalIO/mopidy-sevensegmentdisplay/master/sevensegmentdisplay.jpg
 |
-.. figure:: https://s2.gifyu.com/images/18af69fdf5a34049f.gif
+.. figure:: https://raw.githubusercontent.com/JuMalIO/mopidy-sevensegmentdisplay/master/sevensegmentdisplay-1.gif
 |
-.. figure:: https://s2.gifyu.com/images/24fc76ce4a5b78ef6.gif
+.. figure:: https://raw.githubusercontent.com/JuMalIO/mopidy-sevensegmentdisplay/master/sevensegmentdisplay-2.gif
 
 Installation
 ============
