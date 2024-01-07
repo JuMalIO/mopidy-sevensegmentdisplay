@@ -11,7 +11,7 @@ class Display(object):
         self._brightness = None
         self._is_shutdown = not display_enabled
         self._animation_thread = None
-        self._display = display_enabled if SevenSegmentDisplay() else None
+        self._display = SevenSegmentDisplay() if display_enabled else None
         self._lock = threading.Lock()
 
     def set_brightness(self, brightness):
