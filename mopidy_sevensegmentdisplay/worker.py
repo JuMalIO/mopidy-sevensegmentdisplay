@@ -40,28 +40,32 @@ class Worker(Threader):
         try:
             self._init_menu()
             self.music = Music(self.core, self.config['default_tracks'], self.config['default_preset'])
-            self.display = DisplayWithPowerSaving(self.config['display_min_brightness'],
-                                                  self.config['display_max_brightness'],
-                                                  self.config['display_off_time_from'],
-                                                  self.config['display_off_time_to'])
-            self.gpio = Gpio(self.config['buttons_enabled'],
-                             self.play_stop_music,
-                             self._on_menu_click,
-                             self._on_menu_click_left,
-                             self._on_menu_click_right,
-                             self.config['light_sensor_enabled'],
-                             self._on_light_sensor,
-                             self.config['relay_enabled'])
+            self.display = DisplayWithPowerSaving(
+                self.config['display_enabled'],
+                self.config['display_min_brightness'],
+                self.config['display_max_brightness'],
+                self.config['display_off_time_from'],
+                self.config['display_off_time_to'])
+            self.gpio = Gpio(
+                self.config['buttons_enabled'],
+                self.play_stop_music,
+                self._on_menu_click,
+                self._on_menu_click_left,
+                self._on_menu_click_right,
+                self.config['light_sensor_enabled'],
+                self._on_light_sensor,
+                self.config['relay_enabled'])
             self.ir_sender = IrSender(self.config['ir_remote'], self.gpio.switch_relay)
-            self.ir_receiver = IrReceiver(self.config['ir_receiver_enabled'],
-                                          self.play_stop_music,
-                                          self._on_menu_click,
-                                          self._on_menu_click_left,
-                                          self._on_menu_click_right,
-                                          self.music.decrease_volume,
-                                          self.music.increase_volume,
-                                          self.run_alert,
-                                          self._on_change_preset)
+            self.ir_receiver = IrReceiver(
+                self.config['ir_receiver_enabled'],
+                self.play_stop_music,
+                self._on_menu_click,
+                self._on_menu_click_left,
+                self._on_menu_click_right,
+                self.music.decrease_volume,
+                self.music.increase_volume,
+                self.run_alert,
+                self._on_change_preset)
             self.timer_on = TimerOn(self.play_music)
             self.timer_off = TimerOff(self.stop_music)
             self.alert = Alert(self.music,
@@ -70,9 +74,10 @@ class Worker(Threader):
             self.timer_alert = TimerAlert(self.run_alert)
             self.time = Time()
             self.date = Date([self.timer_on, self.timer_off, self.timer_alert])
-            self.menu = Menu(self.display,
-                             self.MENU,
-                             [self.time, self.date, self.timer_on, self.timer_off, self.timer_alert])
+            self.menu = Menu(
+                self.display,
+                self.MENU,
+                [self.time, self.date, self.timer_on, self.timer_off, self.timer_alert])
 
             while True:
                 self.menu.run()

@@ -5,7 +5,7 @@ from http import factory_decorator
 from actor import Frontend
 from mopidy import config, ext
 
-__version__ = '0.3.1'
+__version__ = '0.4.0'
 
 
 class Extension(ext.Extension):
@@ -19,6 +19,7 @@ class Extension(ext.Extension):
 
     def get_config_schema(self):
         schema = super(Extension, self).get_config_schema()
+        schema['display_enabled'] = config.Boolean()
         schema['buttons_enabled'] = config.Boolean()
         schema['light_sensor_enabled'] = config.Boolean()
         schema['relay_enabled'] = config.Boolean()
