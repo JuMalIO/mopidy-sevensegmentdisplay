@@ -257,15 +257,15 @@ class Music:
             self._core.playback.stop()
             self._core.tracklist.clear()
             self._core.tracklist.add(uris=tracks)
-            self._core.tracklist.consume = False
-            self._core.tracklist.single = False
-            self._core.tracklist.repeat = True
-            self._core.tracklist.random = True
+            self._core.tracklist.set_consume(False)
+            self._core.tracklist.set_single(False)
+            self._core.tracklist.set_repeat(True)
+            self._core.tracklist.set_random(True)
         if (not self.is_playing()):
-            if (self._core.tracklist.get_length().get() < 1):
+            if (self._core.tracklist.get_length() < 1):
                 self._core.tracklist.add(uris=self._default_tracks)
-                self._core.tracklist.repeat = True
-                self._core.tracklist.random = True
+                self._core.tracklist.set_repeat(True)
+                self._core.tracklist.set_random(True)
             self._core.playback.play()
 
     def pause(self):

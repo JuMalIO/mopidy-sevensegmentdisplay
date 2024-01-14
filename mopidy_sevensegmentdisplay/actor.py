@@ -3,16 +3,18 @@ import logging
 from mopidy.core import CoreListener
 from .worker import Worker
 
-logger = logging.getLogger('Frontend')
+
+logger = logging.getLogger(__name__)
 
 
 class Frontend(pykka.ThreadingActor, CoreListener):
     worker = Worker()
 
     def __init__(self, config, core):
+        super().__init__()
+
         self.config = config['sevensegmentdisplay']
         self.core = core
-        super(Frontend, self).__init__()
 
     def on_start(self):
         logger.warning('started')
