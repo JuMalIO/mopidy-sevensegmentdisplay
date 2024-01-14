@@ -36,6 +36,8 @@ setup(
         'nose',
         'mock >= 1.0',
     ],
+    long_description=open('README.rst').read(),
+    long_description_content_type='text/x-rst',
     entry_points={
         'mopidy.ext': [
             'sevensegmentdisplay = mopidy_sevensegmentdisplay:Extension',
