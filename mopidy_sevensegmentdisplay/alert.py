@@ -4,7 +4,7 @@ import time
 import logging
 import json
 from subprocess import call
-from max7219 import Symbols
+from .max7219 import Symbols
 
 
 class Alert:

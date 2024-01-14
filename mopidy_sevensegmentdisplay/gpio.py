@@ -2,9 +2,9 @@ import RPi.GPIO as GPIO
 import threading
 import time
 import logging
-from max7219 import Symbols
 from datetime import datetime
-from threader import Threader
+from .max7219 import Symbols
+from .threader import Threader
 
 
 class Gpio:

@@ -1,15 +1,15 @@
 import logging
 from time import sleep
-from threader import Threader
-from music import Music
-from display import DisplayWithPowerSaving
-from ir import IrSender
-from gpio import Gpio
-from timer import TimerOn, TimerOff, TimerAlert
-from clock import Time, Date
-from menu import Menu
-from max7219 import Symbols
-from alert import Alert
+from .threader import Threader
+from .music import Music
+from .display import DisplayWithPowerSaving
+from .ir import IrSender
+from .gpio import Gpio
+from .timer import TimerOn, TimerOff, TimerAlert
+from .clock import Time, Date
+from .menu import Menu
+from .max7219 import Symbols
+from .alert import Alert
 
 
 class Worker(Threader):
@@ -18,7 +18,6 @@ class Worker(Threader):
     display = None
     gpio = None
     ir_sender = None
-    ir_receiver = None
     timer_on = None
     timer_off = None
     alert = None
@@ -79,7 +78,6 @@ class Worker(Threader):
             logging.error(inst)
         finally:
             self.ir_sender.stop()
-            self.ir_receiver.stop()
             self.display.shutdown()
             self.gpio.cleanup()
 

@@ -1,8 +1,8 @@
-from max7219 import SevenSegmentDisplay, Symbols
-from animation import Animation, BlinkAnimation, ScrollDownAnimation, ScrollUpAnimation, ScrollLeftAnimation, ScrollRightAnimation
 import threading
 import logging
 from datetime import datetime
+from .max7219 import SevenSegmentDisplay, Symbols
+from .animation import Animation, BlinkAnimation, ScrollDownAnimation, ScrollUpAnimation, ScrollLeftAnimation, ScrollRightAnimation
 
 
 class Display(object):

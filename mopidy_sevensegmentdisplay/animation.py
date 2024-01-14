@@ -1,5 +1,5 @@
 import time
-from threader import Threader
+from .threader import Threader
 
 
 class Animation(Threader):

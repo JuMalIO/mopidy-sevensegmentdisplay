@@ -1,7 +1,7 @@
 import pykka
 import logging
 from mopidy.core import CoreListener
-from worker import Worker
+from .worker import Worker
 
 logger = logging.getLogger('Frontend')
 

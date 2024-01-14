@@ -1,9 +1,9 @@
 from mopidy import core
-from max7219 import Symbols
 from random import randint
 import logging
 import os
 from subprocess import call
+from .max7219 import Symbols
 
 
 class Music:
@@ -250,7 +250,7 @@ class Music:
             return False
 
     def is_mute(self):
-        return self._core.playback.mute.get()  # self._core.mixer.get_mute()
+        return self._core.mixer.get_mute()
 
     def play(self, tracks):
         if (tracks is not None):
@@ -295,7 +295,7 @@ class Music:
             logging.error(inst)
 
     def mute(self):
-        self._core.playback.mute = not self.is_mute()  # self._core.mixer.set_mute(not self.is_mute())
+        self._core.mixer.set_mute(not self.is_mute())
 
     def set_preset(self, value):
         index = 0
@@ -325,17 +325,17 @@ class Music:
         return 0
 
     def get_state(self):
-        return self._core.playback.state.get()  # self._core.playback.get_state()
+        return self._core.playback.get_state()
 
     def get_volume(self):
-        return self._core.playback.volume.get()  # self._core.mixer.get_volume()
+        return self._core.mixer.get_volume()
 
     def set_volume(self, volume):
         if (volume < 0):
             volume = 0
         elif (volume > 100):
             volume = 100
-        self._core.playback.volume = volume  # self._core.mixer.set_volume()
+        self._core.mixer.set_volume(volume)
 
     def increase_volume(self, volume=1):
         self.set_volume(self.get_volume() + volume)

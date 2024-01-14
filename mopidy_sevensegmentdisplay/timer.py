@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from max7219 import Symbols
+from .max7219 import Symbols
 
 
 class Timer(object):

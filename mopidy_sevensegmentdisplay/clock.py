@@ -1,5 +1,5 @@
 from datetime import datetime
-from max7219 import Symbols
+from .max7219 import Symbols
 
 
 class Time:
