@@ -250,7 +250,7 @@ class Music:
             return False
 
     def is_mute(self):
-        return self._core.mixer.get_mute()
+        return self._core.mixer.get_mute().get()
 
     def play(self, tracks):
         if (tracks is not None):
@@ -262,7 +262,7 @@ class Music:
             self._core.tracklist.set_repeat(True)
             self._core.tracklist.set_random(True)
         if (not self.is_playing()):
-            if (self._core.tracklist.get_length() < 1):
+            if (self._core.tracklist.get_length().get() < 1):
                 self._core.tracklist.add(uris=self._default_tracks)
                 self._core.tracklist.set_repeat(True)
                 self._core.tracklist.set_random(True)
@@ -325,10 +325,10 @@ class Music:
         return 0
 
     def get_state(self):
-        return self._core.playback.get_state()
+        return self._core.playback.get_state().get()
 
     def get_volume(self):
-        return self._core.mixer.get_volume()
+        return self._core.mixer.get_volume().get()
 
     def set_volume(self, volume):
         if (volume < 0):
