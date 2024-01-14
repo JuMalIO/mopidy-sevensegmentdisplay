@@ -1,7 +1,5 @@
-from __future__ import unicode_literals
-
 import os
-from http import factory_decorator
+from .http import factory_decorator
 from actor import Frontend
 from mopidy import config, ext
 
@@ -31,7 +29,7 @@ class Extension(ext.Extension):
         schema['light_sensor_preset'] = config.String()
         schema['light_sensor_time_from'] = config.Integer()
         schema['light_sensor_time_to'] = config.Integer()
-        schema['alert_files'] = config.String()
+        schema['alert_files'] = config.String(optional=True)
         schema['display_min_brightness'] = config.Integer()
         schema['display_max_brightness'] = config.Integer()
         schema['display_off_time_from'] = config.Integer()

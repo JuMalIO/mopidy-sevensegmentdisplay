@@ -1,6 +1,3 @@
-from __future__ import division
-from __future__ import unicode_literals
-
 from datetime import datetime, timedelta
 from max7219 import Symbols
 

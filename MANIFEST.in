@@ -2,7 +2,7 @@ include .coveragerc
 include .travis.yml
 include LICENSE
 include MANIFEST.in
-include README.rst
+include README.md
 include mopidy_sevensegmentdisplay/ext.conf
 include mopidy_sevensegmentdisplay/presets.sh
 

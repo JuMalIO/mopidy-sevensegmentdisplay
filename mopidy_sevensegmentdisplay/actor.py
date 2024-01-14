@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 import pykka
 import logging
 from mopidy.core import CoreListener

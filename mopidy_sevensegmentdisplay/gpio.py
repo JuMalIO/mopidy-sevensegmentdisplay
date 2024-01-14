@@ -1,6 +1,3 @@
-from __future__ import division
-from __future__ import unicode_literals
-
 import RPi.GPIO as GPIO
 import threading
 import time
