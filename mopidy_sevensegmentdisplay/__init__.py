@@ -5,7 +5,7 @@ from http import factory_decorator
 from actor import Frontend
 from mopidy import config, ext
 
-__version__ = '0.4.0'
+__version__ = '0.4.1'
 
 
 class Extension(ext.Extension):
@@ -23,7 +23,6 @@ class Extension(ext.Extension):
         schema['buttons_enabled'] = config.Boolean()
         schema['light_sensor_enabled'] = config.Boolean()
         schema['relay_enabled'] = config.Boolean()
-        schema['ir_receiver_enabled'] = config.Boolean()
         schema['ir_remote'] = config.String()
         schema['default_tracks'] = config.String()
         schema['default_volume'] = config.Integer()

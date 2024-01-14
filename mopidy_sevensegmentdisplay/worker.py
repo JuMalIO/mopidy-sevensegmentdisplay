@@ -5,7 +5,7 @@ from time import sleep
 from threader import Threader
 from music import Music
 from display import DisplayWithPowerSaving
-from ir import IrSender, IrReceiver
+from ir import IrSender
 from gpio import Gpio
 from timer import TimerOn, TimerOff, TimerAlert
 from clock import Time, Date
@@ -56,16 +56,6 @@ class Worker(Threader):
                 self._on_light_sensor,
                 self.config['relay_enabled'])
             self.ir_sender = IrSender(self.config['ir_remote'], self.gpio.switch_relay)
-            self.ir_receiver = IrReceiver(
-                self.config['ir_receiver_enabled'],
-                self.play_stop_music,
-                self._on_menu_click,
-                self._on_menu_click_left,
-                self._on_menu_click_right,
-                self.music.decrease_volume,
-                self.music.increase_volume,
-                self.run_alert,
-                self._on_change_preset)
             self.timer_on = TimerOn(self.play_music)
             self.timer_off = TimerOff(self.stop_music)
             self.alert = Alert(self.music,
