@@ -52,12 +52,6 @@ class Date:
     def is_visible(self, seconds):
         return seconds < self.VISIBLE_FOR_SECONDS and not self._is_any_module_enabled()
 
-    def _is_any_module_enabled(self):
-        for module in self._modules:
-            if (module.is_set()):
-                return True
-        return False
-
     def get_draw_buffer(self):
         now = datetime.now()
         day = now.day
@@ -76,3 +70,9 @@ class Date:
         ]
 
         return date
+
+    def _is_any_module_enabled(self):
+        for module in self._modules:
+            if (module.is_set()):
+                return True
+        return False
