@@ -78,7 +78,7 @@ class Worker(Threader):
             logging.error(inst)
         finally:
             self.ir_sender.stop()
-            self.display.shutdown()
+            self.display.stop()
             self.gpio.cleanup()
 
     def _init_menu(self):

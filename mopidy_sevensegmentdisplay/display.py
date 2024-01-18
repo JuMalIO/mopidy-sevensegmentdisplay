@@ -32,6 +32,15 @@ class Display(object):
             self._is_shutdown = is_shutdown
             self._display.shutdown(is_shutdown)
 
+    def stop(self):
+        if (self._display is None):
+            return
+        
+        self.shutdown()
+        self._display.stop()
+        self._display = None
+
+
     def draw(self, buffer):
         if (self._display is None):
             return

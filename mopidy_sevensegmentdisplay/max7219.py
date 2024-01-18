@@ -82,6 +82,9 @@ class SevenSegmentDisplay(object):
     def shutdown(self, value):
         self.command(Constants.MAX7219_REG_SHUTDOWN, 0 if value else 1)
 
+    def stop(self):
+        self._spi.close()
+
     def command(self, register, data):
         assert Constants.MAX7219_REG_DECODEMODE <= register <= Constants.MAX7219_REG_DISPLAYTEST
 
