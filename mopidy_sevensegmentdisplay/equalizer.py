@@ -12,6 +12,17 @@ class Equalizer:
         super(Equalizer, self).__init__()
 
         if (equalizer_enabled):
+            self._sample = [
+                Symbols.NONE,
+                Symbols.NONE,
+                Symbols.NONE,
+                Symbols.NONE,
+                Symbols.NONE,
+                Symbols.NONE,
+                Symbols.NONE,
+                Symbols.NONE
+            ]
+
             conpat = """
             [general]
             bars = %d
@@ -44,13 +55,13 @@ class Equalizer:
     def get_draw_buffer(self):
         data = self._source.read(self._chunk)
         if (len(data) < self._chunk):
-            break
-        # sample = [i for i in struct.unpack(fmt, data)]  # raw values without norming
-        sample = [self._getSymbol(i / self._bytenorm) for i in struct.unpack(self._fmt, data)]
+            return self._sample
+        #self._sample = [i for i in struct.unpack(fmt, data)]  # raw values without norming
+        self._sample = [self._getSymbol(i / self._bytenorm) for i in struct.unpack(self._fmt, data)]
         
-        logging.error(sample)
+        logging.error(self._sample)
 
-        return sample
+        return self._sample
 
     def _getSymbol(self, ratio):
         if (ratio > 0.1):
