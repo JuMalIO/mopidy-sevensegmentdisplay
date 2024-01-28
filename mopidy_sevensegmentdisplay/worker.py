@@ -67,11 +67,7 @@ class Worker(Threader):
                 self.display,
                 self.MENU,
                 [self.time, self.date, self.timer_on, self.timer_off, self.timer_alert])
-            self.equalizer = Equalizer(
-                self.config['equalizer_enabled'],
-                self.config['equalizer_bars_number'],
-                self.config['equalizer_output_bit_format'],
-                self.config['equalizer_raw_target'])
+            self.equalizer = Equalizer(self.config['equalizer_enabled'])
 
             while True:
                 if (self.stopped()):

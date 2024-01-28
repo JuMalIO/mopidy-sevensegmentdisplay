@@ -1,14 +1,14 @@
 import os
 import struct
 import subprocess
-import tempfile
 import logging
+import ConfigParser
 from .max7219 import Symbols
 
 
 class Equalizer:
 
-    def __init__(self, equalizer_enabled, equalizer_bars_number, equalizer_output_bit_format, equalizer_raw_target):
+    def __init__(self, equalizer_enabled):
         super(Equalizer, self).__init__()
 
         if (equalizer_enabled):
@@ -23,34 +23,29 @@ class Equalizer:
                 Symbols.NONE
             ]
 
-            conpat = """
-            [general]
-            bars = %d
-            [output]
-            method = raw
-            raw_target = %s
-            bit_format = %s
-            """
+            config_file_name = os.path.expanduser('./cava.config')
 
-            config = conpat % (equalizer_bars_number, equalizer_raw_target, equalizer_output_bit_format)
-            bytetype = "H" if equalizer_output_bit_format == "16bit" else "B"
-            bytesize = 2 if equalizer_output_bit_format == "16bit" else 1
-            self._bytenorm = 65535 if equalizer_output_bit_format == "16bit" else 255
+            configParser = ConfigParser.RawConfigParser()
+            configParser.read(config_file_name)
 
-            with tempfile.NamedTemporaryFile() as config_file:
-                config_file.write(config.encode())
-                config_file.flush()
+            general_bars = configParser.get('general', 'bars')
+            output_raw_target = configParser.get('output', 'raw_target')
+            output_bit_format = configParser.get('output', 'bit_format')
 
-                process = subprocess.Popen(["cava", "-p", config_file.name], stdout=subprocess.PIPE)
-                self._chunk = bytesize * equalizer_bars_number
-                self._fmt = bytetype * equalizer_bars_number
+            bytetype = "H" if output_bit_format == "16bit" else "B"
+            bytesize = 2 if output_bit_format == "16bit" else 1
+            self._bytenorm = 65535 if output_bit_format == "16bit" else 255
 
-                if (equalizer_raw_target != "/dev/stdout"):
-                    if (not os.path.exists(equalizer_raw_target)):
-                        os.mkfifo(equalizer_raw_target)
-                    self._source = open(equalizer_raw_target, "rb")
-                else:
-                    self._source = process.stdout
+            process = subprocess.Popen(["cava", "-p", config_file_name], stdout=subprocess.PIPE)
+            self._chunk = bytesize * general_bars
+            self._fmt = bytetype * general_bars
+
+            if (output_raw_target != "/dev/stdout"):
+                if (not os.path.exists(output_raw_target)):
+                    os.mkfifo(output_raw_target)
+                self._source = open(output_raw_target, "rb")
+            else:
+                self._source = process.stdout
 
     def get_draw_buffer(self):
         data = self._source.read(self._chunk)
