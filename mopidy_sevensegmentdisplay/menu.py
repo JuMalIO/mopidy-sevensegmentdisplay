@@ -26,46 +26,6 @@ class Menu:
         if (self._display.is_power_on()):
             self._draw_module()
 
-    def _run_modules(self):
-        for module in self._modules:
-            module.run()
-
-    def _draw_module(self):
-        if (self._modules[self._module_index].is_visible(self._module_visible)):
-            self._module_visible = self._module_visible + 1
-            self._display.draw(self._modules[self._module_index].get_draw_buffer())
-        else:
-            self._next_module_index()
-            self._display.draw_scroll_left_animation(self._modules[self._module_index].get_draw_buffer())
-
-    def _next_module_index(self):
-        self._module_visible = 0
-        self._module_index = (self._module_index + 1) % len(self._modules)
-        for i in range(self._module_index, len(self._modules)):
-            if (self._modules[i].is_visible(self._module_visible)):
-                self._module_index = i
-                return
-        for i in range(self._module_index):
-            if (self._modules[i].is_visible(self._module_visible)):
-                self._module_index = i
-                return
-
-    def _get_buffer_and_draw(self, draw):
-        if ("get_buffer" in self._sub_menu[self._sub_menu_index]):
-            draw(self._sub_menu[self._sub_menu_index]["get_buffer"]())
-
-    def _on_draw(self):
-        if ("on_draw" in self._sub_menu[self._sub_menu_index]):
-            self._sub_menu[self._sub_menu_index]["on_draw"]()
-
-    def _click_animation(self):
-        if ("click_animation" in self._sub_menu[self._sub_menu_index]):
-            self._get_buffer_and_draw(self._display.draw_blink_animation)
-
-    def _close_sub_menu(self):
-        if (self._sub_menu_visible > 1):
-            self._sub_menu_visible = 1
-
     def reset_sub_menu(self):
         self._set_sub_menu(self._menu)
 
@@ -127,6 +87,46 @@ class Menu:
             return
 
         self._get_buffer_and_draw(self._display.draw)
+
+    def _run_modules(self):
+        for module in self._modules:
+            module.run()
+
+    def _draw_module(self):
+        if (self._modules[self._module_index].is_visible(self._module_visible)):
+            self._module_visible = self._module_visible + 1
+            self._display.draw(self._modules[self._module_index].get_draw_buffer())
+        else:
+            self._next_module_index()
+            self._display.draw_scroll_left_animation(self._modules[self._module_index].get_draw_buffer())
+
+    def _next_module_index(self):
+        self._module_visible = 0
+        self._module_index = (self._module_index + 1) % len(self._modules)
+        for i in range(self._module_index, len(self._modules)):
+            if (self._modules[i].is_visible(self._module_visible)):
+                self._module_index = i
+                return
+        for i in range(self._module_index):
+            if (self._modules[i].is_visible(self._module_visible)):
+                self._module_index = i
+                return
+
+    def _get_buffer_and_draw(self, draw):
+        if ("get_buffer" in self._sub_menu[self._sub_menu_index]):
+            draw(self._sub_menu[self._sub_menu_index]["get_buffer"]())
+
+    def _on_draw(self):
+        if ("on_draw" in self._sub_menu[self._sub_menu_index]):
+            self._sub_menu[self._sub_menu_index]["on_draw"]()
+
+    def _click_animation(self):
+        if ("click_animation" in self._sub_menu[self._sub_menu_index]):
+            self._get_buffer_and_draw(self._display.draw_blink_animation)
+
+    def _close_sub_menu(self):
+        if (self._sub_menu_visible > 1):
+            self._sub_menu_visible = 1
 
     def _is_sub_menu(self, item):
         if (item is not None and self._sub_menu_group != item["group"]):

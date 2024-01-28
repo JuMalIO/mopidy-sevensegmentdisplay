@@ -3,7 +3,7 @@ from mopidy import config, ext
 from .http import factory_decorator
 from .actor import Frontend
 
-__version__ = '0.5.4'
+__version__ = '0.5.5'
 
 
 class Extension(ext.Extension):
@@ -34,6 +34,10 @@ class Extension(ext.Extension):
         schema['display_max_brightness'] = config.Integer()
         schema['display_off_time_from'] = config.Integer()
         schema['display_off_time_to'] = config.Integer()
+        schema['equalizer_enabled'] = config.Boolean()
+        schema['equalizer_bars_number'] = config.Integer()
+        schema['equalizer_output_bit_format'] = config.String()
+        schema['equalizer_raw_target'] = config.String()
         return schema
 
     def setup(self, registry):

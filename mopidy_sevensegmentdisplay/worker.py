@@ -1,5 +1,6 @@
 import logging
 from time import sleep
+from .equalizer import Equalizer
 from .threader import Threader
 from .music import Music
 from .display import DisplayWithPowerSaving
@@ -25,6 +26,7 @@ class Worker(Threader):
     time = None
     date = None
     menu = None
+    equalizer = None
 
     response_code = None
 
@@ -65,13 +67,21 @@ class Worker(Threader):
                 self.display,
                 self.MENU,
                 [self.time, self.date, self.timer_on, self.timer_off, self.timer_alert])
+            self.equalizer = Equalizer(
+                self.config['equalizer_enabled'],
+                self.config['equalizer_bars_number'],
+                self.config['equalizer_output_bit_format'],
+                self.config['equalizer_raw_target'])
 
             while True:
-                self.menu.run()
-
                 if (self.stopped()):
                     break
+
+                if (self.config['equalizer_enabled'] and self._music.is_playing() and not self.menu.is_sub_menu_visible()):
+                    self._display.draw(self.equalizer.get_draw_buffer())
+                    sleep(1)
                 else:
+                    self.menu.run()
                     sleep(1)
 
         except Exception as inst:
