@@ -73,8 +73,8 @@ class Worker(Threader):
                 if (self.stopped()):
                     break
 
-                if (self.config['equalizer_enabled'] and self._music.is_playing() and not self.menu.is_sub_menu_visible()):
-                    self._display.draw(self.equalizer.get_draw_buffer())
+                if (self.config['equalizer_enabled'] and self.music.is_playing() and not self.menu.is_sub_menu_visible()):
+                    self.display.draw(self.equalizer.get_draw_buffer())
                     sleep(1)
                 else:
                     self.menu.run()
