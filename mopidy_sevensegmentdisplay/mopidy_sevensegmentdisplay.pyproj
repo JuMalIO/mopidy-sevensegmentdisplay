@@ -37,6 +37,7 @@
     <Compile Include="__init__.py" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="cava.config" />
     <Content Include="ext.conf" />
     <Content Include="run.sh" />
     <Content Include="static\bootstrap-theme.css" />

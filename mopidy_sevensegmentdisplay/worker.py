@@ -67,22 +67,23 @@ class Worker(Threader):
                 self.display,
                 self.MENU,
                 [self.time, self.date, self.timer_on, self.timer_off, self.timer_alert])
-            self.equalizer = Equalizer(self.config['equalizer_enabled'])
+            self.equalizer = Equalizer(self.display, self.music, self.config['equalizer_enabled'])
 
             while True:
                 if (self.stopped()):
                     break
 
-                if (self.config['equalizer_enabled'] and self.music.is_playing() and not self.menu.is_sub_menu_visible()):
-                    self.display.draw(self.equalizer.get_draw_buffer())
-                    sleep(1)
+                if (self.equalizer.is_visible() and not self.menu.is_sub_menu_visible()):
+                    self.equalizer.run()
                 else:
+                    self.equalizer.stop()
                     self.menu.run()
                     sleep(1)
 
         except Exception as inst:
             logging.error(inst)
         finally:
+            self.equalizer.stop()
             self.ir_sender.stop()
             self.display.stop()
             self.gpio.cleanup()
