@@ -62,11 +62,9 @@ class Equalizer:
     def stop(self):
         if (self._process is not None):
             self._source.close()
-            self._process.join()
-            self._process.close()
-            self._process.kill()
-            self._process = None
             self._source = None
+            self._process.terminate()
+            self._process = None
 
     def _get_draw_buffer(self):
         if (self._source is not None):
