@@ -13,6 +13,7 @@ class Equalizer:
         self._display = display
         self._music = music
         self._equalizer_enabled = equalizer_enabled
+        self._process = None
 
         self._sample = [
             Symbols.NONE,
@@ -46,7 +47,7 @@ class Equalizer:
         return self._equalizer_enabled and self._music.is_playing()
 
     def run(self):
-        if (self._process is None and self._config_file_name is not None):
+        if (self._process is None):
             self._process = subprocess.Popen(["cava", "-p", self._config_file_name], stdout=subprocess.PIPE)
 
             if (self._output_raw_target != "/dev/stdout"):
