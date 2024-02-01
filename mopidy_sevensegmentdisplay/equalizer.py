@@ -76,10 +76,10 @@ class Equalizer:
         return self._sample
 
     def _getSymbol(self, ratio):
-        if (ratio > 0.1):
+        if (ratio > 0.8):
             return Symbols.TOP
         elif (ratio > 0.4):
             return Symbols.MIDDLE
-        elif (ratio > 0.8):
+        elif (ratio > 0.1):
             return Symbols.BOTTOM
         return Symbols.NONE
