@@ -70,7 +70,7 @@ class SevenSegmentDisplay(object):
         self._spi = spidev.SpiDev()
         self._spi.open(spi_bus, spi_device)
         self._spi.cshigh = False
-        self._spi.max_speed_hz = 8000000
+        self._spi.max_speed_hz = 488000
 
         self.command(Constants.MAX7219_REG_SCANLIMIT, 7)    # show all 8 digits
         self.command(Constants.MAX7219_REG_DECODEMODE, 0)   # use matrix (not digits)
