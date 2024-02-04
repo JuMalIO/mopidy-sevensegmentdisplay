@@ -1,7 +1,7 @@
 import colorsys
 import random
 import RPi.GPIO as GPIO
-from lib_nrf24 import NRF24
+from .lib_nrf24 import NRF24
 
 
 class Led:
