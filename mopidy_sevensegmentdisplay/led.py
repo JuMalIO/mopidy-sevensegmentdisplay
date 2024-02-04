@@ -40,7 +40,7 @@ class Led:
 
         c = colorsys.hsv_to_rgb(hue / 360.0, sat, val)
             
-        self._radio.write([0, c[0] * 255, c[1] * 255, c[2] * 255])
+        self._radio.write([0, int(c[0] * 255), int(c[1] * 255), int(c[2] * 255)])
 
     def setRandomColor(self):
         self.setColor(random.random() * 360)
