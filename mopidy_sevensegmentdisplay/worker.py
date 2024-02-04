@@ -85,8 +85,9 @@ class Worker(Threader):
         finally:
             self.equalizer.stop()
             self.ir_sender.stop()
-            self.display.stop()
+            self.led.setNoneColor()
             self.led.stop()
+            self.display.stop()
             self.gpio.cleanup()
 
     def _init_menu(self):
@@ -232,7 +233,7 @@ class Worker(Threader):
             self._increase_timer()
 
     def _on_light_sensor(self, now, is_dark):
-        self.led.sendRandom();
+        self.led.setRandomColor();
 
         if (self.music.is_playing() and
             (now.hour >= self.config['light_sensor_time_from'] or now.hour < self.config['light_sensor_time_to'])):
@@ -318,12 +319,14 @@ class Worker(Threader):
         self.menu.draw_sub_menu_animation(self.music.get_draw_stop_animation())
         self.timer_off.reset()
         self.ir_sender.power(False)
+        self.led.setNoneColor()
 
     def on_playing(self):
         self.menu.draw_sub_menu_animation(self.music.get_draw_play_animation())
         self.timer_on.reset()
         if (self.music.is_playing()):
             self.ir_sender.power(True)
+            self.led.setRandomColor()
 
     def on_paused(self):
         self.menu.draw_sub_menu_animation(self.music.get_draw_pause_animation())

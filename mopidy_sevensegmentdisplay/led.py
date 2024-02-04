@@ -34,7 +34,7 @@ class Led:
         self._radio.openWritingPipe(pipe)
         self._radio.printDetails()
         
-    def send(self, hue, sat = 1, val = 1):
+    def setColor(self, hue, sat = 1, val = 1):
         if self._radio is None:
             return
 
@@ -42,8 +42,11 @@ class Led:
             
         self._radio.write([0, c[0] * 255, c[1] * 255, c[2] * 255])
 
-    def sendRandom(self):
-        self.send(random.random() * 360)
+    def setRandomColor(self):
+        self.setColor(random.random() * 360)
+
+    def setNoneColor(self):
+        self.setColor(0, 0, 0)
         
     def stop(self):
         if self._spi is None:
