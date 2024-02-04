@@ -109,42 +109,16 @@ class Display(object):
 
 class DisplayWithPowerSaving(Display):
 
-    def __init__(self, display_enabled, display_min_brightness, display_max_brightness, display_off_time_from, display_off_time_to):
+    def __init__(self, display_enabled, display_min_brightness, display_max_brightness):
         super(DisplayWithPowerSaving, self).__init__(display_enabled)
         self._display_min_brightness = display_min_brightness
         self._display_max_brightness = display_max_brightness
-        self._display_off_time_from = display_off_time_from
-        self._display_off_time_to = display_off_time_to
-        self._display_power_on = datetime.now()
-
-    def is_power_on(self):
-        now = datetime.now()
-        if (self._is_power_on(now)):
-            self._set_power_on()
-            self._set_brightness(now)
-            return True
-        else:
-            self._set_power_off()
-            return False
-
-    def set_power_on(self):
-        now = datetime.now()
-        if (not self._is_power_on(now)):
-            self._set_power_on()
-            self._display_power_on = now
-
-    def _is_power_on(self, now):
-        return (self._display_power_on.day == now.day and
-                self._display_power_on.month == now.month and
-                self._display_power_on.year == now.year) or (not self._is_work_time(now))
-
-    def _is_work_time(self, now):
-        return now.weekday() < 5 and now.hour > self._display_off_time_from and now.hour < self._display_off_time_to
 
     # hour       - 9 10 11 12 13 14 15 16 17 18 19 20 -
     # brightness 2 3  4  5  6  7  8  8  7  6  5  4  3 2
     # when display_min_brightness=2 and display_max_brightness=8
-    def _set_brightness(self, now):
+    def update_brightness(self):
+        now = datetime.now()
         hour = now.hour
         brightness = self._display_min_brightness
         if (hour >= 9 and hour <= 20):
@@ -155,9 +129,3 @@ class DisplayWithPowerSaving(Display):
                 brightness = int(round(
                     self._display_min_brightness + (self._display_max_brightness - self._display_min_brightness) / 6 * (20 - hour + 1)))
         super(DisplayWithPowerSaving, self).set_brightness(brightness)
-
-    def _set_power_on(self):
-        super(DisplayWithPowerSaving, self).shutdown(False)
-
-    def _set_power_off(self):
-        super(DisplayWithPowerSaving, self).shutdown()

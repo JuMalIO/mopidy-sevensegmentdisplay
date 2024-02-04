@@ -23,8 +23,8 @@ class Menu:
 
         self._run_modules()
 
-        if (self._display.is_power_on()):
-            self._draw_module()
+        self._display.update_brightness()
+        self._draw_module()
 
     def reset_sub_menu(self):
         self._set_sub_menu(self._menu)
@@ -141,7 +141,6 @@ class Menu:
         self._sub_menu_index = 0
 
     def _set_sub_menu_visible(self, seconds=5):
-        self._display.set_power_on()
         self._sub_menu_visible = seconds
         self._module_index = 0
         self._module_visible = 0

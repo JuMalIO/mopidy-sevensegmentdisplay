@@ -11,6 +11,7 @@ from .clock import Time, Date
 from .menu import Menu
 from .max7219 import Symbols
 from .alert import Alert
+from .led import Led
 
 
 class Worker(Threader):
@@ -42,9 +43,7 @@ class Worker(Threader):
             self.display = DisplayWithPowerSaving(
                 self.config['display_enabled'],
                 self.config['display_min_brightness'],
-                self.config['display_max_brightness'],
-                self.config['display_off_time_from'],
-                self.config['display_off_time_to'])
+                self.config['display_max_brightness'])
             self.gpio = Gpio(
                 self.config['buttons_enabled'],
                 self.play_stop_music,
@@ -68,6 +67,7 @@ class Worker(Threader):
                 self.MENU,
                 [self.time, self.date, self.timer_on, self.timer_off, self.timer_alert])
             self.equalizer = Equalizer(self.display, self.music, self.config['equalizer_enabled'])
+            self.led = Led(self.config['led_enabled'])
 
             while True:
                 if (self.stopped()):
@@ -86,6 +86,7 @@ class Worker(Threader):
             self.equalizer.stop()
             self.ir_sender.stop()
             self.display.stop()
+            self.led.stop()
             self.gpio.cleanup()
 
     def _init_menu(self):
@@ -231,6 +232,8 @@ class Worker(Threader):
             self._increase_timer()
 
     def _on_light_sensor(self, now, is_dark):
+        self.led.sendRandom();
+
         if (self.music.is_playing() and
             (now.hour >= self.config['light_sensor_time_from'] or now.hour < self.config['light_sensor_time_to'])):
             if (is_dark):
