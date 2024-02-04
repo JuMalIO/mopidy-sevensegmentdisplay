@@ -15,7 +15,7 @@ class Led:
 
         GPIO.setmode(GPIO.BCM)
 
-        pipe = ["T", "x", "_", "_", "1"]
+        pipe = [0xF0, 0xF0, 0xF0, 0xF0, 0xE1]
 
         import spidev
         self._spi = spidev.SpiDev()
