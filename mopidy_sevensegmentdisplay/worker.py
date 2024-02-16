@@ -324,9 +324,10 @@ class Worker(Threader):
     def on_playing(self):
         self.menu.draw_sub_menu_animation(self.music.get_draw_play_animation())
         self.timer_on.reset()
+        self.led.setRandomColor()
+
         if (self.music.is_playing()):
             self.ir_sender.power(True)
-            self.led.setRandomColor()
 
     def on_paused(self):
         self.menu.draw_sub_menu_animation(self.music.get_draw_pause_animation())
@@ -339,6 +340,9 @@ class Worker(Threader):
             self.on_volume_changed(0)
         else:
             self.on_volume_changed()
+
+    def on_new_track_playing(self):
+        self.led.setRandomColor()
 
     def on_volume_changed(self, volume=None):
         if (self.menu is not None and self.music is not None and self.music.is_volume_changed(volume)):
