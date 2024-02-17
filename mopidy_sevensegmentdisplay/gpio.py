@@ -8,11 +8,11 @@ from .threader import Threader
 
 
 class Gpio:
-    POWER_BUTTON_PIN = 19  # StandBy-On
+    POWER_BUTTON_PIN = 12  # StandBy-On
     MENU_BUTTON_PIN = 13   # Open/Close
     LEFT_BUTTON_PIN = 5    # Play/Pause
     RIGHT_BUTTON_PIN = 6   # Stop
-    LIGHT_SENSOR_PIN = 27
+    LIGHT_SENSOR_PIN = 26
     RELAY_PIN = 4
 
     def __init__(self, buttons_enabled, on_power, on_menu, on_left, on_right, light_sensor_enabled, on_light, relay_enabled):
