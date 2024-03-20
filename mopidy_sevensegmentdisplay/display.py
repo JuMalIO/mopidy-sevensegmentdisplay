@@ -1,6 +1,5 @@
 import threading
 import logging
-from datetime import datetime
 from .max7219 import SevenSegmentDisplay, Symbols
 from .animation import Animation, BlinkAnimation, ScrollDownAnimation, ScrollUpAnimation, ScrollLeftAnimation, ScrollRightAnimation
 
@@ -109,23 +108,15 @@ class Display(object):
 
 class DisplayWithPowerSaving(Display):
 
-    def __init__(self, display_enabled, display_min_brightness, display_max_brightness):
+    def __init__(self, display_enabled, light_sensor, display_min_brightness, display_max_brightness):
         super(DisplayWithPowerSaving, self).__init__(display_enabled)
+        self._light_sensor = light_sensor
         self._display_min_brightness = display_min_brightness
         self._display_max_brightness = display_max_brightness
 
-    # hour       - 9 10 11 12 13 14 15 16 17 18 19 20 -
-    # brightness 2 3  4  5  6  7  8  8  7  6  5  4  3 2
-    # when display_min_brightness=2 and display_max_brightness=8
     def update_brightness(self):
-        now = datetime.now()
-        hour = now.hour
-        brightness = self._display_min_brightness
-        if (hour >= 9 and hour <= 20):
-            if (hour < 15):
-                brightness = int(round(
-                    self._display_min_brightness + (self._display_max_brightness - self._display_min_brightness) / 6 * (hour - 9 + 1)))
-            else:
-                brightness = int(round(
-                    self._display_min_brightness + (self._display_max_brightness - self._display_min_brightness) / 6 * (20 - hour + 1)))
+        value = self._light_sensor.getValue()
+
+        brightness = int(round(self._display_min_brightness + (self._display_max_brightness - self._display_min_brightness) * value))
+        
         super(DisplayWithPowerSaving, self).set_brightness(brightness)

@@ -2,6 +2,7 @@ import logging
 from time import sleep
 from .equalizer import Equalizer
 from .threader import Threader
+from .light_sensor import LightSensor
 from .music import Music
 from .display import DisplayWithPowerSaving
 from .ir import IrSender
@@ -19,6 +20,7 @@ class Worker(Threader):
     music = None
     display = None
     gpio = None
+    light_sensor = None
     ir_sender = None
     timer_on = None
     timer_off = None
@@ -40,8 +42,13 @@ class Worker(Threader):
         try:
             self._init_menu()
             self.music = Music(self.core, self.config['default_tracks'], self.config['default_preset'])
+            self.light_sensor = LightSensor(
+                self.config['light_sensor_enabled'],
+                self._on_light_sensor_sudden_change,
+                self._on_light_sensor_sudden_change_timeout)
             self.display = DisplayWithPowerSaving(
                 self.config['display_enabled'],
+                self.light_sensor
                 self.config['display_min_brightness'],
                 self.config['display_max_brightness'])
             self.gpio = Gpio(
@@ -50,8 +57,6 @@ class Worker(Threader):
                 self._on_menu_click,
                 self._on_menu_click_left,
                 self._on_menu_click_right,
-                self.config['light_sensor_enabled'],
-                self._on_light_sensor,
                 self.config['relay_enabled'])
             self.ir_sender = IrSender(self.config['ir_remote'], self.gpio.switch_relay)
             self.timer_on = TimerOn(self.play_music)
@@ -232,23 +237,30 @@ class Worker(Threader):
         else:
             self._increase_timer()
 
-    def _on_light_sensor(self, now, is_dark):
-        self.led.setRandomColor();
-
-        if (self.music.is_playing() and
-            (now.hour >= self.config['light_sensor_time_from'] or now.hour < self.config['light_sensor_time_to'])):
+    def _on_light_sensor_sudden_change(self, now, is_dark):
+        if (self.music.is_playing()):
+            if (now.hour >= self.config['light_sensor_time_from'] or now.hour < self.config['light_sensor_time_to']):
+                if (is_dark):
+                    if (self.music.get_volume() > self.config['light_sensor_volume']):
+                        self.music.set_volume(self.config['light_sensor_volume'])
+                    self.music.set_preset(self.config['light_sensor_preset'])
+                    self.timer_off.reset()
+                    self.timer_off.increase()
+                    self.timer_off.increase()
+                    self.timer_off.increase()
+                    self.timer_off.increase()
+                    self.menu.draw_sub_menu_animation(self.light_sensor.get_draw_sleep_animation())
+                else:
+                    self.timer_off.reset()
+        else:
             if (is_dark):
-                if (self.music.get_volume() > self.config['light_sensor_volume']):
-                    self.music.set_volume(self.config['light_sensor_volume'])
-                self.music.set_preset(self.config['light_sensor_preset'])
-                self.timer_off.reset()
-                self.timer_off.increase()
-                self.timer_off.increase()
-                self.timer_off.increase()
-                self.timer_off.increase()
-                self.menu.draw_sub_menu_animation(self.gpio.get_draw_sleep_animation())
+                self.led.setRandomColor()
             else:
-                self.timer_off.reset()
+                self.led.setNoneColor()
+
+    def _on_light_sensor_sudden_change_timeout(self):
+        if (not self.music.is_playing()):
+            self.led.setNoneColor()
 
     def _on_change_preset(self, value):
         self.music.set_preset(value)
