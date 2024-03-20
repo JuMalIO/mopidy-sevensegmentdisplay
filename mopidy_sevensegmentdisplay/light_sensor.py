@@ -48,9 +48,10 @@ class LightSensor(Threader):
     _max_value = 26000
     _channel = None
 
-    def __init__(self, enabled, sudden_change_callback, sudden_change_timeout_callback):
+    def __init__(self, enabled, timeout, sudden_change_callback, sudden_change_timeout_callback):
         super(LightSensor, self).__init__()
         
+        self._timeout = timeout
         self._sudden_change_callback = sudden_change_callback
         self._sudden_change_timeout_callback = sudden_change_timeout_callback
 
@@ -71,8 +72,7 @@ class LightSensor(Threader):
         # Define the analog input channel
         self._channel = AnalogIn(ads, ADS.P0)
 
-        self._light_sensor.start()
-
+        super(LightSensor, self).start()
 
     def run(self):
         previous_value = self.getValue()
@@ -93,14 +93,14 @@ class LightSensor(Threader):
                 self._sudden_change_callback(datetime.now(), False)
                 timeout = 0
 
-            if (timeout > 20 * 60 * 0.05 * 20):
+            if (timeout > self._timeout * 60 * 0.05 * 20):
                 self._sudden_change_timeout_callback()
                 timeout = -1
 
             previous_value = value
 
             if (timeout >= 0):
-                timeout++
+                timeout += 1
 
             time.sleep(0.05)
 
@@ -114,4 +114,4 @@ class LightSensor(Threader):
         return self._channel.value / self._max_value
     
     def get_draw_sleep_animation(self):
-        return self._light_sensor.ANIMATION_SLEEP
+        return self.ANIMATION_SLEEP

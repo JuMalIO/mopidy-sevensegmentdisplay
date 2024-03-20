@@ -3,7 +3,7 @@ from mopidy import config, ext
 from .http import factory_decorator
 from .actor import Frontend
 
-__version__ = '0.6.9'
+__version__ = '0.7.0'
 
 
 class Extension(ext.Extension):
@@ -25,6 +25,7 @@ class Extension(ext.Extension):
         schema['default_tracks'] = config.String()
         schema['default_volume'] = config.Integer()
         schema['default_preset'] = config.String()
+        schema['light_sensor_timeout'] = config.Integer()
         schema['light_sensor_volume'] = config.Integer()
         schema['light_sensor_preset'] = config.String()
         schema['light_sensor_time_from'] = config.Integer()

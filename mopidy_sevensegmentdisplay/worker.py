@@ -44,11 +44,12 @@ class Worker(Threader):
             self.music = Music(self.core, self.config['default_tracks'], self.config['default_preset'])
             self.light_sensor = LightSensor(
                 self.config['light_sensor_enabled'],
+                self.config['light_sensor_timeout'],
                 self._on_light_sensor_sudden_change,
                 self._on_light_sensor_sudden_change_timeout)
             self.display = DisplayWithPowerSaving(
                 self.config['display_enabled'],
-                self.light_sensor
+                self.light_sensor,
                 self.config['display_min_brightness'],
                 self.config['display_max_brightness'])
             self.gpio = Gpio(
