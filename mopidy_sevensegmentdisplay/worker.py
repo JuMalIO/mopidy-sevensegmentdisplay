@@ -59,6 +59,7 @@ class Worker(Threader):
                 self._on_menu_click_left,
                 self._on_menu_click_right,
                 self.config['relay_enabled'])
+            self.led = Led(self.config['led_enabled'])
             self.ir_sender = IrSender(self.config['ir_remote'], self.gpio.switch_relay)
             self.timer_on = TimerOn(self.play_music)
             self.timer_off = TimerOff(self.stop_music)
@@ -73,7 +74,6 @@ class Worker(Threader):
                 self.MENU,
                 [self.time, self.date, self.timer_on, self.timer_off, self.timer_alert])
             self.equalizer = Equalizer(self.display, self.music, self.config['equalizer_enabled'])
-            self.led = Led(self.config['led_enabled'])
 
             while True:
                 if (self.stopped()):
@@ -93,8 +93,9 @@ class Worker(Threader):
             self.ir_sender.stop()
             self.led.setNoneColor()
             self.led.stop()
-            self.display.stop()
             self.gpio.cleanup()
+            self.display.stop()
+            self.light_sensor.stop()
 
     def _init_menu(self):
         self.MENU = {

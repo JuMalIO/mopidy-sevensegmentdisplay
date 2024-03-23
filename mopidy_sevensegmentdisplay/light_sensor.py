@@ -64,20 +64,20 @@ class LightSensor(Threader):
         from adafruit_ads1x15.analog_in import AnalogIn
 
         # Initialize the I2C interface
-        i2c = busio.I2C(board.SCL, board.SDA)
+        self._i2c = busio.I2C(board.SCL, board.SDA)
 
         # Create an ADS1115 object
-        ads = ADS.ADS1115(i2c)
+        self._ads = ADS.ADS1115(self._i2c)
 
         # Define the analog input channel
-        self._channel = AnalogIn(ads, ADS.P0)
+        self._channel = AnalogIn(self._ads, ADS.P0)
 
         super(LightSensor, self).start()
 
     def run(self):
         previous_value = self.getValue()
         timeout = -1
-        min_value = 100 / self._max_value
+        min_value = 200 / self._max_value
         max_value = 500 / self._max_value
 
         while (True):
@@ -86,14 +86,14 @@ class LightSensor(Threader):
 
             value = self.getValue()
 
-            if (value < min_value != previous_value > max_value):
+            if (value < min_value and previous_value > max_value):
                 self._sudden_change_callback(datetime.now(), True)
                 timeout = 0
-            elif (value > max_value != previous_value < min_value):
+            elif (value > max_value and previous_value < min_value):
                 self._sudden_change_callback(datetime.now(), False)
                 timeout = 0
 
-            if (timeout > self._timeout * 60 * 0.05 * 20):
+            if (timeout > self._timeout * 60 * 10):
                 self._sudden_change_timeout_callback()
                 timeout = -1
 
@@ -102,7 +102,9 @@ class LightSensor(Threader):
             if (timeout >= 0):
                 timeout += 1
 
-            time.sleep(0.05)
+            time.sleep(0.1)
+
+        self._i2c.deinit()
 
     def getValue(self):
         if (self._channel is None):
