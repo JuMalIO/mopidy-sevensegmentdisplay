@@ -85,7 +85,7 @@
 <script>
     const alwan = new Alwan('#colorPicker', {
         margin: 8,
-        color: 'red',
+        color: 'black',
         inputs: { hex: false, rgb: false, hsl: false },
         opacity: false,
         preview: false,
@@ -93,7 +93,7 @@
         swatches: []
     });
 
-    alwan.on('color', (color) => post({ red: color.r, green: color.g, blue: color.b }));
+    alwan.on('change', (color) => post({ red: color.r, green: color.g, blue: color.b }, false));
 </script>
 
 {% end %}

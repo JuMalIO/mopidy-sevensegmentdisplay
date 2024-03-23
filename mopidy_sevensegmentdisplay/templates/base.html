@@ -24,13 +24,15 @@
     <script src="/sevensegmentdisplay/static/bootstrap.js"></script>
 
     <script>
-        function post(data) {
+        function post(data, reload = true) {
             $.ajax({
                 type: 'POST',
                 url: "/sevensegmentdisplay/api/",
                 data: data,
                 success: function () {
-                    window.location.href = window.location.href;
+                    if (reload) {
+                        window.location.href = window.location.href;
+                    }
                 }
             });
         }
