@@ -287,6 +287,9 @@ class Worker(Threader):
             self.timer_on.decrease()
             self.menu.draw_sub_menu(self.MENU_TIMER_ON)
 
+    def set_led_color(self, red, green, blue):
+        self.led.setColor(red, green, blue)
+
     def run_alert(self):
         self.menu.draw_sub_menu_animation(self.alert.get_draw_alert_animation())
         self.alert.run()

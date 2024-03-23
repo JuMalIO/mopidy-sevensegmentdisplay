@@ -43,6 +43,8 @@
     <Content Include="cava.config" />
     <Content Include="ext.conf" />
     <Content Include="run.sh" />
+    <Content Include="static\alwan.min.css" />
+    <Content Include="static\alwan.min.js" />
     <Content Include="static\bootstrap-theme.css" />
     <Content Include="static\bootstrap.css" />
     <Content Include="static\bootstrap.js" />

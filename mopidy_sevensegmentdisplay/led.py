@@ -35,14 +35,12 @@ class Led:
         self._radio.openWritingPipe(pipes[0])
         self._radio.openReadingPipe(1, pipes[1])
         self._radio.printDetails()
-        
-    def setColor(self, hue, sat = 1, val = 1):
+
+    def setColor(self, red, green, blue):
         if self._radio is None:
             return
 
-        c = colorsys.hsv_to_rgb(hue / 360.0, sat, val)
-            
-        self._radio.write([0, int(c[0] * 255), int(c[1] * 255), int(c[2] * 255)])
+        self._radio.write([0, red, green, blue])
 
         if self._radio.isAckPayloadAvailable():
             buffer = []
@@ -51,10 +49,14 @@ class Led:
             logging.info(buffer)
         else:
             logging.info("Received: Ack only, no payload")
-
+        
+    def setColorHsv(self, hue, sat = 1, val = 1):
+        c = colorsys.hsv_to_rgb(hue / 360.0, sat, val)
+            
+        self.setColor(int(c[0] * 255), int(c[1] * 255), int(c[2] * 255))
 
     def setRandomColor(self):
-        self.setColor(random.random() * 360)
+        self.setColorHsv(random.random() * 360)
 
     def setNoneColor(self):
         self.setColor(0, 0, 0)

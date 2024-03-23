@@ -81,6 +81,12 @@ class ApiRequestHandler(BaseRequestHandler):
         if (preset != ''):
             self.worker.set_preset(preset)
 
+        red = int(self.get_argument('red', None))
+        green = int(self.get_argument('green', None))
+        blue = int(self.get_argument('blue', None))
+        if (red is not None and green is not None and blue is not None):
+            self.worker.set_led_color(red, green, blue)
+
         self.write(str(self.worker.get_volume()))
         self.write(self.worker.get_state())
 
