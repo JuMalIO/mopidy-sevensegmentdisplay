@@ -84,6 +84,7 @@ class Worker(Threader):
                 else:
                     self.equalizer.stop()
                     self.menu.run()
+                    self.led.run()
                     sleep(1)
 
         except Exception as inst:
@@ -92,7 +93,6 @@ class Worker(Threader):
             self.equalizer.stop()
             self.ir_sender.stop()
             self.led.setNoneColor()
-            self.led.stop()
             self.gpio.cleanup()
             self.display.stop()
             self.light_sensor.stop()
