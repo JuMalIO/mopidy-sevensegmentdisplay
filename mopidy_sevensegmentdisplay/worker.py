@@ -92,7 +92,7 @@ class Worker(Threader):
         finally:
             self.equalizer.stop()
             self.ir_sender.stop()
-            self.led.setNoneColor()
+            self.led.set_none_color()
             self.gpio.cleanup()
             self.display.stop()
             self.light_sensor.stop()
@@ -256,13 +256,13 @@ class Worker(Threader):
                     self.timer_off.reset()
         else:
             if (is_dark):
-                self.led.setRandomColor()
+                self.led.set_random_color()
             else:
-                self.led.setNoneColor()
+                self.led.set_none_color()
 
     def _on_light_sensor_sudden_change_timeout(self):
         if (not self.music.is_playing()):
-            self.led.setNoneColor()
+            self.led.set_none_color()
 
     def _on_change_preset(self, value):
         self.music.set_preset(value)
@@ -288,7 +288,7 @@ class Worker(Threader):
             self.menu.draw_sub_menu(self.MENU_TIMER_ON)
 
     def set_led_color(self, red, green, blue):
-        self.led.setColor(red, green, blue)
+        self.led.set_color(red, green, blue)
 
     def run_alert(self):
         self.menu.draw_sub_menu_animation(self.alert.get_draw_alert_animation())
@@ -336,12 +336,12 @@ class Worker(Threader):
         self.menu.draw_sub_menu_animation(self.music.get_draw_stop_animation())
         self.timer_off.reset()
         self.ir_sender.power(False)
-        self.led.setNoneColor()
+        self.led.set_none_color()
 
     def on_playing(self):
         self.menu.draw_sub_menu_animation(self.music.get_draw_play_animation())
         self.timer_on.reset()
-        self.led.setRandomColor()
+        self.led.set_random_color()
 
         if (self.music.is_playing()):
             self.ir_sender.power(True)
@@ -359,7 +359,7 @@ class Worker(Threader):
             self.on_volume_changed()
 
     def on_new_track_playing(self):
-        self.led.setRandomColor()
+        self.led.set_random_color()
 
     def on_volume_changed(self, volume=None):
         if (self.menu is not None and self.music is not None and self.music.is_volume_changed(volume)):

@@ -6,7 +6,7 @@ from .lib_nrf24 import NRF24
 
 
 class Led:
-    
+
     def __init__(self, led_enabled):
         self._radio = None
         self._pipes = []
@@ -16,7 +16,7 @@ class Led:
             return
 
         GPIO.setmode(GPIO.BCM)
-        
+
         readingPipe = [0xF0, 0xF0, 0xF0, 0xF0, 0xE1]
 
         import spidev
@@ -35,7 +35,6 @@ class Led:
         self._radio.setPALevel(NRF24.PA_MAX)
         self._radio.setAutoAck(True)
         self._radio.openReadingPipe(1, readingPipe)
-        self._radio.printDetails()
 
         self._radio.startListening()
 
@@ -60,8 +59,7 @@ class Led:
 
             self._pipes.append([r[1], r[2], r[3], r[4], r[5]])
 
-
-    def setColor(self, red, green, blue):
+    def set_color(self, red, green, blue):
         try:
             if self._radio is None:
                 return
@@ -85,13 +83,13 @@ class Led:
         except Exception as inst:
             logging.error(inst)
         
-    def setColorHsv(self, hue, sat = 1, val = 1):
+    def set_color_hsv(self, hue, sat = 1, val = 1):
         c = colorsys.hsv_to_rgb(hue / 360.0, sat, val)
             
-        self.setColor(int(c[0] * 255), int(c[1] * 255), int(c[2] * 255))
+        self.set_color(int(c[0] * 255), int(c[1] * 255), int(c[2] * 255))
 
-    def setRandomColor(self):
-        self.setColorHsv(random.random() * 360)
+    def set_random_color(self):
+        self.set_color_hsv(random.random() * 360)
 
-    def setNoneColor(self):
-        self.setColor(0, 0, 0)
+    def set_none_color(self):
+        self.set_color(0, 0, 0)

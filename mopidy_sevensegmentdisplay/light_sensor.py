@@ -47,6 +47,7 @@ class LightSensor(Threader):
 
     _max_value = 26000
     _channel = None
+    _value = 0.5
 
     def __init__(self, enabled, timeout, sudden_change_callback, sudden_change_timeout_callback):
         super(LightSensor, self).__init__()
@@ -75,7 +76,7 @@ class LightSensor(Threader):
         super(LightSensor, self).start()
 
     def run(self):
-        previous_value = self.getValue()
+        previous_value = self.read_value()
         timeout = -1
         min_value = 200 / self._max_value
         max_value = 500 / self._max_value
@@ -84,12 +85,12 @@ class LightSensor(Threader):
             if (self.stopped()):
                 break
 
-            value = self.getValue()
+            self._value = self.read_value()
 
-            if (value < min_value and previous_value > max_value):
+            if (self._value < min_value and previous_value > max_value):
                 self._sudden_change_callback(datetime.now(), True)
                 timeout = 0
-            elif (value > max_value and previous_value < min_value):
+            elif (self._value > max_value and previous_value < min_value):
                 self._sudden_change_callback(datetime.now(), False)
                 timeout = 0
 
@@ -97,7 +98,7 @@ class LightSensor(Threader):
                 self._sudden_change_timeout_callback()
                 timeout = -1
 
-            previous_value = value
+            previous_value = self._value
 
             if (timeout >= 0):
                 timeout += 1
@@ -106,14 +107,19 @@ class LightSensor(Threader):
 
         self._i2c.deinit()
 
-    def getValue(self):
+    def read_value(self):
         if (self._channel is None):
             return 0.5
-        
-        if (self._channel.value > self._max_value):
+
+        value = self._channel.value
+
+        if (value > self._max_value):
             return 1
 
-        return self._channel.value / self._max_value
+        return value / self._max_value
+    
+    def get_value(self):
+        return self._value
     
     def get_draw_sleep_animation(self):
         return self.ANIMATION_SLEEP

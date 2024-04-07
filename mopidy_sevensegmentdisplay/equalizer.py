@@ -71,11 +71,11 @@ class Equalizer:
             data = self._source.read(self._chunk)
             if (len(data) < self._chunk):
                 return self._sample
-            self._sample = [self._getSymbol(i / self._bytenorm) for i in struct.unpack(self._fmt, data)]
+            self._sample = [self._get_symbol(i / self._bytenorm) for i in struct.unpack(self._fmt, data)]
 
         return self._sample
 
-    def _getSymbol(self, ratio):
+    def _get_symbol(self, ratio):
         if (ratio > 0.8):
             return Symbols.TOP | Symbols.MIDDLE | Symbols.BOTTOM
         elif (ratio > 0.4):
