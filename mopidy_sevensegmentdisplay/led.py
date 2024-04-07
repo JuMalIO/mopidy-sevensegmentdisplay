@@ -82,10 +82,10 @@ class Led:
             self._radio.startListening()
         except Exception as inst:
             logging.error(inst)
-        
+
     def set_color_hsv(self, hue, sat = 1, val = 1):
         c = colorsys.hsv_to_rgb(hue / 360.0, sat, val)
-            
+
         self.set_color(int(c[0] * 255), int(c[1] * 255), int(c[2] * 255))
 
     def set_random_color(self):

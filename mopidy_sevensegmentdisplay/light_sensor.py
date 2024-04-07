@@ -1,4 +1,5 @@
 import time
+import logging
 from datetime import datetime
 from .max7219 import Symbols
 from .threader import Threader
@@ -111,13 +112,18 @@ class LightSensor(Threader):
         if (self._channel is None):
             return 0.5
 
-        value = self._channel.value
+        try:
+            value = self._channel.value
 
-        if (value > self._max_value):
-            return 1
+            if (value > self._max_value):
+                return 1
 
-        return value / self._max_value
-    
+            return value / self._max_value
+        except Exception as inst:
+            logging.error(inst)
+
+            return self._value
+
     def get_value(self):
         return self._value
     
