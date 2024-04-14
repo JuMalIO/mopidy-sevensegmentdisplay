@@ -11,6 +11,8 @@ from .threader import Threader
 class Led(Threader):
 
     def __init__(self, led_enabled, pipes):
+        super(Led, self).__init__()
+
         self._radio = None
         self._pipes = json.loads(pipes)
         self._size = 8
@@ -55,24 +57,15 @@ class Led(Threader):
 
                 logging.info(data)
 
-                if (data[0] != 1):
-                    return
+                if (data[0] == 1):
+                    new_pipe = [data[1], data[2], data[3], data[4], data[5]]
 
-                newPipe = [data[1], data[2], data[3], data[4], data[5]]
+                    self._radio.stopListening()
+                    self._send(new_pipe, data)
+                    self._radio.startListening()
 
-                self._radio.stopListening()
-                self._send(newPipe, data)
-                self._radio.startListening()
-
-                for pipe in self._pipes:
-                    if (pipe[0] == newPipe[1] and
-                        pipe[1] == newPipe[2] and
-                        pipe[2] == newPipe[3] and
-                        pipe[3] == newPipe[4] and
-                        pipe[4] == newPipe[5]):
-                        return
-
-                self._pipes.append(newPipe)
+                    if (not self._pipe_exists(new_pipe)):
+                        self._pipes.append(new_pipe)
 
             time.sleep(0.2)
 
@@ -99,11 +92,22 @@ class Led(Threader):
 
         self.set_color(int(c[0] * 255), int(c[1] * 255), int(c[2] * 255))
 
-    def set_random_color(self):
-        self.set_color_hsv(random.random() * 360)
+    def set_random_color(self, seed = None):
+        hue = random.random() * 360 if seed is None else random.Random(seed).random()
+        self.set_color_hsv(hue)
 
     def set_none_color(self):
         self.set_color(0, 0, 0)
+
+    def _pipe_exists(self, new_pipe):
+        for pipe in self._pipes:
+            if (pipe[0] == new_pipe[0] and
+                pipe[1] == new_pipe[1] and
+                pipe[2] == new_pipe[2] and
+                pipe[3] == new_pipe[3] and
+                pipe[4] == new_pipe[4]):
+                return True
+        return False
 
     def _send(self, pipe, data):
         self._radio.openWritingPipe(pipe);

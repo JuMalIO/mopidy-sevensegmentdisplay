@@ -255,7 +255,7 @@ class Worker(Threader):
                     self.timer_off.reset()
         else:
             if (is_dark):
-                self.led.set_random_color()
+                self.led.set_random_color(int(now.strftime("%Y%m%d%H%M")))
             else:
                 self.led.set_none_color()
 

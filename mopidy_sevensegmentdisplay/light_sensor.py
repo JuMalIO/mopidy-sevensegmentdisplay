@@ -77,7 +77,10 @@ class LightSensor(Threader):
         super(LightSensor, self).start()
 
     def run(self):
-        previous_value = self.read_value()
+        self._value = self.read_value()
+        size = 10
+        index = 0
+        values = [self._value] * size
         timeout = -1
         min_value = 200 / self._max_value
         max_value = 500 / self._max_value
@@ -88,10 +91,10 @@ class LightSensor(Threader):
 
             self._value = self.read_value()
 
-            if (self._value < min_value and previous_value > max_value):
+            if (self._value < min_value and max(values) > max_value):
                 self._sudden_change_callback(datetime.now(), True)
                 timeout = 0
-            elif (self._value > max_value and previous_value < min_value):
+            elif (self._value > max_value and min(values) < min_value):
                 self._sudden_change_callback(datetime.now(), False)
                 timeout = 0
 
@@ -99,12 +102,14 @@ class LightSensor(Threader):
                 self._sudden_change_timeout_callback()
                 timeout = -1
 
-            previous_value = self._value
+            index = (index + 1) % size
+            values[index] = self._value
 
             if (timeout >= 0):
                 timeout += 1
 
-            time.sleep(0.1)
+            time.sleep(0.05)
+
 
         self._i2c.deinit()
 
