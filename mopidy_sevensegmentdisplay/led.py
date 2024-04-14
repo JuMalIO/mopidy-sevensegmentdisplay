@@ -1,5 +1,6 @@
 import colorsys
 import random
+import json
 import logging
 import time
 import RPi.GPIO as GPIO
@@ -9,9 +10,9 @@ from .threader import Threader
 
 class Led(Threader):
 
-    def __init__(self, led_enabled):
+    def __init__(self, led_enabled, pipes):
         self._radio = None
-        self._pipes = []
+        self._pipes = json.loads(pipes)
         self._size = 8
 
         if (not led_enabled):

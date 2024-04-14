@@ -35,6 +35,7 @@ class Extension(ext.Extension):
         schema['display_max_brightness'] = config.Integer()
         schema['equalizer_enabled'] = config.Boolean()
         schema['led_enabled'] = config.Boolean()
+        schema['led_pipes'] = config.String(optional=True)
         return schema
 
     def setup(self, registry):
