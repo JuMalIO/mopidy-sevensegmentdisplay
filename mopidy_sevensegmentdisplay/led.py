@@ -1,11 +1,13 @@
 import colorsys
 import random
 import logging
+import time
 import RPi.GPIO as GPIO
 from .lib_nrf24 import NRF24
+from .threader import Threader
 
 
-class Led:
+class Led(Threader):
 
     def __init__(self, led_enabled):
         self._radio = None
@@ -38,26 +40,44 @@ class Led:
 
         self._radio.startListening()
 
+        super(Led, self).start()
+
     def run(self):
-        if self._radio.available():
-            r = []
+        while (True):
+            if (self.stopped()):
+                break
 
-            self._radio.read(r, self._size)
+            if (self._radio.available()):
+                data = []
 
-            logging.info(r)
+                self._radio.read(data, self._size)
 
-            if (r[0] != 1):
-                return
+                logging.info(data)
 
-            for pipe in self._pipes:
-                if (pipe[0] == r[1] and
-                    pipe[1] == r[2] and
-                    pipe[2] == r[3] and
-                    pipe[3] == r[4] and
-                    pipe[4] == r[5]):
+                if (data[0] != 1):
                     return
 
-            self._pipes.append([r[1], r[2], r[3], r[4], r[5]])
+                newPipe = [data[1], data[2], data[3], data[4], data[5]]
+
+                self._radio.stopListening()
+                self._send(newPipe, data)
+                self._radio.startListening()
+
+                for pipe in self._pipes:
+                    if (pipe[0] == newPipe[1] and
+                        pipe[1] == newPipe[2] and
+                        pipe[2] == newPipe[3] and
+                        pipe[3] == newPipe[4] and
+                        pipe[4] == newPipe[5]):
+                        return
+
+                self._pipes.append(newPipe)
+
+            time.sleep(0.2)
+
+    def stop(self):
+        self.set_none_color()
+        super(Led, self).stop()
 
     def set_color(self, red, green, blue):
         try:
@@ -67,17 +87,7 @@ class Led:
             self._radio.stopListening()
 
             for pipe in self._pipes:
-                self._radio.openWritingPipe(pipe);
-
-                self._radio.write([0, red, green, blue])
-
-                if self._radio.isAckPayloadAvailable():
-                    buffer = []
-                    self._radio.read(buffer, self._radio.getDynamicPayloadSize())
-                    logging.info("NRF24 ACK Received:"),
-                    logging.info(buffer)
-                else:
-                    logging.info("Received: Ack only, no payload")
+                self._send(pipe, [0, red, green, blue])
 
             self._radio.startListening()
         except Exception as inst:
@@ -93,3 +103,16 @@ class Led:
 
     def set_none_color(self):
         self.set_color(0, 0, 0)
+
+    def _send(self, pipe, data):
+        self._radio.openWritingPipe(pipe);
+
+        self._radio.write(data)
+
+        if self._radio.isAckPayloadAvailable():
+            buffer = []
+            self._radio.read(buffer, self._radio.getDynamicPayloadSize())
+            logging.info("NRF24 ACK Received:"),
+            logging.info(buffer)
+        else:
+            logging.info("Received: Ack only, no payload")
