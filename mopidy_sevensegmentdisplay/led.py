@@ -80,8 +80,17 @@ class Led(Threader):
 
             self._radio.stopListening()
 
-            for pipe in self._pipes:
-                self._send(pipe, [0, red, green, blue])
+            retry = 5
+            success_index = []
+            for x in range(retry):
+                for index, pipe in enumerate(self._pipes):
+                    if (index in success_index):
+                        continue
+                    if (self._send(pipe, [0, red, green, blue]) > 0):
+                        success_index.append(index)
+
+                if (len(success_index) == len(self._pipes)):
+                    break
 
             self._radio.startListening()
         except Exception as inst:
@@ -93,7 +102,7 @@ class Led(Threader):
         self.set_color(int(c[0] * 255), int(c[1] * 255), int(c[2] * 255))
 
     def set_random_color(self, seed = None):
-        hue = random.random() * 360 if seed is None else random.Random(seed).random()
+        hue = (random.random() if seed is None else random.Random(seed).random()) * 360
         self.set_color_hsv(hue)
 
     def set_none_color(self):
@@ -112,12 +121,4 @@ class Led(Threader):
     def _send(self, pipe, data):
         self._radio.openWritingPipe(pipe);
 
-        self._radio.write(data)
-
-        if self._radio.isAckPayloadAvailable():
-            buffer = []
-            self._radio.read(buffer, self._radio.getDynamicPayloadSize())
-            logging.info("NRF24 ACK Received:"),
-            logging.info(buffer)
-        else:
-            logging.info("Received: Ack only, no payload")
+        return self._radio.write(data)

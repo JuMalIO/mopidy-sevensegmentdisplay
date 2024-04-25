@@ -98,7 +98,7 @@ class LightSensor(Threader):
                 self._sudden_change_callback(datetime.now(), False)
                 timeout = 0
 
-            if (timeout > self._timeout * 60 * 10):
+            if (timeout > self._timeout * 60 * 20):
                 self._sudden_change_timeout_callback()
                 timeout = -1
 
