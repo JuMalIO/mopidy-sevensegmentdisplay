@@ -27,7 +27,6 @@
     <Compile Include="equalizer.py" />
     <Compile Include="ir.py" />
     <Compile Include="led.py" />
-    <Compile Include="lib_nrf24.py" />
     <Compile Include="max7219.py" />
     <Compile Include="light_sensor.py" />
     <Compile Include="threader.py" />

@@ -59,7 +59,7 @@ class Worker(Threader):
                 self._on_menu_click_left,
                 self._on_menu_click_right,
                 self.config['relay_enabled'])
-            self.led = Led(self.config['led_enabled'], self.config['led_pipes'])
+            self.led = Led(self.config['led_enabled'], self.config['led_ips'])
             self.ir_sender = IrSender(self.config['ir_remote'], self.gpio.switch_relay)
             self.timer_on = TimerOn(self.play_music)
             self.timer_off = TimerOff(self.stop_music)
@@ -358,7 +358,10 @@ class Worker(Threader):
             self.on_volume_changed()
 
     def on_new_track_playing(self):
-        self.led.set_random_color()
+        if (self.light_sensor.is_dark()):
+            self.led.set_random_color()
+        else:
+            self.led.set_none_color()
 
     def on_volume_changed(self, volume=None):
         if (self.menu is not None and self.music is not None and self.music.is_volume_changed(volume)):

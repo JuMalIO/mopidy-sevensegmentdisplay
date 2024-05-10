@@ -52,7 +52,7 @@ class LightSensor(Threader):
 
     def __init__(self, enabled, timeout, sudden_change_callback, sudden_change_timeout_callback):
         super(LightSensor, self).__init__()
-        
+
         self._timeout = timeout
         self._sudden_change_callback = sudden_change_callback
         self._sudden_change_timeout_callback = sudden_change_timeout_callback
@@ -131,6 +131,9 @@ class LightSensor(Threader):
 
     def get_value(self):
         return self._value
+
+    def is_dark(self):
+        return self.get_value() < 1000 / self._max_value
     
     def get_draw_sleep_animation(self):
         return self.ANIMATION_SLEEP

@@ -75,6 +75,14 @@
     </ul>
 
     <p>
+        {{ worker.light_sensor.get_value() * 26000 }}
+        <br />
+        Light/Dark Ratio: {{ worker.light_sensor.get_value() }}
+        <br />
+        Is Dark: {{ worker.light_sensor.is_dark() }}
+    </p>
+
+    <p>
         <span id="colorPicker"></span>
         <button onclick="post({ red: 0, green: 0, blue: 0 })">Off (black)</button>
     </p>
