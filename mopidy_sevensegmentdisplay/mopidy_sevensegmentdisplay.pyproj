@@ -26,7 +26,6 @@
     <Compile Include="animation.py" />
     <Compile Include="equalizer.py" />
     <Compile Include="ir.py" />
-    <Compile Include="led.py" />
     <Compile Include="max7219.py" />
     <Compile Include="light_sensor.py" />
     <Compile Include="threader.py" />
@@ -42,8 +41,6 @@
     <Content Include="cava.config" />
     <Content Include="ext.conf" />
     <Content Include="run.sh" />
-    <Content Include="static\alwan.min.css" />
-    <Content Include="static\alwan.min.js" />
     <Content Include="static\bootstrap-theme.css" />
     <Content Include="static\bootstrap.css" />
     <Content Include="static\bootstrap.js" />

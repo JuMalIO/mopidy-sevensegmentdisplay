@@ -81,27 +81,6 @@
         <br />
         Is Dark: {{ worker.light_sensor.is_dark() }}
     </p>
-
-    <p>
-        <span id="colorPicker"></span>
-        <button onclick="post({ red: 0, green: 0, blue: 0 })">Off (black)</button>
-    </p>
 </div>
-
-<script src="/sevensegmentdisplay/static/alwan.min.js"></script>
-<link rel="stylesheet" href="/sevensegmentdisplay/static/alwan.min.css" />
-<script>
-    const alwan = new Alwan('#colorPicker', {
-        margin: 8,
-        color: 'black',
-        inputs: { hex: false, rgb: false, hsl: false },
-        opacity: false,
-        preview: false,
-        copy: false,
-        swatches: []
-    });
-
-    alwan.on('change', (color) => post({ red: color.r, green: color.g, blue: color.b }, false));
-</script>
 
 {% end %}

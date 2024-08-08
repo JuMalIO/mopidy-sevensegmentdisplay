@@ -12,7 +12,6 @@ from .clock import Time, Date
 from .menu import Menu
 from .max7219 import Symbols
 from .alert import Alert
-from .led import Led
 
 
 class Worker(Threader):
@@ -42,11 +41,7 @@ class Worker(Threader):
         try:
             self._init_menu()
             self.music = Music(self.core, self.config['default_tracks'], self.config['default_preset'])
-            self.light_sensor = LightSensor(
-                self.config['light_sensor_enabled'],
-                self.config['light_sensor_timeout'],
-                self._on_light_sensor_sudden_change,
-                self._on_light_sensor_sudden_change_timeout)
+            self.light_sensor = LightSensor(self.config['light_sensor_enabled'])
             self.display = DisplayWithPowerSaving(
                 self.config['display_enabled'],
                 self.light_sensor,
@@ -59,7 +54,6 @@ class Worker(Threader):
                 self._on_menu_click_left,
                 self._on_menu_click_right,
                 self.config['relay_enabled'])
-            self.led = Led(self.config['led_enabled'], self.config['led_ips'])
             self.ir_sender = IrSender(self.config['ir_remote'], self.gpio.switch_relay)
             self.timer_on = TimerOn(self.play_music)
             self.timer_off = TimerOff(self.stop_music)
@@ -91,7 +85,6 @@ class Worker(Threader):
         finally:
             self.equalizer.stop()
             self.ir_sender.stop()
-            self.led.stop()
             self.gpio.cleanup()
             self.display.stop()
             self.light_sensor.stop()
@@ -238,31 +231,6 @@ class Worker(Threader):
         else:
             self._increase_timer()
 
-    def _on_light_sensor_sudden_change(self, now, is_dark):
-        if (self.music.is_playing()):
-            if (now.hour >= self.config['light_sensor_time_from'] or now.hour < self.config['light_sensor_time_to']):
-                if (is_dark):
-                    if (self.music.get_volume() > self.config['light_sensor_volume']):
-                        self.music.set_volume(self.config['light_sensor_volume'])
-                    self.music.set_preset(self.config['light_sensor_preset'])
-                    self.timer_off.reset()
-                    self.timer_off.increase()
-                    self.timer_off.increase()
-                    self.timer_off.increase()
-                    self.timer_off.increase()
-                    self.menu.draw_sub_menu_animation(self.light_sensor.get_draw_sleep_animation())
-                else:
-                    self.timer_off.reset()
-        else:
-            if (is_dark):
-                self.led.set_random_color(int(now.strftime("%Y%m%d%H%M")))
-            else:
-                self.led.set_none_color()
-
-    def _on_light_sensor_sudden_change_timeout(self):
-        if (not self.music.is_playing()):
-            self.led.set_none_color()
-
     def _on_change_preset(self, value):
         self.music.set_preset(value)
         if (value < 0):
@@ -285,9 +253,6 @@ class Worker(Threader):
         else:
             self.timer_on.decrease()
             self.menu.draw_sub_menu(self.MENU_TIMER_ON)
-
-    def set_led_color(self, red, green, blue):
-        self.led.set_color(red, green, blue)
 
     def run_alert(self):
         self.menu.draw_sub_menu_animation(self.alert.get_draw_alert_animation())
@@ -335,12 +300,10 @@ class Worker(Threader):
         self.menu.draw_sub_menu_animation(self.music.get_draw_stop_animation())
         self.timer_off.reset()
         self.ir_sender.power(False)
-        self.led.set_none_color()
 
     def on_playing(self):
         self.menu.draw_sub_menu_animation(self.music.get_draw_play_animation())
         self.timer_on.reset()
-        self.led.set_random_color()
 
         if (self.music.is_playing()):
             self.ir_sender.power(True)
@@ -356,12 +319,6 @@ class Worker(Threader):
             self.on_volume_changed(0)
         else:
             self.on_volume_changed()
-
-    def on_new_track_playing(self):
-        if (self.light_sensor.is_dark()):
-            self.led.set_random_color()
-        else:
-            self.led.set_none_color()
 
     def on_volume_changed(self, volume=None):
         if (self.menu is not None and self.music is not None and self.music.is_volume_changed(volume)):

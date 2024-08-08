@@ -31,8 +31,8 @@ class Frontend(pykka.ThreadingActor, CoreListener):
     def on_event(self, event, **kwargs):
         if (event == 'stream_title_changed'):
             self.worker.on_seeked()
-        elif (event == 'track_playback_started'):
-            self.worker.on_new_track_playing()
+        #elif (event == 'track_playback_started'):
+        #    self.worker.on_new_track_playing()
         return CoreListener.on_event(self, event, **kwargs)
 
     def playback_state_changed(self, old_state, new_state):
