@@ -29,6 +29,8 @@ class Extension(ext.Extension):
         schema['display_min_brightness'] = config.Integer()
         schema['display_max_brightness'] = config.Integer()
         schema['equalizer_enabled'] = config.Boolean()
+        schema['mqtt_user'] = config.String()
+        schema['mqtt_password'] = config.String()
         return schema
 
     def setup(self, registry):

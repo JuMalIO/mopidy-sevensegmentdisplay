@@ -75,11 +75,9 @@
     </ul>
 
     <p>
-        {{ worker.light_sensor.get_value() * 26000 }}
+        Raw value: {{ worker.light_sensor.get_raw_value() }}
         <br />
-        Light/Dark Ratio: {{ worker.light_sensor.get_value() }}
-        <br />
-        Is Dark: {{ worker.light_sensor.is_dark() }}
+        Light/Dark ratio: {{ worker.light_sensor.get_value() }}
     </p>
 </div>
 

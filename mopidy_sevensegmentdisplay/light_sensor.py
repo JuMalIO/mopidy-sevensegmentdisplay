@@ -1,19 +1,25 @@
 import time
 import logging
-from datetime import datetime
+from subprocess import call
 from .threader import Threader
 
 class LightSensor(Threader):
 
-    _max_value = 26000
+    _max_value = 32768
     _channel = None
     _value = 0.5
 
-    def __init__(self, enabled):
+    _lightChange = False
+    _darkChange = False
+
+    def __init__(self, enabled, mqtt_user, mqtt_password):
         super(LightSensor, self).__init__()
 
         if (not enabled):
             return
+
+        self._mqtt_user = mqtt_user
+        self._mqtt_password = mqtt_password
 
         import board
         import busio
@@ -46,15 +52,22 @@ class LightSensor(Threader):
             self._value = self.read_value()
 
             if (self._value < min_value and max(values) > max_value):
-                self._sudden_change_callback(datetime.now(), True)
+                self._darkChange = True
+                self._mqtt_publish("rpi/0/dark_change", True)
             elif (self._value > max_value and min(values) < min_value):
-                self._sudden_change_callback(datetime.now(), False)
+                self._lightChange = True
+                self._mqtt_publish("rpi/0/light_change", True)
+            elif (self._darkChange):
+                self._darkChange = False
+                self._mqtt_publish("rpi/0/dark_change", False)
+            elif (self._lightChange):
+                self._lightChange = False
+                self._mqtt_publish("rpi/0/light_change", False)
 
             index = (index + 1) % size
             values[index] = self._value
 
             time.sleep(0.05)
-
 
         self._i2c.deinit()
 
@@ -77,11 +90,9 @@ class LightSensor(Threader):
     def get_value(self):
         return self._value
 
-    def is_dark(self):
-        return self.get_value() < 1000 / self._max_value
+    def get_raw_value(self):
+        return self._value * self._max_value
 
-    def _sudden_change_callback(self, now, is_dark):
-        #if (is_dark):
-            #mqtt
-        #else:
-            #mqtt
+
+    def _mqtt_publish(self, topic, value):
+        call(["mosquitto_pub", "-t", topic, "-m", str(value), "-u", self._mqtt_user, "-P", self._mqtt_password])
