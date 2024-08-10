@@ -3,7 +3,7 @@ from mopidy import config, ext
 from .http import factory_decorator
 from .actor import Frontend
 
-__version__ = '0.8.1'
+__version__ = '0.8.2'
 
 
 class Extension(ext.Extension):

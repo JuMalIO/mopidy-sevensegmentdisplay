@@ -88,7 +88,6 @@ class Worker(Threader):
         finally:
             self.equalizer.stop()
             self.ir_sender.stop()
-            self.gpio.cleanup()
             self.display.stop()
             self.light_sensor.stop()
 
