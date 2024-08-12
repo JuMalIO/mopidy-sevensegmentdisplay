@@ -9,8 +9,7 @@ class LightSensor(Threader):
     _channel = None
     _value = 0.5
 
-    _lightChange = False
-    _darkChange = False
+    _lightChangeEvent = False
 
     def __init__(self, enabled, mqtt_user, mqtt_password):
         super(LightSensor, self).__init__()
@@ -52,17 +51,14 @@ class LightSensor(Threader):
             self._value = self.read_value()
 
             if (self._value < min_value and max(values) > max_value):
-                self._darkChange = True
-                self._mqtt_publish("rpi/0/dark_change", True)
+                self._lightChangeEvent = True
+                self._mqtt_publish("light_off_event")
             elif (self._value > max_value and min(values) < min_value):
-                self._lightChange = True
-                self._mqtt_publish("rpi/0/light_change", True)
-            elif (self._darkChange):
-                self._darkChange = False
-                self._mqtt_publish("rpi/0/dark_change", False)
-            elif (self._lightChange):
-                self._lightChange = False
-                self._mqtt_publish("rpi/0/light_change", False)
+                self._lightChangeEvent = True
+                self._mqtt_publish("light_on_event")
+            elif (self._lightChangeEvent):
+                self._lightChangeEvent = False
+                self._mqtt_publish("none")
 
             index = (index + 1) % size
             values[index] = self._value
@@ -93,6 +89,5 @@ class LightSensor(Threader):
     def get_raw_value(self):
         return self._value * self._max_value
 
-
-    def _mqtt_publish(self, topic, value):
-        call(["mosquitto_pub", "-t", topic, "-m", str(value), "-u", self._mqtt_user, "-P", self._mqtt_password])
+    def _mqtt_publish(self, value):
+        call(["mosquitto_pub", "-t", "rpi/0/light", "-m", value, "-u", self._mqtt_user, "-P", self._mqtt_password])
