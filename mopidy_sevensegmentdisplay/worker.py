@@ -41,10 +41,7 @@ class Worker(Threader):
         try:
             self._init_menu()
             self.music = Music(self.core, self.config['default_tracks'], self.config['default_preset'])
-            self.light_sensor = LightSensor(
-                self.config['light_sensor_enabled'],
-                self.config['mqtt_user'],
-                self.config['mqtt_password'])
+            self.light_sensor = LightSensor(self.config['light_sensor_enabled'])
             self.display = DisplayWithPowerSaving(
                 self.config['display_enabled'],
                 self.light_sensor,
