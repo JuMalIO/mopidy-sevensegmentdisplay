@@ -38,30 +38,32 @@ class LightSensor(Threader):
 
     def run(self):
         self._value = self.read_value()
+
         size = 10
         index = 0
         values = [self._value] * size
-        min_value = 200 / self._max_value
-        max_value = 500 / self._max_value
+        increment = 0.01
 
         while (True):
             if (self.stopped()):
                 break
 
             self._value = self.read_value()
+            index = (index + 1) % size
+            values[index] = self._value
+            
+            increments = [values[(index + i + 1) % size] - values[(index + i) % size] for i in range(size - 1)]
+            average_increment = sum(increments) / len(increments)
 
-            if (self._value < min_value and max(values) > max_value):
+            if (average_increment < -increment):
                 self._lightChangeEvent = True
                 self._mqtt_publish("light_off_event")
-            elif (self._value > max_value and min(values) < min_value):
+            if (average_increment > increment):
                 self._lightChangeEvent = True
                 self._mqtt_publish("light_on_event")
             elif (self._lightChangeEvent):
                 self._lightChangeEvent = False
                 self._mqtt_publish("none")
-
-            index = (index + 1) % size
-            values[index] = self._value
 
             time.sleep(0.05)
 
