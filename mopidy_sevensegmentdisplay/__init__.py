@@ -3,7 +3,7 @@ from mopidy import config, ext
 from .http import factory_decorator
 from .actor import Frontend
 
-__version__ = '0.8.3'
+__version__ = '0.8.2'
 
 
 class Extension(ext.Extension):
@@ -29,6 +29,8 @@ class Extension(ext.Extension):
         schema['display_min_brightness'] = config.Integer()
         schema['display_max_brightness'] = config.Integer()
         schema['equalizer_enabled'] = config.Boolean()
+        schema['mqtt_user'] = config.String()
+        schema['mqtt_password'] = config.String()
         return schema
 
     def setup(self, registry):
