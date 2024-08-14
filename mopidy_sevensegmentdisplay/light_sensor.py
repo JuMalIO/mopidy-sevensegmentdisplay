@@ -85,7 +85,7 @@ class LightSensor(Threader):
             self._raw_value = self._adc / 2 if self._channel is None else self._channel.value
             voltage = self._raw_value * (self._voltage / self._adc)
             resistance = self._resistor * (self._voltage - voltage) / voltage
-            lux = 500 / resistance
+            lux = 500 / (resistance / 1000)
             return lux
         except Exception as inst:
             logging.error(inst)
@@ -97,6 +97,9 @@ class LightSensor(Threader):
 
     def get_raw_value(self):
         return self._raw_value
+
+    def get_ratio_value(self):
+        return self._raw_value / self._adc
 
     def _mqtt_publish(self, topic, message):
         call(["mosquitto_pub", "-t", topic, "-m", message, "-u", self._mqtt_user, "-P", self._mqtt_password])

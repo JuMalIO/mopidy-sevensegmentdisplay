@@ -115,7 +115,7 @@ class DisplayWithPowerSaving(Display):
         self._display_max_brightness = display_max_brightness
 
     def update_brightness(self):
-        value = self._light_sensor.get_value()
+        value = self._light_sensor.get_ratio_value()
 
         brightness = int(round(self._display_min_brightness + (self._display_max_brightness - self._display_min_brightness) * value))
         
