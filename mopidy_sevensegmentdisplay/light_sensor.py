@@ -5,11 +5,18 @@ from .threader import Threader
 
 class LightSensor(Threader):
 
-    _max_value = 32768
-    _channel = None
-    _value = 0.5
+    _adc = (1 << (16 - 1)) - 1
+    _voltage = 3.3
+    _resistor = 10000
+    _offset = 5
 
+    _channel = None
+    _value = 0
+    _previous_value = 0
+    _raw_value = 0
     _lightChangeEvent = False
+    _light_event_threshold = 50
+    _light_buffer_size = 10
 
     def __init__(self, enabled, mqtt_user, mqtt_password):
         super(LightSensor, self).__init__()
@@ -38,48 +45,48 @@ class LightSensor(Threader):
 
     def run(self):
         self._value = self.read_value()
+        self._previous_value = self._value
 
-        size = 10
         index = 0
-        values = [self._value] * size
-        increment = 0.01
+        values = [self._value] * self._light_buffer_size
 
         while (True):
             if (self.stopped()):
                 break
 
             self._value = self.read_value()
-            index = (index + 1) % size
-            values[index] = self._value
-            
-            increments = [values[(index + i + 1) % size] - values[(index + i) % size] for i in range(size - 1)]
-            average_increment = sum(increments) / len(increments)
 
-            if (average_increment < -increment):
-                self._lightChangeEvent = True
-                self._mqtt_publish("light_off_event")
-            if (average_increment > increment):
-                self._lightChangeEvent = True
-                self._mqtt_publish("light_on_event")
+            average_value = sum(values) / self._light_buffer_size
+
+            if abs(self._value - average_value) > self._light_event_threshold:
+                if self._value > average_value:
+                    self._lightChangeEvent = True
+                    self._mqtt_publish("rpi/0/light_event", "light_on")
+                else:
+                    self._lightChangeEvent = True
+                    self._mqtt_publish("rpi/0/light_event", "light_off") 
             elif (self._lightChangeEvent):
                 self._lightChangeEvent = False
-                self._mqtt_publish("none")
+                self._mqtt_publish("rpi/0/light_event", "none")
+
+            if (self._value <= self._previous_value - self._offset or self._value >= self._previous_value + self._offset):
+                self._previous_value = self._value
+                self._mqtt_publish("rpi/0/light", self._value)
+
+            index = (index + 1) % self._light_buffer_size
+            values[index] = self._value
 
             time.sleep(0.05)
 
         self._i2c.deinit()
 
     def read_value(self):
-        if (self._channel is None):
-            return 0.5
-
         try:
-            value = self._channel.value
-
-            if (value > self._max_value):
-                return 1
-
-            return value / self._max_value
+            self._raw_value = self._adc / 2 if self._channel is None else self._channel.value
+            voltage = self._raw_value * (self._voltage / self._adc)
+            resistance = self._resistor * (self._voltage - voltage) / voltage
+            lux = 500 / resistance
+            return lux
         except Exception as inst:
             logging.error(inst)
 
@@ -89,7 +96,7 @@ class LightSensor(Threader):
         return self._value
 
     def get_raw_value(self):
-        return self._value * self._max_value
+        return self._raw_value
 
-    def _mqtt_publish(self, value):
-        call(["mosquitto_pub", "-t", "rpi/0/light", "-m", value, "-u", self._mqtt_user, "-P", self._mqtt_password])
+    def _mqtt_publish(self, topic, message):
+        call(["mosquitto_pub", "-t", topic, "-m", message, "-u", self._mqtt_user, "-P", self._mqtt_password])
