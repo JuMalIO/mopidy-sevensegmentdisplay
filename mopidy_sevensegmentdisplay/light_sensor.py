@@ -54,15 +54,15 @@ class LightSensor(Threader):
 
             self._value = self.read_value()
 
-            average_value = sum(values) / self.LIGHT_BUFFER_SIZE
+            moving_average_value = sum(values) / self.LIGHT_BUFFER_SIZE
 
-            if abs(self._value - average_value) > self.LIGHT_EVENT_THRESHOLD:
-                if self._value > average_value:
+            if abs(self._value - moving_average_value) > self.LIGHT_EVENT_THRESHOLD:
+                if self._value > moving_average_value:
                     self._lightChangeEvent = True
                     self._mqtt_publish("rpi/0/light_event", "light_on")
                 else:
                     self._lightChangeEvent = True
-                    self._mqtt_publish("rpi/0/light_event", "light_off") 
+                    self._mqtt_publish("rpi/0/light_event", "light_off")
             elif (self._lightChangeEvent):
                 self._lightChangeEvent = False
                 self._mqtt_publish("rpi/0/light_event", "none")
