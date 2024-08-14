@@ -6,7 +6,7 @@ from .threader import Threader
 class LightSensor(Threader):
 
     _adc = (1 << (16 - 1)) - 1
-    _voltage = 3.3
+    _voltage = 4.096
     _resistor = 10000
     _offset = 5
 
