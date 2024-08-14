@@ -6,8 +6,6 @@ from .threader import Threader
 class LightSensor(Threader):
 
     ADC = (1 << (16 - 1)) - 1
-    VOLTAGE = 4.096
-    RESISTOR = 10000
     OFFSET = 5
     LIGHT_EVENT_THRESHOLD = 50
     LIGHT_BUFFER_SIZE = 10
@@ -83,10 +81,7 @@ class LightSensor(Threader):
     def read_value(self):
         try:
             self._raw_value = self.ADC / 2 if self._channel is None else self._channel.value
-            voltage = self._raw_value * (self.VOLTAGE / self.ADC)
-            resistance = self.RESISTOR * (self.VOLTAGE - voltage) / voltage
-            lux = 500 / (resistance / 1000)
-            return lux
+            return self._raw_value >> 4
         except Exception as inst:
             logging.error(inst)
 
@@ -99,7 +94,7 @@ class LightSensor(Threader):
         return self._raw_value
 
     def get_ratio_value(self):
-        return self._raw_value / self.ADC
+        return self._raw_value / self.ADC if self._raw_value > 0 else 0
 
     def _mqtt_publish(self, topic, message):
         call(["mosquitto_pub", "-t", topic, "-m", message, "-u", self._mqtt_user, "-P", self._mqtt_password])

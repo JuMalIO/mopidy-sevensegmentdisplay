@@ -75,9 +75,9 @@
     </ul>
 
     <p>
-        Raw value: {{ worker.light_sensor.get_raw_value() }}
+        Raw value (16bit): {{ worker.light_sensor.get_raw_value() }}
         <br />
-        Lux: {{ worker.light_sensor.get_value() }}
+        Value (12bit): {{ worker.light_sensor.get_value() }}
     </p>
 </div>
 
