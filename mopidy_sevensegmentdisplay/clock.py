@@ -41,7 +41,7 @@ class Time:
 
 
 class Date:
-    VISIBLE_FOR_SECONDS = 2
+    VISIBLE_FOR_SECONDS = 1
 
     def __init__(self, modules):
         self._modules = modules
