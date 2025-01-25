@@ -7,14 +7,11 @@ class LightSensor(Threader):
 
     ADC = (1 << (16 - 1)) - 1
     OFFSET = 5
-    LIGHT_EVENT_THRESHOLD = 50
-    LIGHT_BUFFER_SIZE = 10
 
     _channel = None
     _value = 0
     _previous_value = 0
     _raw_value = 0
-    _lightChangeEvent = False
 
     def __init__(self, enabled, mqtt_user, mqtt_password):
         super(LightSensor, self).__init__()
@@ -42,37 +39,16 @@ class LightSensor(Threader):
         super(LightSensor, self).start()
 
     def run(self):
-        self._value = self.read_value()
-        self._previous_value = self._value
-
-        index = 0
-        values = [self._value] * self.LIGHT_BUFFER_SIZE
-
         while (True):
             if (self.stopped()):
                 break
 
             self._value = self.read_value()
 
-            moving_average_value = sum(values) / self.LIGHT_BUFFER_SIZE
-
-            if abs(self._value - moving_average_value) > self.LIGHT_EVENT_THRESHOLD:
-                if self._value > moving_average_value:
-                    self._lightChangeEvent = True
-                    self._mqtt_publish("rpi/0/light_event", "light_on")
-                else:
-                    self._lightChangeEvent = True
-                    self._mqtt_publish("rpi/0/light_event", "light_off")
-            elif (self._lightChangeEvent):
-                self._lightChangeEvent = False
-                self._mqtt_publish("rpi/0/light_event", "none")
 
             if (self._value <= self._previous_value - self.OFFSET or self._value >= self._previous_value + self.OFFSET):
                 self._previous_value = self._value
                 self._mqtt_publish("rpi/0/light", str(self._value))
-
-            index = (index + 1) % self.LIGHT_BUFFER_SIZE
-            values[index] = self._value
 
             time.sleep(0.05)
 
