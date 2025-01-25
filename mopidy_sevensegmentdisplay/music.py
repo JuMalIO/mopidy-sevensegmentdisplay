@@ -273,7 +273,7 @@ class Music:
             self._core.playback.pause()
 
     def stop(self):
-        if (self.is_playing()):
+        if (not self.is_stopped()):
             self._core.playback.stop()
 
     def reboot(self):
