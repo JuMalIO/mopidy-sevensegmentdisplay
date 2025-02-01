@@ -4,12 +4,10 @@ from .max7219 import Symbols
 
 class Timer(object):
     VISIBLE_FOR_SECONDS = 2
+    TIMER_STEP = 30
 
-    def __init__(self, callback, step, remove_min=True):
+    def __init__(self, callback):
         self._callback = callback
-        self._step = step
-        self._half_step = int(step / 2)
-        self._remove_min = remove_min
         self._now = self._datetime_now()
         self._timer = None
 
@@ -46,22 +44,19 @@ class Timer(object):
                 new_timer += timedelta(days=1)
             self._timer = new_timer
 
-    def increase(self):
-        if (not self.is_set()):
-            time_left = (self._step - self._now.minute % self._step) if self._remove_min else 0
-            min = time_left + (self._step if time_left < self._half_step else 0)
-            self._timer = self._now + timedelta(minutes=min)
-        else:
-            new_time = self._timer + timedelta(minutes=self._step)
-            diff = new_time - self._now
-            if (diff.days < 1):
-                self._timer = new_time
+    def increase(self, step=None):
+        timer = self._timer if self.is_set() else self._now
+        delta = timedelta(minutes=int(step) if step is not None else self.TIMER_STEP)
+        new_time = timer + delta
+        diff = new_time - self._now
+        if (diff.days < 1):
+            self._timer = new_time
 
-    def decrease(self):
+    def decrease(self, step=None):
         if (self.is_set()):
-            timer_minus_step = self._timer - timedelta(minutes=self._step)
-            now_plus_half_step = self._now + timedelta(minutes=self._half_step)
-            if (now_plus_half_step < timer_minus_step):
+            delta = timedelta(minutes=int(step) if step is not None else self.TIMER_STEP)
+            timer_minus_step = self._timer - delta
+            if (self._now < timer_minus_step):
                 self._timer = timer_minus_step
             else:
                 self._timer = None
@@ -71,10 +66,9 @@ class Timer(object):
 
 
 class TimerOff(Timer):
-    TIMER_STEP = 30
 
     def __init__(self, callback):
-        super(TimerOff, self).__init__(callback, self.TIMER_STEP)
+        super(TimerOff, self).__init__(callback)
 
     def get_draw_buffer(self):
         if (self.is_set()):
@@ -105,10 +99,9 @@ class TimerOff(Timer):
 
 
 class TimerOn(Timer):
-    TIMER_STEP = 30
 
     def __init__(self, callback):
-        super(TimerOn, self).__init__(callback, self.TIMER_STEP)
+        super(TimerOn, self).__init__(callback)
 
     def get_draw_buffer(self):
         if (self.is_set()):
@@ -189,7 +182,7 @@ class TimerAlert:
 
     def add_timer(self, hour=None, minute=None):
         if (len(self._timers) < 10):
-            new_timer = Timer(self._callback, self.TIMER_STEP, False)
+            new_timer = Timer(self._callback)
             if (hour is not None or minute is not None):
                 new_timer.set(hour, minute)
             else:
@@ -197,7 +190,7 @@ class TimerAlert:
                     timer = self._timers[len(self._timers) - 1].get()
                     new_timer.set(timer.hour, timer.minute)
                 for i in range(6):
-                    new_timer.increase()
+                    new_timer.increase(self.TIMER_STEP)
             self._timers.append(new_timer)
 
     def _have_timers(self):
@@ -216,15 +209,15 @@ class TimerAlert:
     def get(self):
         return self._timers
 
-    def increase(self):
+    def increase(self, step=None):
         if (not self._have_timers()):
             self.add_timer()
         else:
-            self._timers[len(self._timers) - 1].increase()
+            self._timers[len(self._timers) - 1].increase(step if step is not None else self.TIMER_STEP)
 
-    def decrease(self):
+    def decrease(self, step=None):
         if (self._have_timers()):
-            self._timers[len(self._timers) - 1].decrease()
+            self._timers[len(self._timers) - 1].decrease(step if step is not None else self.TIMER_STEP)
 
     def is_visible(self, seconds):
         self._timer_index = seconds // Timer.VISIBLE_FOR_SECONDS

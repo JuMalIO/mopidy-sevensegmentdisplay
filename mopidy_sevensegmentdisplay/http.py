@@ -49,9 +49,13 @@ class ApiRequestHandler(BaseRequestHandler):
             minute = self.get_argument('minute', None)
             self.worker.timer_off.set(hour, minute)
         elif (off == '-'):
-            self.worker.timer_off.decrease()
+            step = self.get_argument('step', None)
+            self.worker.timer_off.decrease(step)
         elif (off == '+'):
-            self.worker.timer_off.increase()
+            step = self.get_argument('step', None)
+            self.worker.timer_off.increase(step)
+        elif (off == 'clear'):
+            self.worker.timer_off.reset()
 
         on = str(self.get_argument('on', ''))
         if (on == 'set'):
@@ -59,9 +63,13 @@ class ApiRequestHandler(BaseRequestHandler):
             minute = self.get_argument('minute', None)
             self.worker.timer_on.set(hour, minute)
         elif (on == '-'):
-            self.worker.timer_on.decrease()
+            step = self.get_argument('step', None)
+            self.worker.timer_on.decrease(step)
         elif (on == '+'):
-            self.worker.timer_on.increase()
+            step = self.get_argument('step', None)
+            self.worker.timer_on.increase(step)
+        elif (on == 'clear'):
+            self.worker.timer_on.reset()
 
         alert = str(self.get_argument('alert', ''))
         if (alert == 'add'):
@@ -71,9 +79,11 @@ class ApiRequestHandler(BaseRequestHandler):
         elif (alert == 'clear'):
             self.worker.timer_alert.reset()
         elif (alert == '-'):
-            self.worker.timer_alert.decrease()
+            step = self.get_argument('step', None)
+            self.worker.timer_alert.decrease(step)
         elif (alert == '+'):
-            self.worker.timer_alert.increase()
+            step = self.get_argument('step', None)
+            self.worker.timer_alert.increase(step)
         elif (alert == 'run'):
             self.worker.run_alert()
 
