@@ -13,7 +13,7 @@ class Mqtt:
         if (self._mqtt_user and self._mqtt_password):
             call(["mosquitto_pub", "-t", "rpi/" + self._serial + "/" + topic, "-m", message, "-u", self._mqtt_user, "-P", self._mqtt_password])
 
-    def _getSerial():
+    def _getSerial(self):
         serial = "0000000000000000"
 
         try:

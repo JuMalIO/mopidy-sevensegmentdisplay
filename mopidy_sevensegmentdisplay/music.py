@@ -4,6 +4,7 @@ import logging
 import os
 from subprocess import call
 from .max7219 import Symbols
+import json
 
 
 class Music:
@@ -224,7 +225,7 @@ class Music:
     def __init__(self, core, default_tracks, preset):
         self._core = core
         self._volume = self.get_volume(),
-        self._default_tracks = list(default_tracks) if isinstance(default_tracks, tuple) else [default_tracks]
+        self._default_tracks = json.loads(default_tracks) if default_tracks and default_tracks.startswith("[") else [default_tracks]
         self._preset = preset
 
     def is_playing(self, state=None):
