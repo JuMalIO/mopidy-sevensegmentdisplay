@@ -34,6 +34,7 @@
     <Compile Include="menu.py" />
     <Compile Include="music.py" />
     <Compile Include="timer.py" />
+    <Compile Include="mqtt.py" />
     <Compile Include="worker.py" />
     <Compile Include="__init__.py" />
   </ItemGroup>

@@ -12,6 +12,7 @@ from .clock import Time, Date
 from .menu import Menu
 from .max7219 import Symbols
 from .alert import Alert
+from .mqtt import Mqtt
 
 
 class Worker(Threader):
@@ -19,6 +20,7 @@ class Worker(Threader):
     music = None
     display = None
     gpio = None
+    mqtt = None
     light_sensor = None
     ir_sender = None
     timer_on = None
@@ -41,10 +43,8 @@ class Worker(Threader):
         try:
             self._init_menu()
             self.music = Music(self.core, self.config['default_tracks'], self.config['default_preset'])
-            self.light_sensor = LightSensor(
-                self.config['light_sensor_enabled'],
-                self.config['mqtt_user'],
-                self.config['mqtt_password'])
+            self.mqtt = Mqtt(self.config['mqtt_user'], self.config['mqtt_password'])
+            self.light_sensor = LightSensor(self.config['light_sensor_enabled'], self.mqtt)
             self.display = DisplayWithPowerSaving(
                 self.config['display_enabled'],
                 self.light_sensor,
@@ -282,18 +282,21 @@ class Worker(Threader):
             self.play_music()
 
     def play_music(self, tracks=None):
-        self.music.set_volume(self.config['default_volume'])
-        self.music.set_preset(self.config['default_preset'])
-        self.music.play(tracks)
-        self.on_started()
+        if (not self.music.is_playing()):
+            self.music.set_volume(self.config['default_volume'])
+            self.music.set_preset(self.config['default_preset'])
+            self.music.play(tracks)
+            self.on_started()
 
     def pause_music(self):
-        self.music.pause()
-        self.on_paused()
+        if (self.music.is_playing()):
+            self.music.pause()
+            self.on_paused()
 
     def stop_music(self):
-        self.music.stop()
-        self.on_stopped()
+        if (not self.music.is_stopped()):
+            self.music.stop()
+            self.on_stopped()
 
     def on_started(self):
         self.menu.draw_sub_menu_animation(self.music.get_draw_start_animation())
@@ -327,8 +330,12 @@ class Worker(Threader):
             self.menu.draw_sub_menu(self.MENU_VOLUME)
 
     def on_playback_state_changed(self, old_state, new_state):
+        self.mqtt.publish('state', new_state);
+
         if (old_state != new_state):
             if (self.music.is_playing(new_state)):
                 self.on_playing()
             elif (self.music.is_paused(new_state)):
                 self.on_paused()
+            elif (self.music.is_stopped(new_state)):
+                self.on_stopped()

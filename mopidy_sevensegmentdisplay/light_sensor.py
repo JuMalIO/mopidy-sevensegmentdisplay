@@ -1,6 +1,5 @@
 import time
 import logging
-from subprocess import call
 from .threader import Threader
 
 class LightSensor(Threader):
@@ -13,14 +12,13 @@ class LightSensor(Threader):
     _previous_value = 0
     _raw_value = 0
 
-    def __init__(self, enabled, mqtt_user, mqtt_password):
+    def __init__(self, enabled, mqtt):
         super(LightSensor, self).__init__()
 
         if (not enabled):
             return
 
-        self._mqtt_user = mqtt_user
-        self._mqtt_password = mqtt_password
+        self._mqtt = mqtt
 
         import board
         import busio
@@ -48,7 +46,7 @@ class LightSensor(Threader):
 
             if (self._value <= self._previous_value - self.OFFSET or self._value >= self._previous_value + self.OFFSET):
                 self._previous_value = self._value
-                self._mqtt_publish("rpi/0/light", str(self._value))
+                self._mqtt.publish("light", str(self._value))
 
             time.sleep(0.05)
 
@@ -71,6 +69,3 @@ class LightSensor(Threader):
 
     def get_ratio_value(self):
         return self._raw_value / self.ADC if self._raw_value > 0 else 0
-
-    def _mqtt_publish(self, topic, message):
-        call(["mosquitto_pub", "-t", topic, "-m", message, "-u", self._mqtt_user, "-P", self._mqtt_password])

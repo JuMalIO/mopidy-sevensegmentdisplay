@@ -47,27 +47,41 @@ class ApiRequestHandler(BaseRequestHandler):
         if (off == 'set'):
             hour = self.get_argument('hour', None)
             minute = self.get_argument('minute', None)
-            self.worker.timer_off.set(hour, minute)
+            self.worker.timer_off.set(
+                None if hour is None or not hour else int(hour),
+                None if minute is None or not minute else int(minute))
+        elif (off == 'clear'):
+            self.worker.timer_off.reset()
         elif (off == '-'):
             self.worker.timer_off.decrease()
         elif (off == '+'):
             self.worker.timer_off.increase()
+        elif (off):
+            self.worker.timer_on.set(int(off))
 
         on = str(self.get_argument('on', ''))
         if (on == 'set'):
             hour = self.get_argument('hour', None)
             minute = self.get_argument('minute', None)
-            self.worker.timer_on.set(hour, minute)
+            self.worker.timer_on.set(
+                None if hour is None or not hour else int(hour),
+                None if minute is None or not minute else int(minute))
+        elif (on == 'clear'):
+            self.worker.timer_on.reset()
         elif (on == '-'):
             self.worker.timer_on.decrease()
         elif (on == '+'):
             self.worker.timer_on.increase()
+        elif (on):
+            self.worker.timer_on.set(int(on))
 
         alert = str(self.get_argument('alert', ''))
         if (alert == 'add'):
             hour = self.get_argument('hour', None)
             minute = self.get_argument('minute', None)
-            self.worker.timer_alert.add_timer(hour, minute)
+            self.worker.timer_alert.add_timer(
+                None if hour is None or not hour else int(hour),
+                None if minute is None or not minute else int(minute))
         elif (alert == 'clear'):
             self.worker.timer_alert.reset()
         elif (alert == '-'):

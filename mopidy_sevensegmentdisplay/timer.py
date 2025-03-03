@@ -35,16 +35,22 @@ class Timer(object):
     def get(self):
         return self._timer
 
-    def set(self, hour=None, minute=None):
-        if (hour is not None or minute is not None):
-            new_timer = self._now
-            if (hour is not None):
-                new_timer = new_timer.replace(hour=int(hour))
-            if (minute is not None):
-                new_timer = new_timer.replace(minute=int(minute))
-            if (new_timer <= self._now):
-                new_timer += timedelta(days=1)
-            self._timer = new_timer
+    def set(self, *args):
+        if len(args) == 1:
+            minutes = args[0]
+            self._timer = self._now + timedelta(minutes=minutes)
+        elif len(args) == 2:
+            hour = args[0]
+            minute = args[1]
+            if (hour is not None or minute is not None):
+                new_timer = self._now
+                if (hour is not None):
+                    new_timer = new_timer.replace(hour=hour)
+                if (minute is not None):
+                    new_timer = new_timer.replace(minute=minute)
+                if (new_timer <= self._now):
+                    new_timer += timedelta(days=1)
+                self._timer = new_timer
 
     def increase(self):
         if (not self.is_set()):
