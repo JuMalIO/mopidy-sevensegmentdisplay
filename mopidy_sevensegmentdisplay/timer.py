@@ -24,7 +24,7 @@ class Timer(object):
         return self._timer is not None
 
     def _datetime_now(self):
-        return datetime.now().replace(second=0, microsecond=0)
+        return datetime.now().replace(microsecond=0)
 
     def _is_time(self):
         return self._now >= self._timer
@@ -37,8 +37,8 @@ class Timer(object):
 
     def set(self, *args):
         if len(args) == 1:
-            minutes = args[0]
-            self._timer = self._now + timedelta(minutes=minutes)
+            seconds = args[0]
+            self._timer = self._now + timedelta(seconds=seconds)
         elif len(args) == 2:
             hour = args[0]
             minute = args[1]
