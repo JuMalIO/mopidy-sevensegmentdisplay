@@ -222,11 +222,12 @@ class Music:
         {"name": "nobass", "curve": [0, 4, 14, 23, 47, 65, 65, 65, 65, 65], "buffer": [N, O, 0, B, A, S, S, 0]}
     ]
 
-    def __init__(self, core, default_tracks, preset):
+    def __init__(self, core, default_tracks, default_volume, default_preset):
         self._core = core
         self._volume = self.get_volume(),
         self._default_tracks = json.loads(default_tracks) if default_tracks and default_tracks.startswith("[") else [default_tracks]
-        self._preset = preset
+        self._default_volume = default_volume
+        self._default_preset = default_preset
 
     def is_playing(self, state=None):
         if (state is None):
@@ -254,6 +255,9 @@ class Music:
         return self._core.mixer.get_mute().get()
 
     def play(self, tracks):
+        if (self.is_stopped()):
+            self.set_volume(self._default_volume)
+            self.set_preset(self._default_preset)
         if (tracks is not None):
             self._core.playback.stop()
             self._core.tracklist.clear()

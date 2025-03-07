@@ -42,7 +42,11 @@ class Worker(Threader):
     def run(self):
         try:
             self._init_menu()
-            self.music = Music(self.core, self.config['default_tracks'], self.config['default_preset'])
+            self.music = Music(
+                self.core,
+                self.config['default_tracks'],
+                self.config['default_volume'],
+                self.config['default_preset'])
             self.mqtt = Mqtt(self.config['mqtt_user'], self.config['mqtt_password'])
             self.light_sensor = LightSensor(self.config['light_sensor_enabled'], self.mqtt)
             self.display = DisplayWithPowerSaving(
@@ -283,23 +287,16 @@ class Worker(Threader):
 
     def play_music(self, tracks=None):
         if (not self.music.is_playing()):
-            self.music.set_volume(self.config['default_volume'])
-            self.music.set_preset(self.config['default_preset'])
+            self.menu.draw_sub_menu_animation(self.music.get_draw_start_animation())
             self.music.play(tracks)
-            self.on_started()
 
     def pause_music(self):
         if (self.music.is_playing()):
             self.music.pause()
-            self.on_paused()
 
     def stop_music(self):
         if (not self.music.is_stopped()):
             self.music.stop()
-            self.on_stopped()
-
-    def on_started(self):
-        self.menu.draw_sub_menu_animation(self.music.get_draw_start_animation())
 
     def on_stopped(self):
         self.menu.draw_sub_menu_animation(self.music.get_draw_stop_animation())
