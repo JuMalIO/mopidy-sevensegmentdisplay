@@ -228,6 +228,7 @@ class Music:
         self._default_tracks = json.loads(default_tracks) if default_tracks and default_tracks.startswith("[") else [default_tracks]
         self._default_volume = default_volume
         self._default_preset = default_preset
+        self._preset = default_preset
 
     def is_playing(self, state=None):
         if (state is None):
