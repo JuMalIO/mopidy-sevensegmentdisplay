@@ -57,7 +57,7 @@ class ApiRequestHandler(BaseRequestHandler):
         elif (off == '+'):
             self.worker.timer_off.increase()
         elif (off):
-            self.worker.timer_on.set(int(off))
+            self.worker.timer_off.set(int(off))
 
         on = str(self.get_argument('on', ''))
         if (on == 'set'):
