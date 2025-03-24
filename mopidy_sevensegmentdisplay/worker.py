@@ -47,7 +47,7 @@ class Worker(Threader):
                 self.config['default_tracks'],
                 self.config['default_volume'],
                 self.config['default_preset'])
-            self.mqtt = Mqtt(self.config['mqtt_user'], self.config['mqtt_password'])
+            self.mqtt = Mqtt(self.config['mqtt_host'], self.config['mqtt_port'], self.config['mqtt_user'], self.config['mqtt_password'])
             self.light_sensor = LightSensor(self.config['light_sensor_enabled'], self.mqtt)
             self.display = DisplayWithPowerSaving(
                 self.config['display_enabled'],
