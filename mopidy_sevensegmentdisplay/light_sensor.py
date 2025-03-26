@@ -15,6 +15,8 @@ class LightSensor(Threader):
     def __init__(self, enabled, mqtt):
         super(LightSensor, self).__init__()
 
+        self._enabled = enabled
+
         if (not enabled):
             return
 
@@ -60,6 +62,9 @@ class LightSensor(Threader):
             logging.error(inst)
 
             return self._value
+
+    def is_enabled(self):
+        return self._enabled
 
     def get_value(self):
         return self._value

@@ -63,9 +63,13 @@ class Alert:
 
     def run(self):
         try:
-            file = random.choice(filter(lambda x: x["enabled"], self._files))
+            file = random.choice([x for x in self._files if x["enabled"]])
 
-            if (not self._music.is_playing()):
+            is_playing = self._music.is_playing()
+
+            if (is_playing):
+                self._music.pause()
+            else:
                 self._ir_sender.power(True)
                 time.sleep(10 if "ir_send" in file else 2)
 
@@ -83,7 +87,9 @@ class Alert:
                 if ("volume" in file["ir_send"]):
                     self._ir_sender.volume(- file["ir_send"]["volume"])
 
-            if (not self._music.is_playing()):
+            if (is_playing):
+                self._music.play()
+            else:
                 time.sleep(5 if "ir_send" in file else 1)
                 self._ir_sender.power(False)
         except Exception as inst:

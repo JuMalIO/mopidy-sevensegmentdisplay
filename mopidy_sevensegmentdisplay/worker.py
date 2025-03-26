@@ -62,8 +62,8 @@ class Worker(Threader):
                 self._on_menu_click_right,
                 self.config['relay_enabled'])
             self.ir_sender = IrSender(self.config['ir_remote'], self.gpio.switch_relay)
-            self.timer_on = TimerOn(self.play_music)
-            self.timer_off = TimerOff(self.stop_music)
+            self.timer_on = TimerOn(self.play_music, lambda x: self.mqtt.publish("timer_on", str(x)))
+            self.timer_off = TimerOff(self.stop_music, lambda x: self.mqtt.publish("timer_off", str(x)))
             self.alert = Alert(self.music,
                                self.ir_sender,
                                self.config['alert_files'])
@@ -91,6 +91,9 @@ class Worker(Threader):
             logging.error(inst)
         finally:
             self.equalizer.stop()
+            self.timer_alert.reset()
+            self.timer_off.reset()
+            self.timer_on.reset()
             self.ir_sender.stop()
             self.display.stop()
             self.light_sensor.stop()

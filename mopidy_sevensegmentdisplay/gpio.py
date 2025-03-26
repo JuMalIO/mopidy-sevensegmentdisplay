@@ -27,7 +27,7 @@ class Gpio:
 
         if (relay_enabled):
             self._is_relay_on = False
-            self.relay = LED(self.RELAY_PIN)
+            self.relay = LED(self.RELAY_PIN, active_high=False)
 
         self._relay_enabled = relay_enabled
 

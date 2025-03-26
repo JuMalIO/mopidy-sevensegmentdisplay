@@ -74,11 +74,13 @@
         {% end %}
     </ul>
 
+    {% if worker.light_sensor.is_enabled() %}
     <p>
         Raw value (16bit): {{ worker.light_sensor.get_raw_value() }}
         <br />
         Value (12bit): {{ worker.light_sensor.get_value() }}
     </p>
+    {% end %}
 </div>
 
 {% end %}

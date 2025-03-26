@@ -5,8 +5,9 @@ from .max7219 import Symbols
 class Timer(object):
     VISIBLE_FOR_SECONDS = 2
 
-    def __init__(self, callback, step, remove_min=True):
+    def __init__(self, callback, timerSetCallback, step, remove_min=True):
         self._callback = callback
+        self._timerSetCallback = timerSetCallback
         self._step = step
         self._half_step = int(step / 2)
         self._remove_min = remove_min
@@ -29,8 +30,12 @@ class Timer(object):
     def _is_time(self):
         return self._now >= self._timer
 
+    def _set(self, timer):
+        self._timer = timer
+        self._timerSetCallback(timer)
+
     def reset(self):
-        self._timer = None
+        self._set(None)
 
     def get(self):
         return self._timer
@@ -38,7 +43,7 @@ class Timer(object):
     def set(self, *args):
         if len(args) == 1:
             seconds = args[0]
-            self._timer = self._now + timedelta(seconds=seconds)
+            self._set(self._now + timedelta(seconds=seconds))
         elif len(args) == 2:
             hour = args[0]
             minute = args[1]
@@ -50,27 +55,27 @@ class Timer(object):
                     new_timer = new_timer.replace(minute=minute)
                 if (new_timer <= self._now):
                     new_timer += timedelta(days=1)
-                self._timer = new_timer
+                self._set(new_timer)
 
     def increase(self):
         if (not self.is_set()):
             time_left = (self._step - self._now.minute % self._step) if self._remove_min else 0
             min = time_left + (self._step if time_left < self._half_step else 0)
-            self._timer = self._now + timedelta(minutes=min)
+            self._set(self._now + timedelta(minutes=min))
         else:
             new_time = self._timer + timedelta(minutes=self._step)
             diff = new_time - self._now
             if (diff.days < 1):
-                self._timer = new_time
+                self._set(new_time)
 
     def decrease(self):
         if (self.is_set()):
             timer_minus_step = self._timer - timedelta(minutes=self._step)
             now_plus_half_step = self._now + timedelta(minutes=self._half_step)
             if (now_plus_half_step < timer_minus_step):
-                self._timer = timer_minus_step
+                self._set(timer_minus_step)
             else:
-                self._timer = None
+                self._set(None)
 
     def is_visible(self, seconds):
         return seconds < self.VISIBLE_FOR_SECONDS and self.is_set()
@@ -79,8 +84,8 @@ class Timer(object):
 class TimerOff(Timer):
     TIMER_STEP = 30
 
-    def __init__(self, callback):
-        super(TimerOff, self).__init__(callback, self.TIMER_STEP)
+    def __init__(self, callback, timerSetCallback):
+        super(TimerOff, self).__init__(callback, timerSetCallback, self.TIMER_STEP)
 
     def get_draw_buffer(self):
         if (self.is_set()):
@@ -113,8 +118,8 @@ class TimerOff(Timer):
 class TimerOn(Timer):
     TIMER_STEP = 30
 
-    def __init__(self, callback):
-        super(TimerOn, self).__init__(callback, self.TIMER_STEP)
+    def __init__(self, callback, timerSetCallback):
+        super(TimerOn, self).__init__(callback, timerSetCallback, self.TIMER_STEP)
 
     def get_draw_buffer(self):
         if (self.is_set()):
@@ -195,7 +200,7 @@ class TimerAlert:
 
     def add_timer(self, hour=None, minute=None):
         if (len(self._timers) < 10):
-            new_timer = Timer(self._callback, self.TIMER_STEP, False)
+            new_timer = Timer(self._callback, lambda x: None, self.TIMER_STEP, False)
             if (hour is not None or minute is not None):
                 new_timer.set(hour, minute)
             else:
