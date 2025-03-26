@@ -1,4 +1,3 @@
-import os
 import random
 import time
 import logging
@@ -88,7 +87,7 @@ class Alert:
                     self._ir_sender.volume(- file["ir_send"]["volume"])
 
             if (is_playing):
-                self._music.play()
+                self._music.play(None)
             else:
                 time.sleep(5 if "ir_send" in file else 1)
                 self._ir_sender.power(False)
@@ -100,5 +99,5 @@ class Alert:
 
     def _play_file(self, file, volume=32768, repeat=1, sleep=0.5):
         for i in range(repeat):
-            call(["mpg123", "-f", str(volume), "-q", os.path.join(os.path.dirname(__file__), file)])
+            call(["mpg123", "-f", str(volume), "-q", file])
             time.sleep(sleep)

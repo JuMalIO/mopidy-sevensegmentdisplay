@@ -327,10 +327,11 @@ class Worker(Threader):
 
     def on_volume_changed(self, volume=None):
         if (self.menu is not None and self.music is not None and self.music.is_volume_changed(volume)):
+            self.mqtt.publish('volume', str(volume))
             self.menu.draw_sub_menu(self.MENU_VOLUME)
 
     def on_playback_state_changed(self, old_state, new_state):
-        self.mqtt.publish('state', new_state);
+        self.mqtt.publish('state', new_state)
 
         if (old_state != new_state):
             if (self.music.is_playing(new_state)):
