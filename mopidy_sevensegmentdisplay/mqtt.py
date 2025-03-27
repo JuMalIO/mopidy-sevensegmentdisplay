@@ -20,8 +20,8 @@ class Mqtt:
                 "-h", self._mqtt_host,
                 "-p", self._mqtt_port,
                 "-u", self._mqtt_user,
-                "-P", self._mqtt_password],
-                "-r")
+                "-P", self._mqtt_password,
+                "-r"])
 
     def _getSerial(self):
         serial = "0000000000000000"
