@@ -1,5 +1,6 @@
 import logging
 from time import sleep
+from mopidy.core import PlaybackState
 from .equalizer import Equalizer
 from .threader import Threader
 from .light_sensor import LightSensor
@@ -62,8 +63,8 @@ class Worker(Threader):
                 self._on_menu_click_right,
                 self.config['relay_enabled'])
             self.ir_sender = IrSender(self.config['ir_remote'], self.gpio.switch_relay)
-            self.timer_on = TimerOn(self.play_music, lambda x: self.mqtt.publish("timer_on", str(x)))
-            self.timer_off = TimerOff(self.stop_music, lambda x: self.mqtt.publish("timer_off", str(x)))
+            self.timer_on = TimerOn(self.play_music, lambda x: self.mqtt.publish("timer_on", str(x) if x is not None else "-"))
+            self.timer_off = TimerOff(self.stop_music, lambda x: self.mqtt.publish("timer_off", str(x) if x is not None else "-"))
             self.alert = Alert(self.music,
                                self.ir_sender,
                                self.config['alert_files'])
@@ -97,6 +98,7 @@ class Worker(Threader):
             self.ir_sender.stop()
             self.display.stop()
             self.light_sensor.stop()
+            self.mqtt.publish('state', PlaybackState.STOPPED)
 
     def _init_menu(self):
         self.MENU = {
