@@ -60,9 +60,14 @@ class Alert:
         self._ir_sender = ir_sender
         self._files = json.loads(files)
 
-    def run(self):
+    def run(self, index):
         try:
-            file = random.choice([x for x in self._files if x["enabled"]])
+            if (index is not None and 0 <= index < len(self._files)):
+                if (not self._files[index]["enabled"]):
+                    return
+                file = self._files[index]
+            else:
+                file = random.choice([x for x in self._files if x["enabled"]])
 
             is_playing = self._music.is_playing()
 
@@ -93,6 +98,12 @@ class Alert:
                 self._ir_sender.power(False)
         except Exception as inst:
             logging.error(inst)
+
+    def is_enabled(self):
+        return len(self._files) > 0
+
+    def get_files(self):
+        return self._files
 
     def get_draw_alert_animation(self):
         return self.ANIMATION_ALERT

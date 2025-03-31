@@ -50,6 +50,7 @@
     </ul>
     <br />
 
+    {% if worker.alert.is_enabled() %}
     <p>
         Timer alert
         <input id="alert_hour" type="number" min="0" max="23" style="width: 50px;" />
@@ -62,7 +63,7 @@
         <button onclick="post({ alert: 'clear' })">Clear</button>
         <button onclick="post({ alert: '-' })">Decrease</button>
         <button onclick="post({ alert: '+' })">Increase</button>
-        <button onclick="post({ alert: 'run' })">Run</button>
+
     </p>
     <ul>
         {% if not worker.timer_alert.is_set() %}
@@ -73,6 +74,16 @@
         {% end %}
         {% end %}
     </ul>
+    {% for index, file in enumerate(worker.alert.get_files()) %}
+    <p>
+        <span>{{ file["name"] }}</span>
+        <span> | Volume: {{ file["volume"] }}</span>
+        <span> | Repeat: {{ file["repeat"] }}</span>
+        <span> | Enabled: {{ file["enabled"] }}</span>
+        <button onclick="post({ alert: index })">Run</button>
+    </p>
+    {% end %}
+    {% end %}
 
     {% if worker.light_sensor.is_enabled() %}
     <p>

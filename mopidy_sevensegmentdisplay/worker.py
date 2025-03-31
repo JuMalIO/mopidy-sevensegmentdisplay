@@ -265,9 +265,9 @@ class Worker(Threader):
             self.timer_on.decrease()
             self.menu.draw_sub_menu(self.MENU_TIMER_ON)
 
-    def run_alert(self):
+    def run_alert(self, index=None):
         self.menu.draw_sub_menu_animation(self.alert.get_draw_alert_animation())
-        self.alert.run()
+        self.alert.run(index)
 
     def get_presets(self):
         return self.music.get_presets()

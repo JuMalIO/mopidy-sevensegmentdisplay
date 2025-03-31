@@ -90,6 +90,8 @@ class ApiRequestHandler(BaseRequestHandler):
             self.worker.timer_alert.increase()
         elif (alert == 'run'):
             self.worker.run_alert()
+        elif (alert):
+            self.worker.run_alert(int(alert))
 
         preset = str(self.get_argument('preset', ''))
         if (preset != ''):
