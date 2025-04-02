@@ -80,7 +80,7 @@
         <span> | Volume: {{ file["volume"] }}</span>
         <span> | Repeat: {{ file["repeat"] }}</span>
         <span> | Enabled: {{ file["enabled"] }}</span>
-        <button onclick="post({ alert: index })">Run</button>
+        <button onclick="post({ alert: '{{ index }}' })">Run</button>
     </p>
     {% end %}
     {% end %}
